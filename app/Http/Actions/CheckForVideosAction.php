@@ -15,13 +15,15 @@ class CheckForVideosAction
     public function execute(Channel $channel): void
     {
         $channelId = $channel->getAttributeValue('channel_id');
+        $channelName = $channel->getAttributeValue('name');
+
         $rssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id='.$channelId;
 
         // Fetch RSS feed
         $response = Http::get($rssUrl);
 
         if ($response->failed()) {
-            Log::error("Failed to fetch RSS feed for channel ID: $channelId. Response: ".$response->body());
+            Log::error("Failed to fetch RSS feed for channel: $channelName. Response: ".$response->body());
 
             return;
         }
@@ -29,7 +31,7 @@ class CheckForVideosAction
         // Parse RSS feed
         $rssData = simplexml_load_string($response->body());
         if (! $rssData || ! isset($rssData->entry)) {
-            Log::info("No videos found in RSS feed for channel ID: $channelId.");
+            Log::info("No videos found in RSS feed for channel: $channelName.");
 
             return;
         }
@@ -61,19 +63,19 @@ class CheckForVideosAction
         // Handle first-time import of video data (no emails)
         if (! $channel->last_checked_at) {
             Video::insert($newVideos); // Bulk insert
-            Log::info("First-time import for channel ID: $channelId completed with ".count($newVideos).' videos.');
+            Log::info("First-time import for channel: $channelName completed with ".count($newVideos).' videos.');
         } else {
             // Insert new videos and send email notifications
             foreach ($newVideos as $videoData) {
                 $video = Video::create($videoData);
                 Mail::to('lewis@larsens.dev')->send(new NewVideoMail($video));
-                Log::info("New video added: {$video->title} ({$video->video_id}) for channel ID: $channelId.");
+                Log::info("New video added: {$video->title} ({$video->video_id}) for channel: $channelName.");
             }
         }
 
         // Update the channel's last_checked_at timestamp
         $channel->update(['last_checked_at' => now()]);
 
-        Log::info("Check for videos completed for channel ID: $channelId.");
+        Log::info("Check for videos completed for channel: $channelName.");
     }
 }
