@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Http\Actions\CheckForVideosAction;
 use App\Models\Channel;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class CheckChannelsCommand extends Command
 {
@@ -14,6 +15,8 @@ class CheckChannelsCommand extends Command
 
     public function handle(): int
     {
+        Log::info('[CHECKING] Performing a check to see if channels have any new content.');
+
         $channels = Channel::all();
 
         if ($channels->isEmpty()) {
