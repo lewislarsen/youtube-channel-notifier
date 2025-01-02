@@ -6,7 +6,7 @@ use App\Models\Video;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class ViewVideosCommand extends Command
+class ListVideosCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -30,12 +30,13 @@ class ViewVideosCommand extends Command
         $videos = Video::orderBy('published_at', 'desc')->get();
 
         $this->table(
-            ['Title', 'Creator', 'Published'],
+            ['Title', 'Creator', 'Published', 'URL'],
             $videos->map(function (Video $video) {
                 return [
                     $video->title,
                     $video->channel->name,
                     Carbon::parse($video->published_at)->diffForHumans(),
+                    'https://youtube.com/watch?v='.$video->getAttributeValue('video_id'),
                 ];
             })->toArray()
         );
