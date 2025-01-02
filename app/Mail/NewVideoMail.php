@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,16 +14,13 @@ class NewVideoMail extends Mailable
     use SerializesModels;
 
     /**
-     * The video instance.
-     */
-    public Video $video;
-
-    /**
      * Create a new message instance.
      */
-    public function __construct(Video $video)
-    {
-        $this->video = $video;
+    public function __construct(
+        public Video $video,
+        public Channel $channel = new Channel
+    ) {
+        $this->channel = $video->channel;
     }
 
     /**
@@ -31,7 +29,7 @@ class NewVideoMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Video Uploaded: '.$this->video->title,
+            subject: 'New Video: '.$this->video->title.' by '.$this->channel->name,
         );
     }
 
@@ -43,9 +41,10 @@ class NewVideoMail extends Mailable
         return new Content(
             markdown: 'mail.new-video-mail',
             with: [
+                'videoCreator' => $this->channel->name,
                 'videoTitle' => $this->video->title,
                 'videoUrl' => 'https://www.youtube.com/watch?v='.$this->video->video_id,
-                'publishedAt' => $this->video->published_at->toFormattedDateString(),
+                'published' => $this->video->published_at->format('d M Y h:i A'),
             ],
         );
     }
