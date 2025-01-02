@@ -14,68 +14,89 @@ class CheckForVideosAction
 {
     public function execute(Channel $channel): void
     {
-        $channelId = $channel->getAttributeValue('channel_id');
-        $channelName = $channel->getAttributeValue('name');
+        $rssData = $this->fetchRssFeed($channel);
+        if (is_null($rssData)) {
+            return;
+        }
 
-        $rssUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id='.$channelId;
+        $newVideos = $this->extractNewVideos($rssData, $channel);
 
-        // Fetch RSS feed
+        if (empty($newVideos)) {
+            return;
+        }
+
+        if (is_null($channel->last_checked_at)) {
+            $this->firstTimeImport($newVideos, $channel);
+        } else {
+            $this->insertNewVideosAndNotify($newVideos, $channel);
+        }
+
+        $this->updateChannelLastChecked($channel);
+    }
+
+    private function fetchRssFeed(Channel $channel): ?object
+    {
+        $rssUrl = sprintf('https://www.youtube.com/feeds/videos.xml?channel_id=%s', $channel->getAttributeValue('channel_id'));
         $response = Http::get($rssUrl);
 
         if ($response->failed()) {
-            Log::error("Failed to fetch RSS feed for channel: $channelName. Response: ".$response->body());
+            Log::error("Failed to fetch RSS feed for channel: {$channel->getAttributeValue('name')}. Response: {$response->body()}");
 
-            return;
+            return null;
         }
 
-        // Parse RSS feed
         $rssData = simplexml_load_string($response->body());
-        if (! $rssData || ! isset($rssData->entry)) {
-            Log::info("No videos found in RSS feed for channel: $channelName.");
 
-            return;
+        if (! $rssData || ! isset($rssData->entry)) {
+            Log::info("No videos found in RSS feed for channel: {$channel->getAttributeValue('name')}.");
+
+            return null;
         }
 
-        // Extract existing video IDs from the database
+        return $rssData;
+    }
+
+    private function extractNewVideos(object $rssData, Channel $channel): array
+    {
         $existingVideoIds = Video::where('channel_id', $channel->id)->pluck('video_id')->toArray();
         $newVideos = [];
 
         foreach ($rssData->entry as $entry) {
-            $rawVideoId = (string) $entry->id; // e.g., "yt:video:5ltAy1W6k-Q"
-            $videoId = str_replace('yt:video:', '', $rawVideoId); // Remove "yt:video:" prefix
-            $title = (string) $entry->title;
-            $publishedAt = Carbon::parse((string) $entry->published);
-
-            // Skip if video already exists in the database
+            $videoId = str_replace('yt:video:', '', (string) $entry->id);
             if (in_array($videoId, $existingVideoIds, true)) {
                 continue;
             }
 
             $newVideos[] = [
                 'video_id' => $videoId,
-                'title' => $title,
+                'title' => (string) $entry->title,
                 'description' => (string) $entry->summary,
-                'published_at' => $publishedAt,
+                'published_at' => Carbon::parse((string) $entry->published),
                 'channel_id' => $channel->id,
             ];
         }
 
-        // Handle first-time import of video data (no emails)
-        if (! $channel->last_checked_at) {
-            Video::insert($newVideos); // Bulk insert
-            Log::info("First-time import for channel: $channelName completed with ".count($newVideos).' videos.');
-        } else {
-            // Insert new videos and send email notifications
-            foreach ($newVideos as $videoData) {
-                $video = Video::create($videoData);
-                Mail::to('lewis@larsens.dev')->send(new NewVideoMail($video));
-                Log::info("New video added: {$video->title} ({$video->video_id}) for channel: $channelName.");
-            }
+        return $newVideos;
+    }
+
+    private function firstTimeImport(array $newVideos, Channel $channel): void
+    {
+        Video::insert($newVideos);
+        Log::info("First-time import for channel: {$channel->getAttributeValue('name')} completed with ".count($newVideos).' videos.');
+    }
+
+    private function insertNewVideosAndNotify(array $newVideos, Channel $channel): void
+    {
+        foreach ($newVideos as $videoData) {
+            $video = Video::create($videoData);
+            Mail::to('lewis@larsens.dev')->send(new NewVideoMail($video));
+            Log::info("New video added: {$video->title} ({$video->video_id}) for channel: {$channel->getAttributeValue('name')}.");
         }
+    }
 
-        // Update the channel's last_checked_at timestamp
+    private function updateChannelLastChecked(Channel $channel): void
+    {
         $channel->update(['last_checked_at' => now()]);
-
-        Log::info("Check for videos completed for channel: $channelName.");
+        Log::info("Check for videos completed for channel: {$channel->getAttributeValue('name')}.");
     }
 }
