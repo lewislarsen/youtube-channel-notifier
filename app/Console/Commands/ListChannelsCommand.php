@@ -30,7 +30,7 @@ class ListChannelsCommand extends Command
         $channels = Channel::orderBy('created_at', 'desc')->get();
 
         $this->table(
-            ['Name', 'Videos Stored', 'Last Checked', 'Channel URL'],
+            ['Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL'],
             $channels->map(function (Channel $channel) {
                 return [
                     $channel->name,
