@@ -18,7 +18,7 @@ it('builds the mailable correctly', function () {
     $mailable = new NewVideoMail($video);
 
     expect($mailable->envelope()->subject)
-        ->toBe('New Video: Test Video by TestChannel');
+        ->toBe('TestChannel - New Video: Test Video');
 
     $content = $mailable->content();
 
@@ -32,7 +32,9 @@ it('builds the mailable correctly', function () {
 it('sends the mailable', function () {
     Mail::fake();
 
+    $channel = Channel::factory()->create(['name' => 'TestChannel']);
     $video = Video::factory()->make([
+        'channel_id' => $channel->id,
         'title' => 'Test Video',
         'video_id' => '5ltAy1W6k-Q',
         'published_at' => Carbon::now(),

@@ -29,8 +29,16 @@ class NewVideoMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Video: '.$this->video->title.' by '.$this->channel->name,
+            subject: $this->getSubject(),
         );
+    }
+
+    /**
+     * Generate the subject line for the envelope.
+     */
+    protected function getSubject(): string
+    {
+        return sprintf('%s - New Video: %s', $this->channel->name, $this->video->title);
     }
 
     /**
