@@ -1,18 +1,19 @@
 <x-mail::message>
-# New Video Alert: {{ $videoTitle }}
+# New Video from {{ $videoCreator }}
 
 Hello,
 
-A new video has just been uploaded by **{{ $videoCreator }}** on their YouTube channel!
+**{{ $videoCreator }}** has just released a new video on their YouTube channel:
+**{{ $videoTitle }}**
 
-
+### Details:
 **Published On:** {{ $published }}
 
-Ready to dive in? Click the button below to watch now:
+Looking for something exciting? Don’t miss out, watch it now!
 
 <x-mail::button :url="$videoUrl" color="primary">
-Watch Now on YouTube
+Watch "{{ $videoTitle }}" on YouTube
 </x-mail::button>
 
-Hope you enjoy the content.
+Thank you for staying connected with **{{ $videoCreator }}**. We hope you enjoy their latest content!
 </x-mail::message>
