@@ -20,27 +20,24 @@ class CheckForVideosAction
         }
 
         $newVideos = $this->extractNewVideos($rssData, $channel);
-
         if (empty($newVideos)) {
             return;
         }
 
-        if (is_null($channel->last_checked_at)) {
-            $this->firstTimeImport($newVideos, $channel);
-        } else {
-            $this->insertNewVideosAndNotify($newVideos, $channel);
-        }
+        is_null($channel->last_checked_at)
+            ? $this->firstTimeImport($newVideos, $channel)
+            : $this->insertNewVideosAndNotify($newVideos, $channel);
 
         $this->updateChannelLastChecked($channel);
     }
 
     private function fetchRssFeed(Channel $channel): ?object
     {
-        $rssUrl = sprintf('https://www.youtube.com/feeds/videos.xml?channel_id=%s', $channel->getAttributeValue('channel_id'));
+        $rssUrl = sprintf('https://www.youtube.com/feeds/videos.xml?channel_id=%s', $channel->channel_id);
         $response = Http::get($rssUrl);
 
         if ($response->failed()) {
-            Log::error("Failed to fetch RSS feed for channel: {$channel->getAttributeValue('name')}. Response: {$response->body()}");
+            Log::error("Failed to fetch RSS feed for channel: {$channel->name}. Response: {$response->body()}");
 
             return null;
         }
@@ -48,7 +45,7 @@ class CheckForVideosAction
         $rssData = simplexml_load_string($response->body());
 
         if (! $rssData || ! isset($rssData->entry)) {
-            Log::info("No videos found in RSS feed for channel: {$channel->getAttributeValue('name')}.");
+            Log::info("No videos found in RSS feed for channel: {$channel->name}.");
 
             return null;
         }
@@ -63,13 +60,22 @@ class CheckForVideosAction
 
         foreach ($rssData->entry as $entry) {
             $videoId = str_replace('yt:video:', '', (string) $entry->id);
+            $title = (string) $entry->title;
+
+            // Check if the title contains the exact word "LIVE"
+            if (stripos($title, 'LIVE') !== false && preg_match('/\bLIVE\b/', $title)) {
+                Log::warning("Video with title containing 'LIVE' found and ignored: {$title}");
+
+                continue;
+            }
+
             if (in_array($videoId, $existingVideoIds, true)) {
                 continue;
             }
 
             $newVideos[] = [
                 'video_id' => $videoId,
-                'title' => (string) $entry->title,
+                'title' => $title,
                 'description' => (string) $entry->summary,
                 'published_at' => Carbon::parse((string) $entry->published),
                 'channel_id' => $channel->id,
@@ -82,7 +88,7 @@ class CheckForVideosAction
     private function firstTimeImport(array $newVideos, Channel $channel): void
     {
         Video::insert($newVideos);
-        Log::info("First-time import for channel: {$channel->getAttributeValue('name')} completed with ".count($newVideos).' videos.');
+        Log::info("First-time import for channel: {$channel->name} completed with ".count($newVideos).' videos.');
     }
 
     private function insertNewVideosAndNotify(array $newVideos, Channel $channel): void
@@ -90,13 +96,13 @@ class CheckForVideosAction
         foreach ($newVideos as $videoData) {
             $video = Video::create($videoData);
             Mail::to('lewis@larsens.dev')->send(new NewVideoMail($video));
-            Log::info("New video added: {$video->title} ({$video->video_id}) for channel: {$channel->getAttributeValue('name')}.");
+            Log::info("New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
         }
     }
 
     private function updateChannelLastChecked(Channel $channel): void
     {
         $channel->update(['last_checked_at' => now()]);
-        Log::info("Check for videos completed for channel: {$channel->getAttributeValue('name')}.");
+        Log::info("Check for videos completed for channel: {$channel->name}.");
     }
 }

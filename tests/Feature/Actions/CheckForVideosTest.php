@@ -176,3 +176,34 @@ it('logs an info message if the RSS feed is malformed and no emails are sent', f
     // Assert that no email was sent
     Mail::assertNothingSent();
 });
+
+it('ignores videos with the exact word LIVE in the title', function () {
+    Mail::fake();
+
+    $channel = Channel::factory()->create([
+        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw', // Example channel ID
+        'last_checked_at' => now()->subDay(), // Simulate that the channel has been checked before
+    ]);
+
+    $rssResponse = <<<'XML'
+    <feed>
+        <entry>
+            <id>yt:video:5ltAy1W6k-Q</id>
+            <title>LIVE Video Title</title>
+            <summary>Video description</summary>
+            <published>2025-01-01T00:00:00+00:00</published>
+        </entry>
+    </feed>
+    XML;
+
+    Http::fake([
+        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+    ]);
+
+    $action = new CheckForVideosAction;
+    $action->execute($channel);
+
+    Mail::assertNothingSent();
+
+    expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeFalse();
+});
