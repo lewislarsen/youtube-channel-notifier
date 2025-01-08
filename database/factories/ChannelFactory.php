@@ -2,22 +2,29 @@
 
 namespace Database\Factories;
 
+use App\Models\Channel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Channel>
+ * Class ChannelFactory
+ *
+ * This factory class is used to generate fake data for the Channel model. It defines
+ * the default state for the model, which includes a fake channel name, a YouTube-like
+ * channel ID, and an initial state for the last checked timestamp.
+ *
+ * @extends Factory<Channel>
  */
 class ChannelFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed> The default state of the model.
      */
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->name, // You may replace `channelName()` with a more suitable method if unavailable
+            'name' => fake()->unique()->name, // Generates a unique fake name for the channel
             'channel_id' => fake()->regexify('[A-Za-z0-9_-]{24}'), // Mimics YouTube channel ID format
             'last_checked_at' => null, // Initial state for new channels
         ];

@@ -6,6 +6,12 @@ use App\Models\Video;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
+/**
+ * Class ListVideosCommand
+ *
+ * This command lists all the YouTube videos stored in the database, displaying
+ * details such as the video title, creator, published date, and the video URL.
+ */
 class ListVideosCommand extends Command
 {
     /**
@@ -20,7 +26,7 @@ class ListVideosCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Lists all the videos that have been stored in the database,';
+    protected $description = 'Lists all the videos that have been stored in the database';
 
     /**
      * Execute the console command.
@@ -36,7 +42,7 @@ class ListVideosCommand extends Command
                     $video->title,
                     $video->channel->name,
                     Carbon::parse($video->published_at)->diffForHumans(),
-                    'https://youtube.com/watch?v='.$video->getAttributeValue('video_id'),
+                    'https://youtube.com/watch?v='.$video->video_id,
                 ];
             })->toArray()
         );

@@ -6,6 +6,13 @@ use App\Models\Channel;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
+/**
+ * Class ListChannelsCommand
+ *
+ * This command lists all the YouTube channels stored in the database, displaying
+ * details such as the channel name, number of videos stored, last video grabbed time,
+ * and the channel URL.
+ */
 class ListChannelsCommand extends Command
 {
     /**
@@ -20,7 +27,7 @@ class ListChannelsCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Lists all the channels that have been stored in the database,';
+    protected $description = 'Lists all the channels that have been stored in the database';
 
     /**
      * Execute the console command.
@@ -36,7 +43,7 @@ class ListChannelsCommand extends Command
                     $channel->name,
                     $channel->videos()->count(),
                     Carbon::parse($channel->last_checked_at)->diffForHumans(),
-                    'https://youtube.com/channel/'.$channel->getAttributeValue('channel_id'),
+                    'https://youtube.com/channel/'.$channel->channel_id,
                 ];
             })->toArray()
         );

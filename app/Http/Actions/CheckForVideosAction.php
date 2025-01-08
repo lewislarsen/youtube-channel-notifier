@@ -10,8 +10,20 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
+/**
+ * Class CheckForVideosAction
+ *
+ * This class is responsible for checking a YouTube channel's RSS feed for new videos,
+ * extracting new videos that have not been previously recorded, and notifying via email
+ * if new videos are found.
+ */
 class CheckForVideosAction
 {
+    /**
+     * Executes the action to check for new videos for a given channel.
+     *
+     * @param  Channel  $channel  The channel to check for new videos.
+     */
     public function execute(Channel $channel): void
     {
         $rssData = $this->fetchRssFeed($channel);
@@ -31,6 +43,12 @@ class CheckForVideosAction
         $this->updateChannelLastChecked($channel);
     }
 
+    /**
+     * Fetches the RSS feed for a given channel.
+     *
+     * @param  Channel  $channel  The channel for which to fetch the RSS feed.
+     * @return object|null The RSS feed data or null if the fetch failed or no videos found.
+     */
     private function fetchRssFeed(Channel $channel): ?object
     {
         $rssUrl = sprintf('https://www.youtube.com/feeds/videos.xml?channel_id=%s', $channel->channel_id);
@@ -53,6 +71,13 @@ class CheckForVideosAction
         return $rssData;
     }
 
+    /**
+     * Extracts new videos from the RSS feed data and filters out videos that already exist or contain the word "LIVE".
+     *
+     * @param  object  $rssData  The RSS feed data.
+     * @param  Channel  $channel  The channel to which the videos belong.
+     * @return array An array of new videos.
+     */
     private function extractNewVideos(object $rssData, Channel $channel): array
     {
         $existingVideoIds = Video::where('channel_id', $channel->id)->pluck('video_id')->toArray();
@@ -85,12 +110,24 @@ class CheckForVideosAction
         return $newVideos;
     }
 
+    /**
+     * Performs the first-time import of new videos for a channel.
+     *
+     * @param  array  $newVideos  An array of new videos to insert.
+     * @param  Channel  $channel  The channel to which the videos belong.
+     */
     private function firstTimeImport(array $newVideos, Channel $channel): void
     {
         Video::insert($newVideos);
         Log::info("First-time import for channel: {$channel->name} completed with ".count($newVideos).' videos.');
     }
 
+    /**
+     * Inserts new videos into the database and sends notification emails.
+     *
+     * @param  array  $newVideos  An array of new videos to insert and notify.
+     * @param  Channel  $channel  The channel to which the videos belong.
+     */
     private function insertNewVideosAndNotify(array $newVideos, Channel $channel): void
     {
         foreach ($newVideos as $videoData) {
@@ -100,6 +137,11 @@ class CheckForVideosAction
         }
     }
 
+    /**
+     * Updates the last checked timestamp for a channel.
+     *
+     * @param  Channel  $channel  The channel to update the last checked timestamp for.
+     */
     private function updateChannelLastChecked(Channel $channel): void
     {
         $channel->update(['last_checked_at' => now()]);
