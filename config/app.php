@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Alert Email
+    |--------------------------------------------------------------------------
+    |
+    | This value is the email address where alert notifications should be
+    | sent. You can set this in your ".env" file to ensure that alerts are
+    | sent to the appropriate recipient.
+    |
+    */
+
+    'alert_email' => env('ALERT_EMAIL', 'alerts@example.com'),
 ];

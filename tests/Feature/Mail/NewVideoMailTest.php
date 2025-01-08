@@ -4,6 +4,7 @@ use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
 it('builds the mailable correctly', function () {
@@ -30,6 +31,7 @@ it('builds the mailable correctly', function () {
 });
 
 it('sends the mailable', function () {
+    Config::set('app.alert_email', 'lewis@larsens.dev');
     Mail::fake();
 
     $channel = Channel::factory()->create(['name' => 'TestChannel']);

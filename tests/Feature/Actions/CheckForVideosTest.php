@@ -4,6 +4,7 @@ use App\Http\Actions\CheckForVideosAction;
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -15,6 +16,7 @@ beforeEach(function () {
 });
 
 it('sends a mailable if a new video is found', function () {
+    Config::set('app.alert_email', 'email@example.com');
     // Mock Mail facade
     Mail::fake();
 
@@ -46,7 +48,7 @@ it('sends a mailable if a new video is found', function () {
 
     // Assert that the email was sent
     Mail::assertSent(NewVideoMail::class, function ($mail) {
-        return $mail->hasTo('lewis@larsens.dev');
+        return $mail->hasTo('email@example.com');
     });
 
     // Assert that the new video was added to the database

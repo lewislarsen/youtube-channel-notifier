@@ -95,7 +95,7 @@ class CheckForVideosAction
     {
         foreach ($newVideos as $videoData) {
             $video = Video::create($videoData);
-            Mail::to('lewis@larsens.dev')->send(new NewVideoMail($video));
+            Mail::to(config('app.alert_email'))->send(new NewVideoMail($video));
             Log::info("New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
         }
     }
