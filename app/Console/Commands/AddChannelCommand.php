@@ -19,7 +19,7 @@ class AddChannelCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'channel:add';
+    protected $signature = 'channels:add';
 
     /**
      * The console command description.

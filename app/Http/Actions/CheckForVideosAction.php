@@ -89,7 +89,7 @@ class CheckForVideosAction
 
             // Check if the title contains the exact word "LIVE"
             if (stripos($title, 'LIVE') !== false && preg_match('/\bLIVE\b/', $title)) {
-                Log::warning("Video with title containing 'LIVE' found and ignored: {$title}");
+                Log::debug("Video with title containing 'LIVE' found and ignored: {$title}");
 
                 continue;
             }

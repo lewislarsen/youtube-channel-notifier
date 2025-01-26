@@ -1,11 +1,10 @@
 # YouTube Channel Notifier
 
-This project is a Channels Management System that checks YouTube channels for new videos and sends notifications when new videos are found. It includes commands to add new channels and to check all channels for updates.
+The YouTube Channel Notifier is a simple tool for managing and monitoring YouTube channels. It periodically checks RSS feeds for new videos and sends notifications when updates are detected. This project is managed exclusively via Terminal console commands, with no web interface.
 
 ## Features
 
 - **Check Channels:** Check all YouTube channels for new videos and send notifications.
-- **Add Channel:** Add a new YouTube channel and perform an initial video import.
 - **Email Notifications:** Send email notifications when new videos are found.
 
 ## Requirements
@@ -30,7 +29,7 @@ This project is a Channels Management System that checks YouTube channels for ne
 
 3. **Set up your environment:**
 
-   Copy the `.env.example` file to `.env` and configure your database and mail settings.
+   Copy the `.env.example` file to `.env` and configure your database and mail settings. The `ALERT_EMAIL` variable is the email alerts will be sent to.
 
    ```sh
    cp .env.example .env
@@ -48,36 +47,69 @@ This project is a Channels Management System that checks YouTube channels for ne
    php artisan migrate
    ```
 
-6. **Run Laravel Pint for code formatting:**
+6. **Start the Artisan Scheduler:**
+
+Ensure the PHP Artisan scheduler is running. This requires setting up a cron job to execute the `php artisan schedule:run` command every minute.
+
+Example cron configuration:
 
    ```sh
-   ./vendor/bin/pint
+* * * * * /usr/bin/php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
    ```
+
 
 ## Usage
 
 ### Commands
 
-1. **Check Channels:**
+**Add a Channel:**
 
-   Check all channels for new videos and send notifications if necessary.
+Add a new YouTube channel to the notifier and automatically import its existing video history.
+
+To find the **Channel ID**, follow these steps:
+1. Visit the YouTube channel's page in a browser.
+2. Right-click anywhere on the page and select "View Page Source."
+3. Search for the term `itemprop="identifier" content="` in the source code.
+4. The Channel ID is the value inside the `content=""` attribute next to this term.
+
+Once you have the Channel ID, add it using the following command:
+
+```sh
+php artisan channels:add
+```
+
+**Remove a Channel:**
+
+   Remove a previously added YouTube channel:  
 
    ```sh
-   php artisan channel:check
+   php artisan channels:remove
    ```
 
-2. **Add Channel:**
+**Lists all Channels:**
 
-   Add a new YouTube channel and perform an initial video import.
+View a list of all YouTube channels being monitored.
 
    ```sh
-   php artisan channel:add
+   php artisan channels:list
+   ```
+
+**Lists all Videos:**
+
+View all videos fetched from monitored channels:
+
+   ```sh
+   php artisan videos:list
    ```
 
 ### Running Tests
 
-To run the tests, use the following command:
+ Run the test suite using Pest:
 
 ```sh
 ./vendor/bin/pest
 ```
+
+## Troubleshooting
+
+If you encounter any issues, feel free to open an issue in the repository. I'll address it as soon as possible.

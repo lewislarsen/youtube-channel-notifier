@@ -20,7 +20,7 @@ class CheckChannelsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'channel:check';
+    protected $signature = 'channels:check';
 
     /**
      * The console command description.
