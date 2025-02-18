@@ -145,6 +145,6 @@ class CheckForVideosAction
     private function updateChannelLastChecked(Channel $channel): void
     {
         $channel->update(['last_checked_at' => now()]);
-        Log::info("Check for videos completed for channel: {$channel->name}.");
+        Log::debug("Check for videos completed for channel: {$channel->name}.");
     }
 }
