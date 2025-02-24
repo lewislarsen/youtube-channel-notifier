@@ -145,7 +145,11 @@ it('logs an error if the RSS feed fetch fails', function () {
 
 it('logs an info message if the RSS feed is malformed and no emails are sent', function () {
     // Mock the Log facade
-    Log::shouldReceive('info')->twice();
+    Log::shouldReceive('info')->once();
+
+    Log::shouldReceive('debug')
+        ->once()
+        ->andReturn(null);
 
     // Mock Mail facade
     Mail::fake();
