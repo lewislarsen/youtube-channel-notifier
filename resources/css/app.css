@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Global styles */
+@layer base {
+    html {
+        @apply bg-gray-50 dark:bg-gray-900;
+    }
+
+    body {
+        @apply min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    }
+}
+
+/* Custom utilities */
+@layer utilities {
+    .bg-gradient-pattern {
+        background-image:
+            radial-gradient(circle at 25% 10%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+    }
+
+    .glass-card {
+        @apply backdrop-blur-md;
+    }
+
+    .hover-rise {
+        @apply transition-transform duration-300 hover:-translate-y-1;
+    }
+}
