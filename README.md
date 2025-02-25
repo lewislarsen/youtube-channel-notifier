@@ -6,6 +6,7 @@ The YouTube Channel Notifier is a simple tool for managing and monitoring YouTub
 
 - **Check Channels:** Check all YouTube channels for new videos and send notifications.
 - **Email Notifications:** Send email notifications when new videos are found.
+- **Discord Notifications:** Send Discord webhook notifications when new videos are found.
 
 ## Requirements
 
@@ -29,7 +30,10 @@ The YouTube Channel Notifier is a simple tool for managing and monitoring YouTub
 
 3. **Set up your environment:**
 
-   Copy the `.env.example` file to `.env` and configure your database and mail settings. The `ALERT_EMAIL` variable is the email alerts will be sent to.
+   Copy the `.env.example` file to `.env` and configure your database and notification settings:
+
+    - `ALERT_EMAIL`: The email address where alerts will be sent
+    - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL for sending notifications to a Discord channel
 
    ```sh
    cp .env.example .env
@@ -80,7 +84,7 @@ php artisan channels:add
 
 **Remove a Channel:**
 
-   Remove a previously added YouTube channel:  
+Remove a previously added YouTube channel:
 
    ```sh
    php artisan channels:remove
@@ -102,9 +106,17 @@ View all videos fetched from monitored channels:
    php artisan videos:list
    ```
 
+### Notifications
+
+The project supports two notification methods:
+
+1. **Email**: Configure your SMTP settings in the `.env` file and set the `ALERT_EMAIL` variable to receive email alerts.
+
+2. **Discord**: Set a webhook in your Discord and add the webhook URL to the `DISCORD_WEBHOOK_URL` variable in the `.env` file.
+
 ### Running Tests
 
- Run the test suite using Pest:
+Run the test suite using Pest:
 
 ```sh
 ./vendor/bin/pest

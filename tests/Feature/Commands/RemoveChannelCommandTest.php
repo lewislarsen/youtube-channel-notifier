@@ -32,7 +32,7 @@ it('outputs a message if it cannot find a channel', function () {
         ->expectsQuestion('Enter the channel name', 'does-not-exist')
         ->expectsOutput('A channel cannot be found with that name. Please run `php artisan channels:list`.');
 
-    $this->assertDatabaseHas('channels', []);
+    $this->assertDatabaseCount('channels', 0);
 });
 
 it('cancels the removal if the user does not confirm', function () {

@@ -6,6 +6,7 @@ use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -40,7 +41,9 @@ class CheckForVideosAction
             ? $this->firstTimeImport($newVideos, $channel)
             : $this->insertNewVideosAndNotify($newVideos, $channel);
 
-        $this->updateChannelLastChecked($channel);
+        $channel->updateLastChecked();
+
+        Log::debug("Check for videos completed for channel: {$channel->name}.");
     }
 
     /**
@@ -130,21 +133,19 @@ class CheckForVideosAction
      */
     private function insertNewVideosAndNotify(array $newVideos, Channel $channel): void
     {
+        $discordService = app(SendDiscordNotificationAction::class);
+
         foreach ($newVideos as $videoData) {
+
             $video = Video::create($videoData);
+
             Mail::to(config('app.alert_email'))->send(new NewVideoMail($video));
+
+            if (Config::get('app.discord_webhook_url')) {
+                $discordService->execute($video);
+            }
+
             Log::info("New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
         }
-    }
-
-    /**
-     * Updates the last checked timestamp for a channel.
-     *
-     * @param  Channel  $channel  The channel to update the last checked timestamp for.
-     */
-    private function updateChannelLastChecked(Channel $channel): void
-    {
-        $channel->update(['last_checked_at' => now()]);
-        Log::debug("Check for videos completed for channel: {$channel->name}.");
     }
 }

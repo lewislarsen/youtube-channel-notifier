@@ -67,8 +67,8 @@ class NewVideoMail extends Mailable
             with: [
                 'videoCreator' => $this->channel->name,
                 'videoTitle' => $this->video->title,
-                'videoUrl' => 'https://www.youtube.com/watch?v='.$this->video->video_id,
-                'published' => $this->video->published_at->format('d M Y h:i A'),
+                'videoUrl' => $this->video->getYoutubeUrl(),
+                'published' => $this->video->getFormattedPublishedDate(),
             ],
         );
     }

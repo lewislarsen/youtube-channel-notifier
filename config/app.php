@@ -135,4 +135,17 @@ return [
     */
 
     'alert_email' => env('ALERT_EMAIL', 'alerts@example.com'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Discord Webhook URL
+    |--------------------------------------------------------------------------
+    |
+    | This value is the webhook URL for sending notifications to Discord.
+    | When configured, the application will send notifications to this
+    | Discord channel in addition to other configured notification methods.
+    |
+    */
+
+    'discord_webhook_url' => env('DISCORD_WEBHOOK_URL', null),
 ];

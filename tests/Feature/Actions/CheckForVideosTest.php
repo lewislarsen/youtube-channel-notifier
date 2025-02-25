@@ -144,11 +144,10 @@ it('logs an error if the RSS feed fetch fails', function () {
 });
 
 it('logs an info message if the RSS feed is malformed and no emails are sent', function () {
-    // Mock the Log facade
     Log::shouldReceive('info')->once();
 
     Log::shouldReceive('debug')
-        ->once()
+        ->twice()
         ->andReturn(null);
 
     // Mock Mail facade
@@ -212,4 +211,83 @@ it('ignores videos with the exact word LIVE in the title', function () {
     Mail::assertNothingSent();
 
     expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeFalse();
+});
+
+// Essential Discord integration tests that should remain in this file
+
+it('sends both email and discord notifications for new videos', function () {
+    Config::set('app.alert_email', 'email@example.com');
+    Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
+
+    Mail::fake();
+
+    // Create a test channel with last_checked_at set
+    $channel = Channel::factory()->create([
+        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+        'last_checked_at' => now()->subDay(),
+    ]);
+
+    // Mock HTTP responses
+    Http::fake([
+        // Mock the YouTube RSS feed
+        'https://www.youtube.com/feeds/videos.xml*' => Http::response(<<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+                <summary>Video description</summary>
+                <published>2025-01-01T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML, 200),
+
+        // Mock the Discord webhook response
+        'https://discord.com/api/webhooks/test' => Http::response(null, 204),
+    ]);
+
+    // Execute the action
+    $action = new CheckForVideosAction;
+    $action->execute($channel);
+
+    // Assert that both notification types were sent
+    Mail::assertSent(NewVideoMail::class);
+    Http::assertSent(function ($request) {
+        return $request->url() === 'https://discord.com/api/webhooks/test';
+    });
+});
+
+it('does not send discord notifications on first-time import', function () {
+    Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
+
+    Mail::fake();
+
+    // Create a test channel without last_checked_at
+    $channel = Channel::factory()->create([
+        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+        'last_checked_at' => null, // Simulate first-time check
+    ]);
+
+    // Mock HTTP response for the RSS feed
+    Http::fake([
+        'https://www.youtube.com/feeds/videos.xml*' => Http::response(<<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+                <summary>Video description</summary>
+                <published>2025-01-01T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML, 200),
+    ]);
+
+    // Execute the action
+    $action = new CheckForVideosAction;
+    $action->execute($channel);
+
+    // Assert that no notifications were sent
+    Mail::assertNothingSent();
+    Http::assertNotSent(function ($request) {
+        return strpos($request->url(), 'discord.com/api/webhooks') !== false;
+    });
 });
