@@ -31,7 +31,7 @@ class SendDiscordNotificationAction
             'color' => 0xFF0000, // YouTube red
             'timestamp' => $video->getIsoPublishedDate(),
             'thumbnail' => [
-                'url' => $video->getThumbnailUrl(),
+                'url' => $video->getThumbnailUrl('maxresdefault'),
             ],
             'footer' => [
                 'text' => Config::get('app.name'),
