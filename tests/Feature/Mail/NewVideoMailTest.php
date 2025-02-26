@@ -28,10 +28,8 @@ it('builds the mailable correctly', function () {
         ->and($content->with['videoTitle'])->toBe('Test Video')
         ->and($content->with['videoUrl'])->toBe('https://www.youtube.com/watch?v=5ltAy1W6k-Q')
         ->and($content->with['published'])->toBe($video->published_at->format('d M Y h:i A'))
-        ->and($content->with['thumbnailUrl'])->toBe("https://i.ytimg.com/vi/5ltAy1W6k-Q/maxresdefault.jpg");
+        ->and($content->with['thumbnailUrl'])->toBe('https://i.ytimg.com/vi/5ltAy1W6k-Q/maxresdefault.jpg');
 });
-
-
 
 it('sends the mailable to a single email address', function () {
     Config::set('app.alert_emails', ['lewis@larsens.dev']);

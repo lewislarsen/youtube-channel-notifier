@@ -44,7 +44,7 @@ class SendDiscordNotificationAction
         ];
 
         $payload = [
-            'content' => '🎬 **New Video Alert!** Check out this new upload from ' . $video->channel->getAttribute('name'),
+            'content' => '🎬 **New Video Alert!** Check out this new upload from '.$video->channel->getAttribute('name'),
             'embeds' => [$embed],
         ];
 
