@@ -1,156 +1,147 @@
 # YouTube Channel Notifier
 
-The YouTube Channel Notifier is a simple tool for managing and monitoring YouTube channels. It periodically checks RSS feeds for new videos and sends notifications when updates are detected. This project is managed exclusively via Terminal console commands, with no web interface.
+A small, Laravel-powered app that keeps track of YouTube channels and notifies you of new uploads.
 
-## Features
+<p align="center">
+  <a href="#requirements">Requirements</a> |
+  <a href="#installation">Installation</a> |
+  <a href="#configuration">Configuration</a> |
+  <a href="#usage">Usage</a> |
+  <a href="#notifications">Notifications</a> |
+  <a href="#testing">Testing</a> |
+  <a href="#support">Support</a>
+</p>
 
-- **Check Channels:** Check all YouTube channels for new videos and send notifications.
-- **Email Notifications:** Send email notifications when new videos are found.
-- **Discord Notifications:** Send Discord webhook notifications when new videos are found.
+## Introduction
+
+YouTube Channel Notifier elegantly tracks your favourite YouTube channels via their RSS feeds and delivers timely notifications when new content is published. This console-based application provides a simple, powerful way to stay updated without checking YouTube.
 
 ## Requirements
 
-- PHP 8.3 or higher
+- PHP 8.3+
 - Composer
 
 ## Installation
 
-1. **Clone the repository:**
+First, install the YouTube Channel Notifier using Composer:
 
-   ```sh
-   git clone https://github.com/lewislarsen/youtube-channel-notifier.git
-   cd youtube-channel-notifier
-   ```
+```bash
+git clone https://github.com/lewislarsen/youtube-channel-notifier.git
+cd youtube-channel-notifier
+```
 
-2. **Install dependencies:**
+Once installed, run the convenient installation command:
 
-   ```sh
-   composer install
-   ```
+```bash
+php artisan app:install
+```
 
-3. **Run the installer:**
+This interactive installer will guide you through configuring notification methods, and preparing your database.
 
-   The application includes an interactive installer that will guide you through the setup process:
+## Configuration
 
-   ```sh
-   php artisan app:install
-   ```
+### Scheduler
 
-   The installer will:
-    - Create and configure your .env file
-    - Set up email notifications
-    - Configure Discord webhook (optional)
-    - Generate application key
-    - Create and migrate the database
-    - Provide next steps for using the application
+To automate checking for new videos, add the scheduler to your server's crontab:
 
-4. **Set up the scheduler:**
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
 
-   To enable automatic checking for new videos, add this to your crontab:
+### Manual Configuration
 
-   ```sh
-   * * * * * /usr/bin/php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
-   ```
+If you prefer manual configuration:
 
-## Manual Configuration (Alternative to Installer)
+```bash
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+```
 
-If you prefer to configure the application manually:
+Edit your `.env` file to configure:
 
-1. **Copy the environment file:**
-
-   ```sh
-   cp .env.example .env
-   ```
-
-2. **Edit the .env file:**
-
-    - `ALERT_EMAIL`: Email address(es) where alerts will be sent. For multiple recipients, use a comma-separated list (e.g., `test1@example.com,test2@example.com`)
-    - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL for sending notifications
-    - Configure SMTP settings for sending emails
-
-3. **Generate application key:**
-
-   ```sh
-   php artisan key:generate
-   ```
-
-4. **Run database migrations:**
-
-   ```sh
-   php artisan migrate
-   ```
+```
+ALERT_EMAILS=your@email.com
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+```
 
 ## Usage
 
-### Commands
+YouTube Channel Notifier provides a suite of Artisan commands for managing your channels:
 
-**Add a Channel:**
+### Adding Channels
 
-Add a new YouTube channel to the notifier and automatically import its existing video history.
-
-To find the **Channel ID**, follow these steps:
-1. Visit the YouTube channel's page in a browser.
-2. Right-click anywhere on the page and select "View Page Source."
-3. Search for the term `itemprop="identifier" content="` in the source code.
-4. The Channel ID is the value inside the `content=""` attribute next to this term.
-
-Once you have the Channel ID, add it using the following command:
-
-```sh
+```bash
 php artisan channels:add
 ```
 
-**Remove a Channel:**
+This command will prompt you for a YouTube Channel ID. To locate a Channel ID:
 
-Remove a previously added YouTube channel:
+1. Visit the channel on YouTube
+2. View page source (right-click → View Page Source)
+3. Search for `itemprop="identifier" content="`
+4. The ID appears within this content attribute
 
-```sh
-php artisan channels:remove
-```
+### Managing Channels
 
-**Lists all Channels:**
-
-View a list of all YouTube channels being monitored.
-
-```sh
+```bash
+# List all monitored channels
 php artisan channels:list
-```
 
-**Lists all Videos:**
+# Remove a channel
+php artisan channels:remove
 
-View all videos fetched from monitored channels:
-
-```sh
+# List all videos
 php artisan videos:list
-```
 
-**Manual Check for New Videos:**
-
-Force a check for new videos across all channels:
-
-```sh
+# Manually check for new videos
 php artisan channels:check
 ```
 
-### Notifications
+## Notifications
 
-The project supports two notification methods:
+YouTube Channel Notifier supports two notification methods that can be configured in your `.env` file:
 
-1. **Email**:
-    - Configure your SMTP settings in the `.env` file
-    - Set the `ALERT_EMAIL` variable to receive email alerts
-    - For multiple recipients, use a comma-separated list (e.g., `email1@example.com,email2@example.com`)
+### Email
 
-2. **Discord**: Set a webhook in your Discord and add the webhook URL to the `DISCORD_WEBHOOK_URL` variable in the `.env` file.
+Configure your mail settings and recipients:
 
-### Running Tests
+```
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=username
+MAIL_PASSWORD=password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=from@example.com
 
-Run the test suite using Pest:
+# Single recipient
+ALERT_EMAILS=recipient@example.com
 
-```sh
+# Multiple recipients
+ALERT_EMAILS=first@example.com,second@example.com
+```
+
+### Discord
+
+Add your Discord webhook URL to receive notifications directly in your server:
+
+```
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
+```
+
+## Testing
+
+YouTube Channel Notifier uses [Pest](https://pestphp.com) for testing:
+
+```bash
 ./vendor/bin/pest
 ```
 
-## Troubleshooting
+## Support
 
-If you encounter any issues, feel free to open an issue in the repository. I'll address it as soon as possible.
+If you discover a bug or have a feature request, please open an issue on GitHub.
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/lewislarsen">Lewis Larsen</a>
+</p>
