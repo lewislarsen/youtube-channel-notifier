@@ -25,8 +25,8 @@ class SendDiscordNotificationAction
         }
 
         $embed = [
-            'title' => $video->title,
-            'description' => $video->description,
+            'title' => $video->getAttribute('title'),
+            'description' => $video->getAttribute('description'),
             'url' => $video->getYoutubeUrl(),
             'color' => 0xFF0000, // YouTube red
             'timestamp' => $video->getIsoPublishedDate(),
@@ -39,11 +39,12 @@ class SendDiscordNotificationAction
         ];
 
         $embed['author'] = [
-            'name' => $video->channel->name,
+            'name' => $video->channel->getAttribute('name'),
             'url' => $video->channel->getChannelUrl(),
         ];
 
         $payload = [
+            'content' => '🎬 **New Video Alert!** Check out this new upload from ' . $video->channel->getAttribute('name'),
             'embeds' => [$embed],
         ];
 
@@ -51,20 +52,20 @@ class SendDiscordNotificationAction
             $response = Http::post($webhookUrl, $payload);
 
             if ($response->successful()) {
-                Log::info("Discord notification sent for video: {$video->title}");
+                Log::info("Discord notification sent for video: {$video->getAttribute('title')}");
 
                 return true;
             }
 
             Log::error("Discord notification failed with status: {$response->status()}", [
-                'video_id' => $video->video_id,
+                'video_id' => $video->getAttribute('video_id'),
                 'response' => $response->body(),
             ]);
 
             return false;
         } catch (Exception $e) {
             Log::error("Discord notification exception: {$e->getMessage()}", [
-                'video_id' => $video->video_id,
+                'video_id' => $video->getAttribute('video_id'),
             ]);
 
             return false;
