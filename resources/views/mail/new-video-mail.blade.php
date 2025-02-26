@@ -1,19 +1,25 @@
 <x-mail::message>
-# New Video Alert: {{ $videoTitle }}
+# New Video Upload
 
-**{{ $videoCreator }}** has just uploaded a new video:
+**{{ $videoCreator }}** has uploaded a new video:
 
-<div style="text-align: center; margin: 20px 0;">
-<a href="{{ $videoUrl }}" style="display: inline-block;">
-<img src="{{ $thumbnailUrl }}" alt="Video thumbnail" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+## {{ $videoTitle }}
+
+<div style="text-align: center; margin: 25px 0;">
+ <a href="{{ $videoUrl }}" style="display: inline-block;">
+ <img src="{{ $thumbnailUrl }}" alt="{{ $videoTitle }}" style="max-width: 100%; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
 </a>
 </div>
 
-**Published:** {{ $published }}
+<p style="text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 25px;">
+Published: {{ $published }}
+</p>
 
 <x-mail::button :url="$videoUrl" color="primary">
-Watch Now
+Watch Now on YouTube
 </x-mail::button>
 
-Stay up to date with all the latest uploads from **{{ $videoCreator }}**!
+ <x-mail::subcopy>
+You're receiving this notification because you are subscribed to video releases from {{ $videoCreator }}.
+</x-mail::subcopy>
 </x-mail::message>
