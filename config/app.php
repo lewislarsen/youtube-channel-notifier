@@ -125,16 +125,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Alert Email
+    | Alert Emails
     |--------------------------------------------------------------------------
     |
-    | This value is the email address where alert notifications should be
+    | This value is the email address(es) where alert notifications should be
     | sent. You can set this in your ".env" file to ensure that alerts are
-    | sent to the appropriate recipient.
+    | sent to the appropriate recipient(s).
     |
     */
 
-    'alert_email' => env('ALERT_EMAIL', 'alerts@example.com'),
+    'alert_emails' => array_map('trim', explode(',', env('ALERT_EMAILS', 'alerts@example.com'))),
 
     /*
     |--------------------------------------------------------------------------

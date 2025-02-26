@@ -32,7 +32,7 @@ The YouTube Channel Notifier is a simple tool for managing and monitoring YouTub
 
    Copy the `.env.example` file to `.env` and configure your database and notification settings:
 
-    - `ALERT_EMAIL`: The email address where alerts will be sent
+    - `ALERT_EMAIL`: Email address(es) where alerts will be sent. For multiple recipients, use a comma-separated list (e.g., `test1@example.com,test2@example.com`)
     - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL for sending notifications to a Discord channel
 
    ```sh
@@ -110,7 +110,10 @@ View all videos fetched from monitored channels:
 
 The project supports two notification methods:
 
-1. **Email**: Configure your SMTP settings in the `.env` file and set the `ALERT_EMAIL` variable to receive email alerts.
+1. **Email**:
+    - Configure your SMTP settings in the `.env` file
+    - Set the `ALERT_EMAIL` variable to receive email alerts
+    - For multiple recipients, use a comma-separated list (e.g., `email1@example.com,email2@example.com`)
 
 2. **Discord**: Set a webhook in your Discord and add the webhook URL to the `DISCORD_WEBHOOK_URL` variable in the `.env` file.
 

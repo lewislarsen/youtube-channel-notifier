@@ -30,8 +30,8 @@ it('builds the mailable correctly', function () {
         ->and($content->with['published'])->toBe($video->published_at->format('d M Y h:i A'));
 });
 
-it('sends the mailable', function () {
-    Config::set('app.alert_email', 'lewis@larsens.dev');
+it('sends the mailable to a single email address', function () {
+    Config::set('app.alert_emails', ['lewis@larsens.dev']);
     Mail::fake();
 
     $channel = Channel::factory()->create(['name' => 'TestChannel']);
@@ -42,9 +42,30 @@ it('sends the mailable', function () {
         'published_at' => Carbon::now(),
     ]);
 
-    Mail::to('lewis@larsens.dev')->send(new NewVideoMail($video));
+    Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
 
     Mail::assertSent(NewVideoMail::class, function ($mail) use ($video) {
         return $mail->video->is($video) && $mail->hasTo('lewis@larsens.dev');
+    });
+});
+
+it('sends the mailable to multiple email addresses', function () {
+    Config::set('app.alert_emails', ['lewis@larsens.dev', 'another@example.com']);
+    Mail::fake();
+
+    $channel = Channel::factory()->create(['name' => 'TestChannel']);
+    $video = Video::factory()->make([
+        'channel_id' => $channel->id,
+        'title' => 'Test Video',
+        'video_id' => '5ltAy1W6k-Q',
+        'published_at' => Carbon::now(),
+    ]);
+
+    Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
+
+    Mail::assertSent(NewVideoMail::class, function ($mail) use ($video) {
+        return $mail->video->is($video)
+            && $mail->hasTo('lewis@larsens.dev')
+            && $mail->hasTo('another@example.com');
     });
 });

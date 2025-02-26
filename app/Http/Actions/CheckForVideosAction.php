@@ -139,7 +139,7 @@ class CheckForVideosAction
 
             $video = Video::create($videoData);
 
-            Mail::to(config('app.alert_email'))->send(new NewVideoMail($video));
+            Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
 
             if (Config::get('app.discord_webhook_url')) {
                 $discordService->execute($video);
