@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Console\Commands\InstallerCommand;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                InstallerCommand::class,
+            ]);
+        }
     }
 }

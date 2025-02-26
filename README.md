@@ -28,39 +28,57 @@ The YouTube Channel Notifier is a simple tool for managing and monitoring YouTub
    composer install
    ```
 
-3. **Set up your environment:**
+3. **Run the installer:**
 
-   Copy the `.env.example` file to `.env` and configure your database and notification settings:
+   The application includes an interactive installer that will guide you through the setup process:
 
-    - `ALERT_EMAIL`: Email address(es) where alerts will be sent. For multiple recipients, use a comma-separated list (e.g., `test1@example.com,test2@example.com`)
-    - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL for sending notifications to a Discord channel
+   ```sh
+   php artisan app:install
+   ```
+
+   The installer will:
+    - Create and configure your .env file
+    - Set up email notifications
+    - Configure Discord webhook (optional)
+    - Generate application key
+    - Create and migrate the database
+    - Provide next steps for using the application
+
+4. **Set up the scheduler:**
+
+   To enable automatic checking for new videos, add this to your crontab:
+
+   ```sh
+   * * * * * /usr/bin/php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
+   ```
+
+## Manual Configuration (Alternative to Installer)
+
+If you prefer to configure the application manually:
+
+1. **Copy the environment file:**
 
    ```sh
    cp .env.example .env
    ```
 
-4. **Generate an application key:**
+2. **Edit the .env file:**
+
+    - `ALERT_EMAIL`: Email address(es) where alerts will be sent. For multiple recipients, use a comma-separated list (e.g., `test1@example.com,test2@example.com`)
+    - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL for sending notifications
+    - Configure SMTP settings for sending emails
+
+3. **Generate application key:**
 
    ```sh
    php artisan key:generate
    ```
 
-5. **Run the database migrations:**
+4. **Run database migrations:**
 
    ```sh
    php artisan migrate
    ```
-
-6. **Start the Artisan Scheduler:**
-
-Ensure the PHP Artisan scheduler is running. This requires setting up a cron job to execute the `php artisan schedule:run` command every minute.
-
-Example cron configuration:
-
-   ```sh
-* * * * * /usr/bin/php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
-   ```
-
 
 ## Usage
 
@@ -86,25 +104,33 @@ php artisan channels:add
 
 Remove a previously added YouTube channel:
 
-   ```sh
-   php artisan channels:remove
-   ```
+```sh
+php artisan channels:remove
+```
 
 **Lists all Channels:**
 
 View a list of all YouTube channels being monitored.
 
-   ```sh
-   php artisan channels:list
-   ```
+```sh
+php artisan channels:list
+```
 
 **Lists all Videos:**
 
 View all videos fetched from monitored channels:
 
-   ```sh
-   php artisan videos:list
-   ```
+```sh
+php artisan videos:list
+```
+
+**Manual Check for New Videos:**
+
+Force a check for new videos across all channels:
+
+```sh
+php artisan channels:check
+```
 
 ### Notifications
 
