@@ -32,7 +32,7 @@
         }
 
         a {
-            color: #0ea5e9;
+            color: #FF0000;
             text-decoration: none;
         }
 
@@ -109,7 +109,7 @@
         .header {
             padding: 25px 0;
             text-align: center;
-            background-color: #0ea5e9;
+            background-color: #FF0000;
         }
 
         .header a {
@@ -237,11 +237,11 @@
 
         .button-blue,
         .button-primary {
-            background-color: #0ea5e9;
-            border-bottom: 8px solid #0ea5e9;
-            border-left: 18px solid #0ea5e9;
-            border-right: 18px solid #0ea5e9;
-            border-top: 8px solid #0ea5e9;
+            background-color: #FF0000;
+            border-bottom: 8px solid #FF0000;
+            border-left: 18px solid #FF0000;
+            border-right: 18px solid #FF0000;
+            border-top: 8px solid #FF0000;
         }
 
         .button-green,
@@ -264,7 +264,7 @@
 
         /* Panels */
         .panel {
-            border-left: #0ea5e9 solid 4px;
+            border-left: #FF0000 solid 4px;
             margin: 21px 0;
         }
 
@@ -289,7 +289,7 @@
 
         /* Header gradient - simplified for email clients */
         .header-gradient {
-            background-color: #0ea5e9;
+            background-color: #FF0000;
             padding: 24px 0;
             text-align: center;
         }
