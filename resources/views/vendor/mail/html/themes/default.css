@@ -28,7 +28,7 @@ blockquote {
 }
 
 a {
-    color: #0ea5e9;
+    color: #fc0032;
     text-decoration: none;
 }
 
@@ -109,7 +109,7 @@ img {
 .header {
     padding: 25px 0;
     text-align: center;
-    background-color: #0ea5e9;
+    background-color: #fc0032;
 }
 
 .header a {
@@ -192,7 +192,7 @@ img {
 }
 
 .footer a {
-    color: #0ea5e9;
+    color: #fc0032;
     text-decoration: underline;
 }
 
@@ -241,21 +241,22 @@ img {
 
 .button {
     -webkit-text-size-adjust: none;
-    border-radius: 8px;
+    border-radius: 14px;
     color: #fff;
     display: inline-block;
     overflow: hidden;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 500;
+    padding: 3px 2px 3px 2px;
 }
 
-.button-blue,
+.button-red,
 .button-primary {
-    background-color: #0ea5e9;
-    border-bottom: 8px solid #0ea5e9;
-    border-left: 18px solid #0ea5e9;
-    border-right: 18px solid #0ea5e9;
-    border-top: 8px solid #0ea5e9;
+    background-color: #fc0032;
+    border-bottom: 8px solid #fc0032;
+    border-left: 18px solid #fc0032;
+    border-right: 18px solid #fc0032;
+    border-top: 8px solid #fc0032;
 }
 
 .button-green,
@@ -267,19 +268,10 @@ img {
     border-top: 8px solid #10b981;
 }
 
-.button-red,
-.button-error {
-    background-color: #ef4444;
-    border-bottom: 8px solid #ef4444;
-    border-left: 18px solid #ef4444;
-    border-right: 18px solid #ef4444;
-    border-top: 8px solid #ef4444;
-}
-
 /* Panels */
 
 .panel {
-    border-left: #0ea5e9 solid 4px;
+    border-left: #fc0032 solid 4px;
     margin: 21px 0;
 }
 
@@ -300,13 +292,6 @@ img {
 .panel-item p:last-of-type {
     margin-bottom: 0;
     padding-bottom: 0;
-}
-
-/* Header gradient - simplified for email clients */
-.header-gradient {
-    background-color: #0ea5e9;
-    padding: 24px 0;
-    text-align: center;
 }
 
 /* Utilities */
