@@ -27,6 +27,9 @@ YouTube Channel Notifier is a solution for receiving notifications when YouTube 
 - **Privacy Focused**: No YouTube API keys required, no data sharing with third parties
 - **Docker Support**: Run in a container with automatic setup and persistence
 
+> [!IMPORTANT]  
+> This project is managed through (simple) CLI terminal commands and has no web interface for management.
+
 ## Requirements
 
 - PHP 8.2+
