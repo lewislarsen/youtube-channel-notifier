@@ -181,7 +181,7 @@ php artisan channels:remove
 ### Finding a YouTube Channel ID
 
 > [!NOTE]  
-> This is a clumsy way to do it but it works for the time being. Any efforts that could be made towards 'extracting' the identifier through the page automatically would be welcomed.
+> This is a clumsy way to do it, but it works for the time being. Any efforts that could be made towards 'extracting' the identifier through the page automatically would be welcomed.
 
 When adding a channel, you'll need the channel ID. To find it:
 
