@@ -21,3 +21,11 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Docker related
+docker-build.log
+docker-compose.override.yml
+.docker
+docker/data
+/docker/*
+!/docker/.gitkeep

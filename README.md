@@ -7,6 +7,7 @@
   <a href="#key-features">Key Features</a> •
   <a href="#requirements">Requirements</a> •
   <a href="#installation">Installation</a> •
+  <a href="#docker-installation">Docker Installation</a> •
   <a href="#configuration">Configuration</a> •
   <a href="#usage">Usage</a> •
   <a href="#faq">FAQ</a> •
@@ -24,12 +25,16 @@ YouTube Channel Notifier is a solution for receiving notifications when YouTube 
 - **Notifications**: Receive alerts through email, Discord, or both when new videos are published
 - **Simple CLI Interface**: Manage everything through intuitive commands
 - **Privacy Focused**: No YouTube API keys required, no data sharing with third parties
+- **Docker Support**: Run in a container with automatic setup and persistence
 
 ## Requirements
 
 - PHP 8.2+
 - Composer
 - SQLite, Postgresql or MySQL
+
+For Docker installation:
+- Docker
 
 ## Installation
 
@@ -66,6 +71,50 @@ php artisan migrate
 # Add notification settings to .env (see Configuration section)
 ```
 
+## Docker Installation
+
+For the simplest possible setup, you can run YouTube Channel Notifier using Docker:
+
+### 1. Build the Docker image
+
+```bash
+./build-docker.sh
+```
+
+### 2. Run the container
+
+```bash
+docker run -d --name youtube-notifier \
+  -p 8080:80 \
+  -e MAIL_HOST=your-smtp-server \
+  -e MAIL_PORT=587 \
+  -e MAIL_USERNAME=your-username \
+  -e MAIL_PASSWORD=your-password \
+  -e MAIL_FROM_ADDRESS=your@email.com \
+  -e ALERT_EMAILS=recipient1@email.com,recipient2@email.com \
+  -e DISCORD_WEBHOOK_URL=your-discord-webhook-url \
+  youtube-channel-notifier
+```
+
+### 3. Manage channels from within the container
+
+```bash
+# 1. Connect to the container
+docker exec -it youtube-notifier sh
+
+# 2. Run these commands inside the container:
+php artisan channels:add     # Add a new YouTube channel
+php artisan channels:list    # List all monitored channels
+php artisan channels:remove  # Remove a channel
+php artisan channels:check   # Manually check for new videos
+php artisan videos:list      # List discovered videos
+
+# 3. Type 'exit' and press Enter to leave the container
+# The container will continue running in the background
+```
+
+Docker automatically handles data persistence and the scheduler, so you don't need to configure a cron job.
+
 ## Configuration
 
 ### Scheduler Setup
@@ -75,6 +124,8 @@ To automate checks for new videos, add this single cron entry to your server:
 ```bash
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
+
+Note: If using Docker, the scheduler is already configured and running.
 
 ### Notification Configuration
 
