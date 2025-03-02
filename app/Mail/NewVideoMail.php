@@ -70,6 +70,7 @@ class NewVideoMail extends Mailable
                 'videoUrl' => $this->video->getYoutubeUrl(),
                 'published' => $this->video->getFormattedPublishedDate(),
                 'thumbnailUrl' => $this->video->getThumbnailUrl('maxresdefault'),
+                'videoCreatorUrl' => $this->channel->getChannelUrl(),
             ],
         );
     }

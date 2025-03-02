@@ -1,8 +1,8 @@
 <?php
 
+use App\Actions\CheckForVideosAction;
 use App\Console\Commands\AddChannelCommand;
 use App\Console\Commands\CheckChannelsCommand;
-use App\Http\Actions\CheckForVideosAction;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Facades\Mail;

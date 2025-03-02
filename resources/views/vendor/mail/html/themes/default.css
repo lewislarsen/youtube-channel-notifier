@@ -29,7 +29,7 @@ blockquote {
 
 a {
     color: #fc0032;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 a:hover {

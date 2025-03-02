@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Actions\SendDiscordNotificationAction;
+use App\Actions\SendDiscordNotificationAction;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Carbon;

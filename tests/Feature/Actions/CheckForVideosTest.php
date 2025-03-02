@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Actions\CheckForVideosAction;
+use App\Actions\CheckForVideosAction;
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Actions;
+namespace App\Actions;
 
 use App\Mail\NewVideoMail;
 use App\Models\Channel;

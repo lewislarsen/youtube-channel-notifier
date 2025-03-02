@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Actions\CheckForVideosAction;
+use App\Actions\CheckForVideosAction;
 use App\Models\Channel;
 use Illuminate\Console\Command;
 

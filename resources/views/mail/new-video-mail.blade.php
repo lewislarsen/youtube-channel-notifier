@@ -20,6 +20,6 @@ Watch Now on YouTube
 </x-mail::button>
 
  <x-mail::subcopy>
-You're receiving this notification because you are subscribed to video releases from {{ $videoCreator }}.
+You're receiving this notification because you are subscribed to video releases from <a href="{{ $videoCreatorUrl }}">{{ $videoCreator }}</a>.
 </x-mail::subcopy>
 </x-mail::message>
