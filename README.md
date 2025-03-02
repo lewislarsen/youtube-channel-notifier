@@ -1,6 +1,6 @@
 # YouTube Channel Notifier
 
-> A lightweight Laravel application that monitors your favourite YouTube channels and delivers timely notifications when new videos are published.
+> A lightweight Laravel application that keeps you connected with your favorite YouTube creators by delivering friendly notifications whenever they publish new videos.
 
 
 <div align="center">
@@ -11,78 +11,33 @@
 <p align="center">
   <a href="#introduction">Introduction</a> •
   <a href="#key-features">Key Features</a> •
-  <a href="#requirements">Requirements</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#docker-installation">Docker Installation</a> •
-  <a href="#configuration">Configuration</a> •
-  <a href="#usage">Usage</a> •
+  <a href="#docker-installation">Quick Start with Docker</a> •
+  <a href="#installation">Standard Installation</a> •
+  <a href="#usage">Using the Notifier</a> •
+  <a href="#configuration">Configuration Options</a> •
   <a href="#faq">FAQ</a> •
-  <a href="#testing">Testing</a> •
-  <a href="#support">Support</a>
+  <a href="#support">Support & Community</a> •
+  <a href="#testing">Testing</a>
 </p>
 
 ## Introduction
 
-YouTube Channel Notifier is a solution for receiving notifications when YouTube creators post new content, intended primarily for people who don't have a Google Account any more and are unable to have subscriptions.
+YouTube Channel Notifier helps you stay updated with your favorite content creators even if you don't have a Google account anymore. Never miss a video from channels you care about — we'll let you know whenever something new gets published through friendly email or Discord notifications.
 
 ## Key Features
 
-- **Channel Tracking**: Easily add YouTube channels you want to monitor
-- **Notifications**: Receive alerts through email, Discord, or both when new videos are published
+- **Effortless Channel Tracking**: Easily add and manage YouTube channels you love
+- **Flexible Notifications**: Choose between email alerts, Discord messages, or both
 - **Simple CLI Interface**: Manage everything through intuitive commands
-- **Privacy Focused**: No YouTube API keys required, no data sharing with third parties
-- **Docker Support**: Run in a container with automatic setup and persistence
+- **Privacy-Focused**: No YouTube API keys required, no data sharing with third parties
+- **Docker Ready**: Get up and running in minutes with automatic setup and persistence
 
 > [!IMPORTANT]  
-> This project is managed through (simple) CLI terminal commands and has no web interface for management.
+> This project is managed through simple CLI terminal commands and doesn't have a web interface for management.
 
-## Requirements
+## Quick Start with Docker
 
-- PHP 8.2+
-- Composer
-- SQLite, Postgresql or MySQL
-
-For Docker installation:
-- Docker
-
-## Installation
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/lewislarsen/youtube-channel-notifier.git
-cd youtube-channel-notifier
-
-# Install dependencies
-composer install
-
-# Run the interactive installer
-php artisan app:install
-```
-
-The interactive installer will guide you through:
-- Setting up notification preferences
-- Adding your first YouTube channels
-
-### Manual Installation
-
-If you prefer to configure manually:
-
-```bash
-# Copy environment file and generate application key
-cp .env.example .env
-php artisan key:generate
-
-# Configure your database in .env, then run migrations
-php artisan migrate
-
-# Add notification settings to .env (see Configuration section)
-```
-
-## Docker Installation
-
-For the simplest possible setup, you can run YouTube Channel Notifier using Docker:
+The fastest way to get notified about new videos from your favorite creators:
 
 ### 1. Build the Docker image
 
@@ -105,38 +60,133 @@ docker run -d --name youtube-notifier \
   youtube-channel-notifier
 ```
 
-### 3. Manage channels from within the container
+### 3. Add your favorite channels
 
 ```bash
-# 1. Connect to the container
+# Connect to the container
 docker exec -it youtube-notifier sh
 
-# 2. Run these commands inside the container:
-php artisan channels:add     # Add a new YouTube channel
-php artisan channels:list    # List all monitored channels
-php artisan channels:remove  # Remove a channel
-php artisan channels:check   # Manually check for new videos
-php artisan videos:list      # List discovered videos
+# Add YouTube channels to monitor
+php artisan channels:add
 
-# 3. Type 'exit' and press Enter to leave the container
-# The container will continue running in the background
+# See what you're tracking
+php artisan channels:list
+
+# Exit when done (the notifier keeps running)
+exit
 ```
 
-Docker automatically handles data persistence and the scheduler, so you don't need to configure a cron job.
+That's it! The container automatically checks for new videos every 5 minutes and will notify you when creators post new content.
 
-## Configuration
+### Docker Container Management
+
+```bash
+# View container logs
+docker logs youtube-notifier
+
+# Stop the container
+docker stop youtube-notifier
+
+# Start the container
+docker start youtube-notifier
+
+# Remove the container
+docker rm youtube-notifier
+```
+
+## Using the Notifier
+
+YouTube Channel Notifier comes with friendly commands to manage everything:
+
+### Channel Management
+
+```bash
+# Add a new YouTube channel to monitor
+php artisan channels:add
+
+# List all your monitored channels
+php artisan channels:list
+
+# Remove a channel you no longer want to track
+php artisan channels:remove
+```
+
+### Video Management
+
+```bash
+# See all videos the notifier has discovered
+php artisan videos:list
+
+# Manually check your channels for new videos
+php artisan channels:check
+```
+
+### Finding a YouTube Channel ID
+
+When adding a channel, you'll need the channel ID. Here's how to find it:
+
+1. Visit the YouTube channel's page
+2. View the page source (right-click → View Page Source)
+3. Search for `itemprop="identifier" content="`
+4. The ID appears after this text
+
+> [!NOTE]  
+> This method is a bit clumsy. Any PRs to automate this reliably via extracting it from the page would be greatly appreciated!
+
+## Standard Installation
+
+### Requirements
+
+- PHP 8.2+
+- Composer
+- SQLite, PostgreSQL or MySQL
+
+### Step-by-Step Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/lewislarsen/youtube-channel-notifier.git
+cd youtube-channel-notifier
+
+# Install dependencies
+composer install
+
+# Run our friendly interactive installer
+php artisan app:install
+```
+
+The interactive installer will guide you through:
+- Setting up your notification preferences
+- Adding your first YouTube channels to monitor
+
+### Manual Installation
+
+If you prefer to configure things yourself:
+
+```bash
+# Copy environment file and generate application key
+cp .env.example .env
+php artisan key:generate
+
+# Configure your database in .env, then run migrations
+php artisan migrate
+
+# Add notification settings to .env (see Configuration section)
+```
 
 ### Scheduler Setup
 
-To automate checks for new videos, add this single cron entry to your server:
+To automatically check for new videos, add this cron entry to your server:
 
 ```bash
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-Note: If using Docker, the scheduler is already configured and running.
+Note: If you're using Docker, the scheduler is already configured and running for you.
 
-### Notification Configuration
+## Configuration Options
+
+### Notification Settings
 
 Configure your preferred notification methods in the `.env` file:
 
@@ -161,68 +211,39 @@ ALERT_EMAILS=your@email.com,another@email.com
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
 ```
 
-## Usage
-
-YouTube Channel Notifier provides a suite of intuitive Artisan commands:
-
-### Channel Management
-
-```bash
-# Add a new YouTube channel to monitor
-php artisan channels:add
-
-# List all monitored channels
-php artisan channels:list
-
-# Remove a channel from monitoring
-php artisan channels:remove
-```
-
-### Finding a YouTube Channel ID
-
-> [!NOTE]  
-> This is a clumsy way to do it, but it works for the time being. Any efforts that could be made towards 'extracting' the identifier through the page automatically would be welcomed.
-
-When adding a channel, you'll need the channel ID. To find it:
-
-1. Visit the YouTube channel's page
-2. View the page source (right-click → View Page Source)
-3. Search for `itemprop="identifier" content="`
-4. The ID appears after this text
-
-### Video Management
-
-```bash
-# List all videos discovered by the notifier
-php artisan videos:list
-
-# Manually check all channels for new videos
-php artisan channels:check
-```
 ## FAQ
 
 ### Does this application download or store videos?
-No. YouTube Channel Notifier only tracks metadata (title, publish date, URL) about videos through RSS feeds. No video content is ever downloaded, stored, or processed.
-
-### Does it support platforms other than YouTube?
-It does not. Currently, the application is designed specifically to read YouTube's RSS data.
+Not at all! We only track metadata (title, publish date, URL) about videos through public RSS feeds. No video content is ever downloaded, stored, or processed.
 
 ### How often does it check for new videos?
-The project checks every 5 minutes.
+The notifier checks every 5 minutes, so you'll know about new content shortly after it's published.
 
 ### Does this use the YouTube API?
-No. The application uses YouTube's public RSS feeds, which means:
+No, and that's a good thing! The application uses YouTube's public RSS feeds, which means:
 - No API key required
 - No quotas or rate limits to worry about
-
-### Can I get notifications for livestreams?
-We do try to strip out live video content currently as it isn't the intended target for this project.
+- Simpler setup for you
 
 ### Does it work with private/unlisted videos?
-No. Only publicly available videos that appear in the channel's RSS feed can be detected.
+No, we can only detect publicly available videos that appear in the channel's RSS feed.
 
-### How can I get an additional notification channel added?
-Make an issue in the repository and I'll review it. I don't want to add too many, but I'd like there to be options for people.
+### Can I get notifications for livestreams?
+Currently, we focus on regular video uploads and filter out livestream content.
+
+### Does it support platforms other than YouTube?
+Not yet. Currently, the application is designed specifically for YouTube creators.
+
+### How can I request a new notification channel?
+We'd love to hear your ideas! Open an issue in the repository and we'll consider adding more notification options.
+
+## Support & Community
+
+If you encounter any issues or have ideas for improvements, please open an issue on our repository. We're always looking for ways to make YouTube Channel Notifier better for everyone!
+
+## Contributing
+
+Contributions are warmly welcomed! If you'd like to help improve the project, please feel free to submit a Pull Request and we'll review it as soon as possible.
 
 ## Testing
 
@@ -232,11 +253,3 @@ This project uses [Pest](https://pestphp.com) for testing:
 # Run all tests
 ./vendor/bin/pest
 ```
-
-## Support
-
-If you encounter any issues or have feature requests please open an issue on this repository.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request and I'll check it out.

@@ -8,7 +8,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}YouTube Channel Notifier - Docker Setup${NC}"
-echo "Building a container for the YCN."
+echo "Building a container for the YCN..."
 
 # Check if Docker is installed and running
 if ! command -v docker &> /dev/null || ! docker info &> /dev/null; then
@@ -77,10 +77,54 @@ EOL
 cat > docker/entrypoint.sh << 'EOL'
 #!/bin/sh
 
-# Generate key if not exists (only if .env exists and APP_KEY is empty)
-if [ -f /app/.env ] && ! grep -q "^APP_KEY=" /app/.env; then
+# Ensure we have a .env file
+if [ ! -f /app/.env ]; then
+    echo "Creating default .env file"
+    cp /app/.env.example /app/.env || echo "APP_KEY=" > /app/.env
+fi
+
+# Update .env with Docker environment variables
+if [ ! -z "$MAIL_HOST" ]; then
+    sed -i "s/^MAIL_HOST=.*/MAIL_HOST=${MAIL_HOST}/" /app/.env 2>/dev/null || echo "MAIL_HOST=${MAIL_HOST}" >> /app/.env
+fi
+
+if [ ! -z "$MAIL_PORT" ]; then
+    sed -i "s/^MAIL_PORT=.*/MAIL_PORT=${MAIL_PORT}/" /app/.env 2>/dev/null || echo "MAIL_PORT=${MAIL_PORT}" >> /app/.env
+fi
+
+if [ ! -z "$MAIL_USERNAME" ]; then
+    sed -i "s/^MAIL_USERNAME=.*/MAIL_USERNAME=${MAIL_USERNAME}/" /app/.env 2>/dev/null || echo "MAIL_USERNAME=${MAIL_USERNAME}" >> /app/.env
+fi
+
+if [ ! -z "$MAIL_PASSWORD" ]; then
+    sed -i "s/^MAIL_PASSWORD=.*/MAIL_PASSWORD=${MAIL_PASSWORD}/" /app/.env 2>/dev/null || echo "MAIL_PASSWORD=${MAIL_PASSWORD}" >> /app/.env
+fi
+
+if [ ! -z "$MAIL_ENCRYPTION" ]; then
+    sed -i "s/^MAIL_ENCRYPTION=.*/MAIL_ENCRYPTION=${MAIL_ENCRYPTION}/" /app/.env 2>/dev/null || echo "MAIL_ENCRYPTION=${MAIL_ENCRYPTION}" >> /app/.env
+fi
+
+if [ ! -z "$MAIL_FROM_ADDRESS" ]; then
+    sed -i "s/^MAIL_FROM_ADDRESS=.*/MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}/" /app/.env 2>/dev/null || echo "MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}" >> /app/.env
+fi
+
+if [ ! -z "$ALERT_EMAILS" ]; then
+    sed -i "s/^ALERT_EMAILS=.*/ALERT_EMAILS=${ALERT_EMAILS}/" /app/.env 2>/dev/null || echo "ALERT_EMAILS=${ALERT_EMAILS}" >> /app/.env
+fi
+
+if [ ! -z "$DISCORD_WEBHOOK_URL" ]; then
+    sed -i "s/^DISCORD_WEBHOOK_URL=.*/DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}/" /app/.env 2>/dev/null || echo "DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}" >> /app/.env
+fi
+
+# Always generate app key if not set
+if ! grep -q "^APP_KEY=[a-zA-Z0-9:+=/]\+$" /app/.env; then
+    echo "Generating application key"
     php artisan key:generate --no-interaction --force
 fi
+
+# Run artisan optimize (which includes config:cache, route:cache, view:cache)
+echo "Optimizing application"
+php artisan optimize --no-interaction
 
 # Run migrations with tries to handle database availability delays
 RETRY_COUNT=0
@@ -108,7 +152,7 @@ EOL
 # Make entrypoint executable
 chmod +x docker/entrypoint.sh
 
-echo "Configuring the YCN. Hold on!"
+echo "Building image..."
 
 # Build Docker image with limited output
 if docker build -t youtube-channel-notifier . > docker-build.log 2>&1; then
@@ -127,36 +171,23 @@ if docker build -t youtube-channel-notifier . > docker-build.log 2>&1; then
     echo "  -e DISCORD_WEBHOOK_URL=webhook-url \\"
     echo "  youtube-channel-notifier"
     echo ""
-    echo -e "${BLUE}Manage your YouTube channels with these commands:${NC}"
+    echo -e "${BLUE}Quick Management Commands:${NC}"
     echo -e "1. Connect to the container:"
     echo -e "   docker exec -it youtube-notifier sh"
     echo -e ""
-    echo -e "2. Run one of these commands inside the container:"
-    echo -e "   php artisan channels:add     # Add a new channel to monitor"
-    echo -e "   php artisan channels:list    # List all monitored channels"
-    echo -e "   php artisan channels:remove  # Remove a channel"
-    echo -e "   php artisan videos:list      # List discovered videos"
+    echo -e "2. Add your first channel:"
+    echo -e "   php artisan channels:add"
     echo -e ""
-    echo -e "3. When finished, type 'exit' and press Enter to leave the container shell."
-    echo -e "   The container will continue running in the background."
-    echo -e ""
-    echo -e "The container automatically checks for new videos every 5 minutes."
-    echo -e "If you have issues, check the logs with:"
-    echo -e "docker exec -it youtube-notifier cat /app/storage/logs/laravel.log"
-    echo -e ""
-    echo -e "Never miss a YouTube upload again!"
+    echo -e "See README.md for complete usage instructions."
     echo ""
-    echo -e "${YELLOW}Did the YouTube Channel Notifier help you?${NC}"
-    echo -e "Please consider starring the repository at:"
-    echo -e "https://github.com/lewislarsen/youtube-channel-notifier"
-    echo ""
+    echo -e "${YELLOW}Find this useful? Star the repo: github.com/lewislarsen/youtube-channel-notifier${NC}"
+
     # Remove log file on success
     rm docker-build.log 2>/dev/null
     exit 0
 else
     echo -e "${RED}❌ Build failed${NC}"
     echo "Build log saved to docker-build.log for troubleshooting."
-    echo "If you need help, please open an issue at:"
-    echo "https://github.com/lewislarsen/youtube-channel-notifier/issues/new"
+    echo "If you need help, please open an issue on GitHub."
     exit 1
 fi
