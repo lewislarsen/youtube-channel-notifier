@@ -2,6 +2,12 @@
 
 > A lightweight Laravel application that monitors your favourite YouTube channels and delivers timely notifications when new videos are published.
 
+
+<div align="center">
+  <img src="/website.png" alt="Image of the web page" width="800" height="auto">
+</div>
+
+
 <p align="center">
   <a href="#introduction">Introduction</a> •
   <a href="#key-features">Key Features</a> •
