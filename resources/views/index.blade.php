@@ -12,7 +12,7 @@
 
     <!-- Social Media Meta Tags -->
     <meta property="og:title" content="YouTube Channel Notifier">
-    <meta property="og:description" content="Get notified when your favorite YouTube channels upload new content.">
+    <meta property="og:description" content="Get notified when your favourite YouTube channels upload new content.">
     <meta property="og:image" content="{{ asset('og-image.png') }}">
     <meta property="og:url" content="{{ URL::current() }}">
     <meta property="og:type" content="website">
@@ -20,7 +20,7 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="YouTube Channel Notifier">
-    <meta name="twitter:description" content="Get notified when your favorite YouTube channels upload new content.">
+    <meta name="twitter:description" content="Get notified when your favoirite YouTube channels upload new content.">
     <meta name="twitter:image" content="{{ asset('og-image.png') }}">
 
     <!-- Theme Color -->
@@ -112,7 +112,7 @@
                     </div>
 
                     <h1 class="text-3xl font-bold text-white">YouTube Channel Notifier</h1>
-                    <p class="text-red-100 mt-2 max-w-md mx-auto">Never miss a video upload from your favorite creators again.</p>
+                    <p class="text-red-100 mt-2 max-w-md mx-auto">Never miss a video upload from your favourite creators again.</p>
                 </div>
             </div>
 
@@ -159,7 +159,7 @@
                             <span class="text-red-600 text-xl" x-text="open === 1 ? '−' : '+'"></span>
                         </button>
                         <div x-show="open === 1" x-transition class="p-4 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800/30">
-                            This is a YouTube Channel Notifier, a tool that monitors your favorite YouTube channels and notifies you whenever they upload new content. It helps you stay up-to-date without constantly checking YouTube.
+                            This is a YouTube Channel Notifier, a tool that monitors your favourite YouTube channels and notifies you whenever they upload new content. It helps you stay up-to-date without constantly checking YouTube.
                         </div>
                     </div>
 
