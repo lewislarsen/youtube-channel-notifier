@@ -147,7 +147,7 @@ class CheckForVideosAction
                 return;
             }
 
-            Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
+            Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
 
             if (Config::get('app.discord_webhook_url')) {
                 $sendDiscordNotificationAction->execute($video);

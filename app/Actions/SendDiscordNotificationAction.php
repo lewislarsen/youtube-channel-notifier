@@ -42,6 +42,9 @@ class SendDiscordNotificationAction
 
         $embed['author'] = [
             'name' => $video->channel->getAttribute('name'),
+            /**
+             * @phpstan-ignore-next-line
+             */
             'url' => $video->channel->getChannelUrl(),
         ];
 

@@ -22,9 +22,19 @@ class Channel extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<string>
      */
     public $guarded = [];
+
+    /**
+     * The attributes that have been cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'muted_at' => 'datetime',
+        'published_at' => 'datetime',
+    ];
 
     /**
      * Get the videos associated with the channel.

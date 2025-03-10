@@ -30,10 +30,8 @@ class NewVideoMail extends Mailable
      */
     public function __construct(
         public Video $video,
-        public Channel $channel = new Channel
-    ) {
-        $this->channel = $video->channel;
-    }
+        public Channel $channel
+    ) {}
 
     /**
      * Get the message envelope.

@@ -8,43 +8,24 @@ use App\Models\Video;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-/**
- * Class ListVideosCommand
- *
- * This command lists all the YouTube videos stored in the database, displaying
- * details such as the video title, creator, published date, and the video URL.
- */
 class ListVideosCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'videos:list';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Lists all the videos that have been stored in the database';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(): void
     {
-        $videos = Video::orderBy('published_at', 'desc')->get();
+        $videos = Video::orderBy('published_at', 'desc')->with('channel')->get();
 
         $this->table(
             ['Title', 'Creator', 'Published', 'URL'],
-            $videos->map(function (Video $video) {
+            $videos->map(function (Video $video): array {
                 return [
                     $video->title,
-                    $video->channel->name,
+                    $video->channel->name ?? 'Unknown',
                     Carbon::parse($video->published_at)->diffForHumans(),
-                    'https://youtube.com/watch?v='.$video->video_id,
+                    $video->getYoutubeUrl(),
                 ];
             })->toArray()
         );

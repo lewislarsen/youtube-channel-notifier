@@ -21,7 +21,7 @@ it('displays a list of videos', function (): void {
                 $video->title,
                 $video->channel->name,
                 Carbon::parse($video->published_at)->diffForHumans(),
-                'https://youtube.com/watch?v='.$video->video_id,
+                $video->getYoutubeUrl(),
             ];
         })->toArray());
 });
@@ -53,19 +53,19 @@ it('orders videos by most recently published', function (): void {
                 $newVideo->title,
                 $newVideo->channel->name,
                 Carbon::parse($newVideo->published_at)->diffForHumans(),
-                'https://youtube.com/watch?v='.$newVideo->video_id,
+                $newVideo->getYoutubeUrl(),
             ],
             [
                 $middleVideo->title,
                 $middleVideo->channel->name,
                 Carbon::parse($middleVideo->published_at)->diffForHumans(),
-                'https://youtube.com/watch?v='.$middleVideo->video_id,
+                $middleVideo->getYoutubeUrl(),
             ],
             [
                 $oldVideo->title,
                 $oldVideo->channel->name,
                 Carbon::parse($oldVideo->published_at)->diffForHumans(),
-                'https://youtube.com/watch?v='.$oldVideo->video_id,
+                $oldVideo->getYoutubeUrl(),
             ],
         ]);
 });
@@ -82,7 +82,7 @@ it('displays correct video information', function (): void {
                 $video->title,
                 $video->channel->name,
                 Carbon::parse($video->published_at)->diffForHumans(),
-                'https://youtube.com/watch?v='.$video->video_id,
+                $video->getYoutubeUrl(),
             ],
         ]);
 });

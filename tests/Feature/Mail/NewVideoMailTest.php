@@ -18,7 +18,7 @@ it('builds the mailable correctly', function (): void {
         'published_at' => Carbon::now(),
     ]);
 
-    $mailable = new NewVideoMail($video);
+    $mailable = new NewVideoMail($video, $channel);
 
     expect($mailable->envelope()->subject)
         ->toBe('TestChannel - New Video: Test Video');
@@ -45,7 +45,7 @@ it('sends the mailable to a single email address', function (): void {
         'published_at' => Carbon::now(),
     ]);
 
-    Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
+    Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
 
     Mail::assertSent(NewVideoMail::class, function ($mail) use ($video) {
         return $mail->video->is($video) && $mail->hasTo('lewis@larsens.dev');
@@ -64,7 +64,7 @@ it('sends the mailable to multiple email addresses', function (): void {
         'published_at' => Carbon::now(),
     ]);
 
-    Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
+    Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
 
     Mail::assertSent(NewVideoMail::class, function ($mail) use ($video) {
         return $mail->video->is($video)
