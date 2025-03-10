@@ -22,7 +22,7 @@
 
 ## Introduction
 
-YouTube Channel Notifier helps you stay updated with your favorite content creators even if you don't have a Google account anymore. Never miss a video from channels you care about — we'll let you know whenever something new gets published through friendly email or Discord notifications.
+YouTube Channel Notifier helps you stay updated with your favorite content creators even if you don't have a Google account any more. Never miss a video from channels you care about — we'll let you know whenever something new gets published through friendly email or Discord notifications.
 
 ## Key Features
 
@@ -109,6 +109,9 @@ php artisan channels:list
 
 # Remove a channel you no longer want to track
 php artisan channels:remove
+
+# Mute a channel to stop receiving notifications
+php artisan channels:mute
 ```
 
 ### Video Management
