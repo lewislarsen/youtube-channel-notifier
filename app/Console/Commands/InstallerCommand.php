@@ -27,9 +27,8 @@ class InstallerCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): void
     {
-        // Show a warning when in production
         if (App::environment('production') && ! $this->option('force')) {
             $this->components->error('You are running the installer in production environment!');
             $this->newLine();
@@ -49,13 +48,13 @@ class InstallerCommand extends Command
             if (! $this->components->confirm('Do you really wish to proceed?', false)) {
                 $this->components->info('Command canceled.');
 
-                return 1;
+                return;
             }
 
             if (! $this->components->confirm('Are you sure? This cannot be undone', false)) {
                 $this->components->info('Command canceled.');
 
-                return 1;
+                return;
             }
 
             $this->newLine();
@@ -67,38 +66,29 @@ class InstallerCommand extends Command
         $this->components->info('This command will help you set up the application.');
         $this->newLine();
 
-        // Check if .env already exists
-        if (File::exists(base_path('.env'))) {
+        if (File::exists(base_path('.env')) && ! $this->confirm('An .env file already exists. Do you want to overwrite it?', false)) {
+            $this->components->info('Installation aborted. Your existing .env file was not modified.');
 
-            if (! $this->confirm('An .env file already exists. Do you want to overwrite it?', false)) {
-                $this->components->info('Installation aborted. Your existing .env file was not modified.');
-
-                return 1;
-            }
+            return;
         }
 
-        // Create .env file from .env.example
         if (! File::exists(base_path('.env.example'))) {
             $this->components->error('.env.example file not found. Please make sure the file exists before running the installer.');
 
-            return 1;
+            return;
         }
 
-        // Copy .env.example to .env
         File::copy(base_path('.env.example'), base_path('.env'));
         $this->components->info('Created .env file.');
 
-        // Collect user input for configuration
         $this->configureEnvironment();
 
-        // Generate application key
         $this->components->task('Generating application key', function () {
             Artisan::call('key:generate', ['--force' => true]);
 
             return true;
         });
 
-        // Set up database
         $this->components->task('Setting up the database', function () {
             if (! File::exists(database_path('database.sqlite'))) {
                 File::put(database_path('database.sqlite'), '');
@@ -107,7 +97,6 @@ class InstallerCommand extends Command
             return true;
         });
 
-        // Run migrations
         $this->components->task('Running database migrations', function () {
             Artisan::call('migrate', ['--force' => true]);
 
@@ -120,7 +109,6 @@ class InstallerCommand extends Command
 
         $this->showNextSteps();
 
-        return 0;
     }
 
     /**
@@ -132,12 +120,10 @@ class InstallerCommand extends Command
         $this->components->info('Let\'s configure your notification settings:');
         $this->newLine();
 
-        // Configure alert emails
         $alertEmails = $this->ask('Enter email address(es) for notifications (comma-separated for multiple)');
         $this->updateEnv('ALERT_EMAIL', $alertEmails);
         $this->components->task('Setting up email notifications', fn () => true);
 
-        // Configure email settings
         if ($this->confirm('Do you want to configure SMTP for sending emails?', true)) {
             $mailDriver = 'smtp';
             $mailHost = $this->ask('SMTP Host', 'smtp.gmail.com');
@@ -167,14 +153,12 @@ class InstallerCommand extends Command
             $this->updateEnv('MAIL_MAILER', 'log');
         }
 
-        // Configure Discord webhook
         if ($this->confirm('Do you want to set up Discord notifications?', false)) {
             $webhookUrl = $this->ask('Enter your Discord webhook URL');
             $this->updateEnv('DISCORD_WEBHOOK_URL', $webhookUrl);
             $this->components->task('Setting up Discord notifications', fn () => true);
         }
 
-        // Set a sensible default for logging
         $this->updateEnv('LOG_LEVEL', 'info');
 
         $this->newLine();
@@ -189,7 +173,6 @@ class InstallerCommand extends Command
         if (is_null($value)) {
             $value = 'null';
         } else {
-            // Escape quotes
             $value = str_replace('"', '\"', $value);
 
             // Wrap in quotes if value contains spaces or special characters

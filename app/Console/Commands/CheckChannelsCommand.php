@@ -32,28 +32,27 @@ class CheckChannelsCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): void
     {
         $channels = Channel::all();
 
         if ($channels->isEmpty()) {
-            $this->info('No channels found in the database.');
+            $this->components->error('No channels found in the database.');
 
-            return 0;
+            return;
         }
 
-        $this->info('Checking channels for new videos...');
+        $this->components->info('Checking channels for new videos...');
 
         $action = app(CheckForVideosAction::class);
 
         foreach ($channels as $channel) {
             Log::debug('Checking channel "'.$channel->name.'" for new videos...');
-            $this->info("Checking channel: {$channel->name} ({$channel->channel_id})");
+            $this->components->info("Checking channel: {$channel->name} ({$channel->channel_id})");
             $action->execute($channel);
         }
 
-        $this->info('Channel check completed.');
+        $this->components->success('Channel check completed.');
 
-        return 0;
     }
 }

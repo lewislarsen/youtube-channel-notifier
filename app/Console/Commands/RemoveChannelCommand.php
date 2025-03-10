@@ -30,28 +30,27 @@ class RemoveChannelCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): void
     {
         $channelName = $this->ask('Enter the channel name');
 
         $channel = $this->findChannel($channelName);
-        if (! $channel) {
-            $this->error('A channel cannot be found with that name. Please run `php artisan channels:list`.');
 
-            return 1;
+        if (! $channel) {
+            $this->components->error('A channel cannot be found with that name. Please run `php artisan channels:list`.');
+
+            return;
         }
 
         if (! $this->confirmRemoval($channelName)) {
-            $this->info('Channel removal has been cancelled.');
+            $this->components->info('Channel removal has been cancelled.');
 
-            return 1;
+            return;
         }
 
         $this->removeChannel($channel);
 
-        $this->info("Channel '{$channelName}' has been removed.");
-
-        return 0;
+        $this->components->success("Channel '{$channelName}' has been removed.");
     }
 
     /**

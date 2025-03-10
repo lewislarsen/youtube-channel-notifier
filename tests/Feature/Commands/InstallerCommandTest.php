@@ -143,8 +143,7 @@ it('aborts installation when user chooses not to overwrite existing .env', funct
     File::put(base_path('.env'), 'DUMMY=value');
 
     $this->artisan('app:install')
-        ->expectsConfirmation('An .env file already exists. Do you want to overwrite it?', 'no')
-        ->assertExitCode(1);
+        ->expectsConfirmation('An .env file already exists. Do you want to overwrite it?', 'no');
 
     // Verify the file wasn't modified
     expect(File::get(base_path('.env')))->toBe('DUMMY=value');

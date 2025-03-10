@@ -31,30 +31,28 @@ class AddChannelCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): void
     {
         $name = $this->ask('Enter the channel name');
         $channelId = $this->ask('Enter the channel ID');
 
         if (Channel::where('channel_id', $channelId)->exists()) {
-            $this->error('A channel with this ID already exists in the database.');
+            $this->components->error('A channel with this ID already exists in the database.');
 
-            return 1;
+            return;
         }
 
         $channel = Channel::create([
             'name' => $name,
             'channel_id' => $channelId,
-            'last_checked_at' => null, // Ensure it's treated as a first-time import
+            'last_checked_at' => null,
         ]);
 
-        $this->info("Channel '{$channel->name}' added successfully!");
+        $this->components->success("Channel '{$channel->name}' added successfully!");
 
-        $this->info("Running initial video import for '{$channel->name}'...");
+        $this->components->info("Running initial video import for '{$channel->name}'...");
         app(CheckForVideosAction::class)->execute($channel);
 
-        $this->info('Initial import completed successfully.');
-
-        return 0;
+        $this->components->success('Initial import completed successfully.');
     }
 }
