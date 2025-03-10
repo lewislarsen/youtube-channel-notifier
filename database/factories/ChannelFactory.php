@@ -27,6 +27,25 @@ class ChannelFactory extends Factory
             'name' => fake()->unique()->name, // Generates a unique fake name for the channel
             'channel_id' => fake()->regexify('[A-Za-z0-9_-]{24}'), // Mimics YouTube channel ID format
             'last_checked_at' => null, // Initial state for new channels
+            'muted_at' => null,
         ];
+    }
+
+    public function muted(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'muted_at' => now(),
+            ];
+        });
+    }
+
+    public function unmuted(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'muted_at' => null,
+            ];
+        });
     }
 }

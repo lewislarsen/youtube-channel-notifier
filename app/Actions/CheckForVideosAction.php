@@ -139,6 +139,12 @@ class CheckForVideosAction
 
             $video = Video::create($videoData);
 
+            if ($channel->isMuted()) {
+                Log::info("Did not send notification(s) due to channel being muted. New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
+
+                return;
+            }
+
             Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
 
             if (Config::get('app.discord_webhook_url')) {

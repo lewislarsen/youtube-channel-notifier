@@ -37,13 +37,14 @@ class ListChannelsCommand extends Command
         $channels = Channel::orderBy('created_at', 'desc')->get();
 
         $this->table(
-            ['Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL'],
+            ['Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL', 'Muted'],
             $channels->map(function (Channel $channel) {
                 return [
                     $channel->name,
                     $channel->videos()->count(),
                     Carbon::parse($channel->last_checked_at)->diffForHumans(),
-                    'https://youtube.com/channel/'.$channel->channel_id,
+                    $channel->getChannelUrl(),
+                    $channel->isMuted() ? '✔' : '✘',
                 ];
             })->toArray()
         );

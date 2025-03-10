@@ -59,4 +59,24 @@ class Channel extends Model
     {
         return "https://www.youtube.com/channel/{$this->channel_id}";
     }
+
+    /**
+     * Determine if the channel is currently muted.
+     */
+    public function isMuted(): bool
+    {
+        return $this->muted_at !== null;
+    }
+
+    /**
+     * Toggle the muted state for the channel.
+     */
+    /**
+     * Toggle the mute status of the channel.
+     */
+    public function toggleMute(): void
+    {
+        $this->muted_at = $this->isMuted() ? null : now();
+        $this->save();
+    }
 }

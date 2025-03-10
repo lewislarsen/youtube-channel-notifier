@@ -17,3 +17,31 @@ it('returns the full youtube channel link', function () {
     // Verify the getChannelUrl method returns the correct URL
     expect($channel->getChannelUrl())->toBe("https://www.youtube.com/channel/{$channelId}");
 });
+
+it('returns true if the channel is muted', function () {
+    $channel = Channel::factory()->muted()->create();
+
+    expect($channel->isMuted())->toBeTrue();
+});
+
+it('returns false if the channel is not muted', function () {
+    $channel = Channel::factory()->unmuted()->create();
+
+    expect($channel->isMuted())->toBeFalse();
+});
+
+it('can switch a channel to muted', function () {
+    $channel = Channel::factory()->create(['muted_at' => null]);
+
+    $channel->toggleMute();
+
+    expect($channel->isMuted())->toBeTrue();
+});
+
+it('can unmute a muted channel', function () {
+    $channel = Channel::factory()->muted()->create();
+
+    $channel->toggleMute();
+
+    expect($channel->isMuted())->toBeFalse();
+});

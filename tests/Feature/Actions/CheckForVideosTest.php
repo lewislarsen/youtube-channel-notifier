@@ -334,3 +334,43 @@ it('sends notification to multiple email addresses when configured', function ()
     // Assert that the new video was added to the database
     expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
 });
+
+it('does not send any notifications if the channel has been muted', function () {
+    Config::set('app.alert_emails', 'email@example.com');
+    Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
+    Mail::fake();
+
+    $channel = Channel::factory()->muted()->create([
+        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+        'last_checked_at' => now()->subDay(), // Simulate that the channel has been checked before
+    ]);
+
+    $rssResponse = <<<'XML'
+    <feed>
+        <entry>
+            <id>yt:video:5ltAy1W6k-Q</id>
+            <title>New Video Title</title>
+            <summary>Video description</summary>
+            <published>2025-01-01T00:00:00+00:00</published>
+        </entry>
+    </feed>
+    XML;
+
+    Http::fake([
+        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+    ]);
+
+    $action = new CheckForVideosAction;
+    $action->execute($channel);
+
+    Mail::assertNotSent(NewVideoMail::class, function ($mail) {
+        return $mail->hasTo('email@example.com');
+    });
+
+    Http::assertNotSent(function ($request) {
+        return str_contains($request->url(), 'discord.com/api/webhooks');
+    });
+
+    expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue()
+        ->and($channel->isMuted())->toBeTrue();
+});
