@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <x-mail::layout>
 {{-- Header --}}
 <x-slot:header>
@@ -25,3 +30,4 @@
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>
+<?php 

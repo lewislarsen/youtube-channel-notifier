@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -117,7 +119,7 @@ class InstallerCommand extends Command
     private function configureEnvironment(): void
     {
         $this->newLine();
-        $this->components->info('Let\'s configure your notification settings:');
+        $this->components->info("Let's configure your notification settings:");
         $this->newLine();
 
         $alertEmails = $this->ask('Enter email address(es) for notifications (comma-separated for multiple)');

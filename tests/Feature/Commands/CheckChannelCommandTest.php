@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\CheckForVideosAction;
 use App\Console\Commands\AddChannelCommand;
 use App\Console\Commands\CheckChannelsCommand;
@@ -7,20 +9,20 @@ use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Facades\Mail;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Channel::truncate();
     Video::truncate();
 });
 
-it('outputs a message when no channels are found', function () {
+it('outputs a message when no channels are found', function (): void {
     $this->artisan(CheckChannelsCommand::class)
         ->expectsOutputToContain('No channels found in the database.')
         ->assertExitCode(0);
 });
 
-it('handles CheckForVideosAction execution for each channel', function () {
-    $action = Mockery::mock(CheckForVideosAction::class);
-    app()->instance(CheckForVideosAction::class, $action);
+it('handles CheckForVideosAction execution for each channel', function (): void {
+    $mock = Mockery::mock(CheckForVideosAction::class);
+    app()->instance(CheckForVideosAction::class, $mock);
 
     $channel1 = Channel::factory()->create([
         'name' => 'Channel One',
@@ -32,11 +34,11 @@ it('handles CheckForVideosAction execution for each channel', function () {
         'channel_id' => 'UC_x6YG2P6uZZ5FSM9Ttw',
     ]);
 
-    $action->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel1) {
+    $mock->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel1) {
         return $channel->is($channel1);
     }))->once();
 
-    $action->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel2) {
+    $mock->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel2) {
         return $channel->is($channel2);
     }))->once();
 
@@ -48,7 +50,7 @@ it('handles CheckForVideosAction execution for each channel', function () {
         ->assertExitCode(0);
 });
 
-it('adds a new channel and performs an initial video import', function () {
+it('adds a new channel and performs an initial video import', function (): void {
     Mail::fake();
 
     // Mock user input for channel name and ID
@@ -66,7 +68,7 @@ it('adds a new channel and performs an initial video import', function () {
     Mail::assertNothingSent();
 });
 
-it('does not add a channel if a channel with the same ID already exists', function () {
+it('does not add a channel if a channel with the same ID already exists', function (): void {
     Channel::factory()->create([
         'name' => 'Existing Channel',
         'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',

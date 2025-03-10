@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
-beforeEach(function () {
+beforeEach(function (): void {
     // Backup .env file if it exists
     if (File::exists(base_path('.env'))) {
         File::copy(base_path('.env'), base_path('.env.backup'));
@@ -15,7 +17,7 @@ beforeEach(function () {
     }
 });
 
-afterEach(function () {
+afterEach(function (): void {
     // Restore .env file from backup
     if (File::exists(base_path('.env.backup'))) {
         File::copy(base_path('.env.backup'), base_path('.env'));
@@ -25,11 +27,11 @@ afterEach(function () {
     }
 });
 
-it('has the install command registered', function () {
+it('has the install command registered', function (): void {
     expect(array_key_exists('app:install', Artisan::all()))->toBeTrue();
 });
 
-it('creates an env file with basic settings', function () {
+it('creates an env file with basic settings', function (): void {
     // Remove .env file if it exists
     if (File::exists(base_path('.env'))) {
         File::delete(base_path('.env'));
@@ -49,7 +51,7 @@ it('creates an env file with basic settings', function () {
         ->toContain('LOG_LEVEL=info');
 });
 
-it('configures multiple email addresses correctly', function () {
+it('configures multiple email addresses correctly', function (): void {
     if (File::exists(base_path('.env'))) {
         File::delete(base_path('.env'));
     }
@@ -65,7 +67,7 @@ it('configures multiple email addresses correctly', function () {
     expect($envContent)->toContain('ALERT_EMAIL=test1@example.com,test2@example.com');
 });
 
-it('configures SMTP settings correctly', function () {
+it('configures SMTP settings correctly', function (): void {
     if (File::exists(base_path('.env'))) {
         File::delete(base_path('.env'));
     }
@@ -96,7 +98,7 @@ it('configures SMTP settings correctly', function () {
         ->toContain('MAIL_FROM_NAME="Test Notifier"');
 });
 
-it('configures Discord webhook correctly', function () {
+it('configures Discord webhook correctly', function (): void {
     if (File::exists(base_path('.env'))) {
         File::delete(base_path('.env'));
     }
@@ -114,7 +116,7 @@ it('configures Discord webhook correctly', function () {
         ->toContain('DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/123456/abcdef');
 });
 
-it('handles "no encryption" option correctly', function () {
+it('handles "no encryption" option correctly', function (): void {
     if (File::exists(base_path('.env'))) {
         File::delete(base_path('.env'));
     }
@@ -138,7 +140,7 @@ it('handles "no encryption" option correctly', function () {
         ->toContain('MAIL_ENCRYPTION=null');
 });
 
-it('aborts installation when user chooses not to overwrite existing .env', function () {
+it('aborts installation when user chooses not to overwrite existing .env', function (): void {
     // Create a dummy .env file
     File::put(base_path('.env'), 'DUMMY=value');
 
@@ -149,7 +151,7 @@ it('aborts installation when user chooses not to overwrite existing .env', funct
     expect(File::get(base_path('.env')))->toBe('DUMMY=value');
 });
 
-it('properly handles values with spaces in env file', function () {
+it('properly handles values with spaces in env file', function (): void {
     if (File::exists(base_path('.env'))) {
         File::delete(base_path('.env'));
     }

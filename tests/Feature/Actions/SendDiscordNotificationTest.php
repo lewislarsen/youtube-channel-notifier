@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\SendDiscordNotificationAction;
 use App\Models\Channel;
 use App\Models\Video;
@@ -7,12 +9,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Video::truncate();
     Channel::truncate();
 });
 
-it('sends a discord notification successfully', function () {
+it('sends a discord notification successfully', function (): void {
     // Configure webhook URL
     Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
 
@@ -53,7 +55,7 @@ it('sends a discord notification successfully', function () {
     });
 });
 
-it('returns false when discord webhook is not configured', function () {
+it('returns false when discord webhook is not configured', function (): void {
     // Ensure webhook URL is not configured
     Config::set('app.discord_webhook_url', null);
 
@@ -72,7 +74,7 @@ it('returns false when discord webhook is not configured', function () {
     Http::assertNothingSent();
 });
 
-it('handles error responses from discord', function () {
+it('handles error responses from discord', function (): void {
     // Configure webhook URL
     Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
 
@@ -102,7 +104,7 @@ it('handles error responses from discord', function () {
     });
 });
 
-it('handles exceptions during discord notification', function () {
+it('handles exceptions during discord notification', function (): void {
     // Configure webhook URL
     Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
 

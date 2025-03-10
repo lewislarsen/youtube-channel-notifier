@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\CheckForVideosAction;
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
@@ -10,12 +12,12 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 // Ensure the database is clean before running each test
-beforeEach(function () {
+beforeEach(function (): void {
     Channel::truncate();
     Video::truncate();
 });
 
-it('sends a mailable if a new video is found', function () {
+it('sends a mailable if a new video is found', function (): void {
     Config::set('app.alert_emails', 'email@example.com');
     // Mock Mail facade
     Mail::fake();
@@ -55,7 +57,7 @@ it('sends a mailable if a new video is found', function () {
     expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
 });
 
-it('does not send a mailable on first-time import', function () {
+it('does not send a mailable on first-time import', function (): void {
     // Mock Mail facade
     Mail::fake();
 
@@ -92,7 +94,7 @@ it('does not send a mailable on first-time import', function () {
     expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
 });
 
-it('does not send a mailable if no new videos are found', function () {
+it('does not send a mailable if no new videos are found', function (): void {
     // Mock Mail facade
     Mail::fake();
 
@@ -120,7 +122,7 @@ it('does not send a mailable if no new videos are found', function () {
     Mail::assertNothingSent();
 });
 
-it('logs an error if the RSS feed fetch fails', function () {
+it('logs an error if the RSS feed fetch fails', function (): void {
     Mail::fake();
     // Mock the Log facade
     Log::shouldReceive('error')->once();
@@ -143,7 +145,7 @@ it('logs an error if the RSS feed fetch fails', function () {
     Mail::assertNothingSent();
 });
 
-it('logs an info message if the RSS feed is malformed and no emails are sent', function () {
+it('logs an info message if the RSS feed is malformed and no emails are sent', function (): void {
     Log::shouldReceive('info')->once();
 
     Log::shouldReceive('debug')
@@ -182,7 +184,7 @@ it('logs an info message if the RSS feed is malformed and no emails are sent', f
     Mail::assertNothingSent();
 });
 
-it('ignores videos with the exact word LIVE in the title', function () {
+it('ignores videos with the exact word LIVE in the title', function (): void {
     Mail::fake();
 
     $channel = Channel::factory()->create([
@@ -215,7 +217,7 @@ it('ignores videos with the exact word LIVE in the title', function () {
 
 // Essential Discord integration tests that should remain in this file
 
-it('sends both email and discord notifications for new videos', function () {
+it('sends both email and discord notifications for new videos', function (): void {
     Config::set('app.alert_email', 'email@example.com');
     Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
 
@@ -256,7 +258,7 @@ it('sends both email and discord notifications for new videos', function () {
     });
 });
 
-it('does not send discord notifications on first-time import', function () {
+it('does not send discord notifications on first-time import', function (): void {
     Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
 
     Mail::fake();
@@ -288,11 +290,11 @@ it('does not send discord notifications on first-time import', function () {
     // Assert that no notifications were sent
     Mail::assertNothingSent();
     Http::assertNotSent(function ($request) {
-        return strpos($request->url(), 'discord.com/api/webhooks') !== false;
+        return str_contains((string) $request->url(), 'discord.com/api/webhooks');
     });
 });
 
-it('sends notification to multiple email addresses when configured', function () {
+it('sends notification to multiple email addresses when configured', function (): void {
     // Configure multiple email addresses
     Config::set('app.alert_emails', ['email1@example.com', 'email2@example.com']);
 
@@ -335,7 +337,7 @@ it('sends notification to multiple email addresses when configured', function ()
     expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
 });
 
-it('does not send any notifications if the channel has been muted', function () {
+it('does not send any notifications if the channel has been muted', function (): void {
     Config::set('app.alert_emails', 'email@example.com');
     Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
     Mail::fake();
@@ -368,7 +370,7 @@ it('does not send any notifications if the channel has been muted', function () 
     });
 
     Http::assertNotSent(function ($request) {
-        return str_contains($request->url(), 'discord.com/api/webhooks');
+        return str_contains((string) $request->url(), 'discord.com/api/webhooks');
     });
 
     expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue()

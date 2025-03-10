@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Actions\CheckForVideosAction;
@@ -44,12 +46,12 @@ class CheckChannelsCommand extends Command
 
         $this->components->info('Checking channels for new videos...');
 
-        $action = app(CheckForVideosAction::class);
+        $checkForVideosAction = app(CheckForVideosAction::class);
 
         foreach ($channels as $channel) {
             Log::debug('Checking channel "'.$channel->name.'" for new videos...');
             $this->components->info("Checking channel: {$channel->name} ({$channel->channel_id})");
-            $action->execute($channel);
+            $checkForVideosAction->execute($channel);
         }
 
         $this->components->success('Channel check completed.');

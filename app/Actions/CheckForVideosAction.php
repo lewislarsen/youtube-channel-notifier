@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions;
 
 use App\Mail\NewVideoMail;
@@ -133,11 +135,11 @@ class CheckForVideosAction
      */
     private function insertNewVideosAndNotify(array $newVideos, Channel $channel): void
     {
-        $discordService = app(SendDiscordNotificationAction::class);
+        $sendDiscordNotificationAction = app(SendDiscordNotificationAction::class);
 
-        foreach ($newVideos as $videoData) {
+        foreach ($newVideos as $newVideo) {
 
-            $video = Video::create($videoData);
+            $video = Video::create($newVideo);
 
             if ($channel->isMuted()) {
                 Log::info("Did not send notification(s) due to channel being muted. New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
@@ -148,7 +150,7 @@ class CheckForVideosAction
             Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video));
 
             if (Config::get('app.discord_webhook_url')) {
-                $discordService->execute($video);
+                $sendDiscordNotificationAction->execute($video);
             }
 
             Log::info("New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");

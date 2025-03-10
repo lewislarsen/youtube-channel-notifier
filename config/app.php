@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -101,7 +103,7 @@ return [
 
     'previous_keys' => [
         ...array_filter(
-            explode(',', env('APP_PREVIOUS_KEYS', ''))
+            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
 
@@ -134,7 +136,7 @@ return [
     |
     */
 
-    'alert_emails' => array_map('trim', explode(',', env('ALERT_EMAILS', 'alerts@example.com'))),
+    'alert_emails' => array_map('trim', explode(',', (string) env('ALERT_EMAILS', 'alerts@example.com'))),
 
     /*
     |--------------------------------------------------------------------------

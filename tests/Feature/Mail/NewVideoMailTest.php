@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;
@@ -7,7 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
-it('builds the mailable correctly', function () {
+it('builds the mailable correctly', function (): void {
     $channel = Channel::factory()->create(['name' => 'TestChannel']);
     $video = Video::factory()->make([
         'channel_id' => $channel->id,
@@ -31,7 +33,7 @@ it('builds the mailable correctly', function () {
         ->and($content->with['thumbnailUrl'])->toBe('https://i.ytimg.com/vi/5ltAy1W6k-Q/maxresdefault.jpg');
 });
 
-it('sends the mailable to a single email address', function () {
+it('sends the mailable to a single email address', function (): void {
     Config::set('app.alert_emails', ['lewis@larsens.dev']);
     Mail::fake();
 
@@ -50,7 +52,7 @@ it('sends the mailable to a single email address', function () {
     });
 });
 
-it('sends the mailable to multiple email addresses', function () {
+it('sends the mailable to multiple email addresses', function (): void {
     Config::set('app.alert_emails', ['lewis@larsens.dev', 'another@example.com']);
     Mail::fake();
 

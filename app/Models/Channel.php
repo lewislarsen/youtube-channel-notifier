@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,15 +25,6 @@ class Channel extends Model
      * @var array
      */
     public $guarded = [];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'last_checked_at' => 'datetime',
-    ];
 
     /**
      * Get the videos associated with the channel.
@@ -78,5 +71,17 @@ class Channel extends Model
     {
         $this->muted_at = $this->isMuted() ? null : now();
         $this->save();
+    }
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'last_checked_at' => 'datetime',
+        ];
     }
 }

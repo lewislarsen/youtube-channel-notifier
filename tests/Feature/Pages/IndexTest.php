@@ -1,6 +1,8 @@
 <?php
 
-test('the page can be rendered', function () {
+declare(strict_types=1);
+
+test('the page can be rendered', function (): void {
 
     $response = $this->get(route('index'));
 

@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 <x-mail::message>
 # New Video Upload
 
@@ -23,3 +28,4 @@ Watch Now on YouTube
 You're receiving this notification because you are subscribed to video releases from <a href="{{ $videoCreatorUrl }}">{{ $videoCreator }}</a>.
 </x-mail::subcopy>
 </x-mail::message>
+<?php 

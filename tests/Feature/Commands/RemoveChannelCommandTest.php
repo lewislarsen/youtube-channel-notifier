@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Console\Commands\RemoveChannelCommand;
 use App\Models\Channel;
 use App\Models\Video;
 
-it('removes a channel and all data', function () {
+it('removes a channel and all data', function (): void {
 
     $channel = Channel::factory()->create();
 
@@ -26,7 +28,7 @@ it('removes a channel and all data', function () {
     ]);
 });
 
-it('outputs a message if it cannot find a channel', function () {
+it('outputs a message if it cannot find a channel', function (): void {
 
     $this->artisan(RemoveChannelCommand::class)
         ->expectsQuestion('Enter the channel name', 'does-not-exist')
@@ -35,7 +37,7 @@ it('outputs a message if it cannot find a channel', function () {
     $this->assertDatabaseCount('channels', 0);
 });
 
-it('cancels the removal if the user does not confirm', function () {
+it('cancels the removal if the user does not confirm', function (): void {
 
     $channel = Channel::factory()->create();
 

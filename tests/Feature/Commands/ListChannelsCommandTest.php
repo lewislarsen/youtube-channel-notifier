@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Console\Commands\ListChannelsCommand;
 use App\Models\Channel;
 use App\Models\Video;
 use Carbon\Carbon;
 
-it('displays a list of channels', function () {
+it('displays a list of channels', function (): void {
     $channels = Channel::factory()->count(3)->create();
 
     $channels->each(fn ($channel) => [
@@ -27,14 +29,14 @@ it('displays a list of channels', function () {
         })->toArray());
 });
 
-it('displays an empty table when no channels exist', function () {
+it('displays an empty table when no channels exist', function (): void {
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
             'Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL', 'Muted',
         ], []);
 });
 
-it('shows muted status correctly for muted and unmuted channels', function () {
+it('shows muted status correctly for muted and unmuted channels', function (): void {
     $mutedChannel = Channel::factory()->muted()->create();
     $unmutedChannel = Channel::factory()->unmuted()->create();
 
@@ -59,7 +61,7 @@ it('shows muted status correctly for muted and unmuted channels', function () {
         ]);
 });
 
-it('orders channels by most recently created', function () {
+it('orders channels by most recently created', function (): void {
     $oldChannel = Channel::factory()->create([
         'created_at' => now()->subDays(10),
         'last_checked_at' => now()->subDays(10),

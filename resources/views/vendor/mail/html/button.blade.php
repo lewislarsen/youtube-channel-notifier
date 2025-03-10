@@ -1,3 +1,8 @@
+<?php
+
+declare(strict_types=1);
+
+?>
 @props([
     'url',
     'color' => 'primary',
@@ -22,3 +27,4 @@
         </td>
     </tr>
 </table>
+<?php 
