@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class SendDiscordNotificationAction
 {
@@ -51,6 +52,8 @@ class SendDiscordNotificationAction
         $payload = [
             'content' => '🎬 **New Video Alert!** Check out this new upload from '.$video->channel->getAttribute('name'),
             'embeds' => [$embed],
+            'avatar_url' => URL::asset('assets/white-full.png'),
+            'username' => Config::get('app.name'),
         ];
 
         try {
