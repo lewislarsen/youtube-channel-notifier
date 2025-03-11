@@ -29,69 +29,70 @@ class InstallerCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(): int
     {
+        $this->components->info('🎬 Welcome to the YouTube Channel Notifier!');
+        $this->components->info("Let's get your notification system set up in just a few minutes.");
+        $this->newLine();
+
         if (App::environment('production') && ! $this->option('force')) {
-            $this->components->error('You are running the installer in production environment!');
+            $this->components->error('⚠️ Production Environment Detected!');
             $this->newLine();
 
             $this->components->warn(
-                'Running the installer in production may overwrite your existing configuration.'
+                'Running this installer in production might affect your existing setup:'
             );
 
             $this->components->bulletList([
-                'Your existing environment configuration might be overwritten',
-                'Database migrations will be run which could affect your data',
-                'A new application key will be generated which affects encrypted values',
+                'Your current environment settings may be overwritten',
+                'Database migrations will run (potentially affecting existing data)',
+                'A new application key will be generated (invalidating existing encrypted values)',
             ]);
 
             $this->newLine();
 
-            if (! $this->components->confirm('Do you really wish to proceed?', false)) {
-                $this->components->info('Command canceled.');
+            if (! $this->components->confirm('Would you like to proceed anyway?', false)) {
+                $this->components->info('No problem! Installation canceled.');
 
-                return;
+                return 1;
             }
 
-            if (! $this->components->confirm('Are you sure? This cannot be undone', false)) {
-                $this->components->info('Command canceled.');
+            if (! $this->components->confirm('Just to be sure - this cannot be undone. Continue?', false)) {
+                $this->components->info('Installation safely canceled.');
 
-                return;
+                return 1;
             }
 
             $this->newLine();
-            $this->components->info('Continuing installation in production environment...');
+            $this->components->info('Continuing with installation in production environment...');
             $this->newLine();
         }
 
-        $this->components->info('Welcome to the YouTube Channel Notifier installer!');
-        $this->components->info('This command will help you set up the application.');
-        $this->newLine();
+        if (File::exists(base_path('.env')) &&
+            ! $this->components->confirm('I noticed an .env file already exists. Is it okay to replace it?', false)) {
+            $this->components->info('Got it! Your existing configuration has been preserved.');
 
-        if (File::exists(base_path('.env')) && ! $this->confirm('An .env file already exists. Do you want to overwrite it?', false)) {
-            $this->components->info('Installation aborted. Your existing .env file was not modified.');
-
-            return;
+            return 1;
         }
 
         if (! File::exists(base_path('.env.example'))) {
-            $this->components->error('.env.example file not found. Please make sure the file exists before running the installer.');
+            $this->components->error("I can't find the .env.example template file. Please check that it exists before running the installer.");
 
-            return;
+            return 1;
         }
 
         File::copy(base_path('.env.example'), base_path('.env'));
-        $this->components->info('Created .env file.');
+        $this->components->info('✅ Created fresh .env configuration file.');
 
         $this->configureEnvironment();
 
-        $this->components->task('Generating application key', function () {
+        $this->components->task('Generating secure application key', function () {
             Artisan::call('key:generate', ['--force' => true]);
 
             return true;
         });
 
-        $this->components->task('Setting up the database', function () {
+        $this->components->task('Setting up SQLite database', function () {
             if (! File::exists(database_path('database.sqlite'))) {
                 File::put(database_path('database.sqlite'), '');
             }
@@ -106,11 +107,13 @@ class InstallerCommand extends Command
         });
 
         $this->newLine();
-        $this->components->success('Installation completed successfully!');
+        $this->components->success('🎉 Installation completed successfully!');
+        $this->components->info('Your YouTube Channel Notifier is now ready to use.');
         $this->newLine();
 
         $this->showNextSteps();
 
+        return 0;
     }
 
     /**
@@ -119,52 +122,56 @@ class InstallerCommand extends Command
     private function configureEnvironment(): void
     {
         $this->newLine();
-        $this->components->info("Let's configure your notification settings:");
+        $this->components->info("📝 Let's personalize your notification settings:");
         $this->newLine();
 
-        $alertEmails = $this->ask('Enter email address(es) for notifications (comma-separated for multiple)');
-        $this->updateEnv('ALERT_EMAIL', $alertEmails);
-        $this->components->task('Setting up email notifications', fn () => true);
+        $alertEmails = $this->ask('Where should notifications be sent? (Email addresses, comma-separated for multiple)');
+        $this->updateEnv('ALERT_EMAILS', $alertEmails);
+        $this->components->task('Setting up email notification recipients', fn () => true);
 
-        if ($this->confirm('Do you want to configure SMTP for sending emails?', true)) {
-            $mailDriver = 'smtp';
+        if ($this->components->confirm('Would you like to configure SMTP for sending emails? (Recommended)', true)) {
             $mailHost = $this->ask('SMTP Host', 'smtp.gmail.com');
             $mailPort = $this->ask('SMTP Port', '587');
-            $mailUsername = $this->ask('SMTP Username');
-            $mailPassword = $this->secret('SMTP Password');
-            $mailEncryption = $this->choice('SMTP Encryption', ['tls', 'ssl', 'none'], 0);
+            $mailUsername = $this->ask('SMTP Username (usually your email address)');
+            $mailPassword = $this->secret('SMTP Password (input will be hidden)');
+            $mailEncryption = $this->choice('SMTP Encryption Type', ['tls', 'ssl', 'none'], 0);
             $mailFromAddress = $this->ask('From Email Address', $mailUsername);
-            $mailFromName = $this->ask('From Name', 'YouTube Channel Notifier');
 
             if ($mailEncryption === 'none') {
                 $mailEncryption = null;
             }
 
-            $this->updateEnv('MAIL_MAILER', $mailDriver);
+            $this->updateEnv('MAIL_MAILER', 'smtp');
             $this->updateEnv('MAIL_HOST', $mailHost);
             $this->updateEnv('MAIL_PORT', $mailPort);
             $this->updateEnv('MAIL_USERNAME', $mailUsername);
             $this->updateEnv('MAIL_PASSWORD', $mailPassword);
             $this->updateEnv('MAIL_ENCRYPTION', $mailEncryption);
             $this->updateEnv('MAIL_FROM_ADDRESS', $mailFromAddress);
-            $this->updateEnv('MAIL_FROM_NAME', $mailFromName);
 
-            $this->components->task('Configuring SMTP settings', fn () => true);
+            $this->components->task('Configuring email delivery settings', fn () => true);
+
+            $this->newLine();
+            $this->components->info('✅ Email delivery configured successfully!');
         } else {
-            $this->components->warn('Using log driver for emails. Emails will be written to the log file.');
+            $this->components->warn('Using log driver for emails. Messages will be written to the log file instead of being sent.');
             $this->updateEnv('MAIL_MAILER', 'log');
         }
 
-        if ($this->confirm('Do you want to set up Discord notifications?', false)) {
-            $webhookUrl = $this->ask('Enter your Discord webhook URL');
+        $this->newLine();
+        if ($this->components->confirm('Would you like to receive Discord notifications too?', false)) {
+            $webhookUrl = $this->ask('Please paste your Discord webhook URL');
             $this->updateEnv('DISCORD_WEBHOOK_URL', $webhookUrl);
             $this->components->task('Setting up Discord notifications', fn () => true);
+            $this->components->info('✅ Discord notifications configured!');
+        } else {
+            $this->components->info('No problem! You can always add Discord notifications later.');
         }
 
         $this->updateEnv('LOG_LEVEL', 'info');
 
         $this->newLine();
-        $this->components->info('Environment configured successfully!');
+        $this->components->info('✨ Configuration complete! Your settings have been saved.');
     }
 
     /**
@@ -203,14 +210,14 @@ class InstallerCommand extends Command
      */
     private function showNextSteps(): void
     {
-        $this->components->info('Next steps:');
+        $this->components->info('🚀 Ready to start monitoring? Here\'s what to do next:');
         $this->newLine();
 
         $this->components->bulletList([
             'Add your first YouTube channel: <fg=yellow>php artisan channels:add</>',
-            'Set up the scheduler: <fg=yellow>* * * * * cd '.base_path().' && php artisan schedule:run >> /dev/null 2>&1</>',
-            'Test the system by running: <fg=yellow>php artisan channels:check</>',
-            'List your monitored channels: <fg=yellow>php artisan channels:list</>',
+            'Set up the scheduler (so checks run automatically): <fg=yellow>* * * * * cd '.base_path().' && php artisan schedule:run >> /dev/null 2>&1</>',
+            'Test the system right now: <fg=yellow>php artisan channels:check</>',
+            'View all monitored channels: <fg=yellow>php artisan channels:list</>',
         ]);
 
         $this->newLine();
@@ -218,7 +225,7 @@ class InstallerCommand extends Command
 
         $this->newLine(2);
         $this->components->twoColumnDetail(
-            '<fg=bright-blue>★ Enjoying this tool?</>',
+            '<fg=bright-blue>⭐ Enjoying this tool?</>',
             'Please consider starring the project on GitHub: <fg=green>https://github.com/lewislarsen/youtube-channel-notifier</>'
         );
         $this->newLine();
