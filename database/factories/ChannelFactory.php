@@ -33,37 +33,35 @@ class ChannelFactory extends Factory
 
     /**
      * Generate a realistic YouTube channel name.
-     *
-     * @return string
      */
     protected function generateRealisticChannelName(): string
     {
         $channelNameFormats = [
             // Personal brand formats
-            fn() => fake()->firstName() . ' ' . fake()->lastName(),
-            fn() => fake()->userName(),
-            fn() => fake()->firstName() . 'TV',
-            fn() => fake()->lastName() . 'Gaming',
-            fn() => 'The' . fake()->lastName() . 'Family',
+            fn () => fake()->firstName().' '.fake()->lastName(),
+            fn () => fake()->userName(),
+            fn () => fake()->firstName().'TV',
+            fn () => fake()->lastName().'Gaming',
+            fn () => 'The'.fake()->lastName().'Family',
 
             // Topic-based formats
-            fn() => fake()->word() . ' ' . fake()->word() . ' Studio',
-            fn() => fake()->word() . 'Tutorials',
-            fn() => fake()->word() . 'Reviews',
-            fn() => fake()->word() . ' ' . fake()->word() . ' Official',
-            fn() => 'The' . ucfirst(fake()->word()) . 'Channel',
+            fn () => fake()->word().' '.fake()->word().' Studio',
+            fn () => fake()->word().'Tutorials',
+            fn () => fake()->word().'Reviews',
+            fn () => fake()->word().' '.fake()->word().' Official',
+            fn () => 'The'.ucfirst(fake()->word()).'Channel',
 
             // Creative formats
-            fn() => ucfirst(fake()->word()) . ucfirst(fake()->word()),
-            fn() => ucfirst(fake()->word()) . fake()->numberBetween(1, 9999),
-            fn() => 'The' . ucfirst(fake()->colorName()) . ucfirst(fake()->word()),
-            fn() => ucfirst(fake()->word()) . 'Hub',
-            fn() => ucfirst(fake()->word()) . 'Nation',
+            fn () => ucfirst(fake()->word()).ucfirst(fake()->word()),
+            fn () => ucfirst(fake()->word()).fake()->numberBetween(1, 9999),
+            fn () => 'The'.ucfirst(fake()->colorName()).ucfirst(fake()->word()),
+            fn () => ucfirst(fake()->word()).'Hub',
+            fn () => ucfirst(fake()->word()).'Nation',
 
             // Professional formats
-            fn() => fake()->company() . ' Official',
-            fn() => ucfirst(fake()->bs()),
-            fn() => fake()->catchPhrase(),
+            fn () => fake()->company().' Official',
+            fn () => ucfirst(fake()->bs()),
+            fn () => fake()->catchPhrase(),
         ];
 
         // Randomly select a format and generate a channel name
@@ -73,7 +71,7 @@ class ChannelFactory extends Factory
         // Sometimes add decorations like emojis or special characters
         if (fake()->boolean(20)) {
             $decorations = ['✓', '™', '®', '➤', '►', '★', '☆', '❤', '🎮', '🎬', '🎯', '🔥', '💯'];
-            $channelName .= ' ' . $decorations[array_rand($decorations)];
+            $channelName .= ' '.$decorations[array_rand($decorations)];
         }
 
         return $channelName;
@@ -81,8 +79,6 @@ class ChannelFactory extends Factory
 
     /**
      * Mark the channel as muted.
-     *
-     * @return static
      */
     public function muted(): static
     {
@@ -95,8 +91,6 @@ class ChannelFactory extends Factory
 
     /**
      * Mark the channel as unmuted.
-     *
-     * @return static
      */
     public function unmuted(): static
     {

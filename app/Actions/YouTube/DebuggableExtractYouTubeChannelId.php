@@ -236,9 +236,9 @@ class DebuggableExtractYouTubeChannelId extends ExtractYouTubeChannelId
             });
         }
 
-        foreach ($metaNodes as $node) {
+        foreach ($metaNodes as $metumNode) {
             // @phpstan-ignore-next-line
-            $content = $node->getAttribute('content');
+            $content = $metumNode->getAttribute('content');
             if (preg_match('#channel_id=([^"&?/]+)#', $content, $matches)) {
                 return $matches[1];
             }
