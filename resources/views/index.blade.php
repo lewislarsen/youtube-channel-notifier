@@ -12,8 +12,9 @@ declare(strict_types=1);
     <title>YouTube Channel Notifier</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ asset('gray-favicon.ico') }}" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="{{ asset('white-favicon.ico') }}" media="(prefers-color-scheme: dark)">
 
     <!-- Social Media Meta Tags -->
     <meta property="og:title" content="YouTube Channel Notifier">
@@ -201,4 +202,4 @@ declare(strict_types=1);
 </div>
 </body>
 </html>
-<?php 
+<?php
