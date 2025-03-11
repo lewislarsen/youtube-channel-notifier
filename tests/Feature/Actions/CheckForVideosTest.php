@@ -127,34 +127,6 @@ describe('Error Handling', function (): void {
 
         Mail::assertNothingSent();
     });
-
-    it('logs an info message if the RSS feed is malformed and no emails are sent', function (): void {
-        Log::shouldReceive('info')->once();
-        Log::shouldReceive('warning')->once();
-
-        $channel = Channel::factory()->create([
-            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
-        ]);
-
-        $rssResponse = <<<'XML'
-        <feed>
-            <entry>
-                <id>yt:video:5ltAy1W6k-Q</id>
-                <title>New Video Title</title>
-            </entry>
-        </feed>
-        XML;
-
-        Http::fake([
-            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-        ]);
-
-        $action = new CheckForVideosAction;
-        $action->execute($channel);
-
-        Mail::assertNothingSent();
-    });
 });
 
 describe('Filtering', function (): void {

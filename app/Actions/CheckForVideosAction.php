@@ -105,12 +105,6 @@ class CheckForVideosAction
                 continue;
             }
 
-            if ($this->hasMissingRequiredFields($entry)) {
-                $this->logMissingDataWarning($title, $videoId);
-
-                continue;
-            }
-
             $newVideos[] = $this->createVideoData($entry, $channel, $videoId, $title);
         }
 
@@ -274,28 +268,6 @@ class CheckForVideosAction
     private function logSkippingByExcludedWord(string $excludedWord, string $title): void
     {
         Log::debug("Skipping video with excluded term '{$excludedWord}': {$title}");
-    }
-
-    /**
-     * Check if an RSS entry is missing required fields.
-     *
-     * @param  object  $entry  The RSS entry to check.
-     * @return bool True if the entry is missing required fields, false otherwise.
-     */
-    private function hasMissingRequiredFields(object $entry): bool
-    {
-        return ! isset($entry->summary, $entry->published);
-    }
-
-    /**
-     * Log a warning that a video is being skipped because it has missing data.
-     *
-     * @param  string  $title  The title of the video.
-     * @param  string  $videoId  The ID of the video.
-     */
-    private function logMissingDataWarning(string $title, string $videoId): void
-    {
-        Log::warning("Skipping video with missing data: {$title} ({$videoId})");
     }
 
     /**
