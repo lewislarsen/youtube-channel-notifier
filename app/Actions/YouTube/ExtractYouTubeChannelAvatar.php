@@ -20,7 +20,7 @@ class ExtractYouTubeChannelAvatar
         $html = $this->fetchChannelPage($channelUrl);
         $avatarUrl = $this->extractImageSrcUrl($html);
 
-        if (!$avatarUrl) {
+        if (! $avatarUrl) {
             throw new RuntimeException('Could not extract avatar image URL');
         }
 
@@ -53,7 +53,7 @@ class ExtractYouTubeChannelAvatar
                 }
 
                 $html = $response->body();
-                if (!str_contains($html, 'consent.youtube.com')) {
+                if (! str_contains($html, 'consent.youtube.com')) {
                     return $html;
                 }
             } catch (Exception $e) {

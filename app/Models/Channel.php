@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\YouTube\ExtractYouTubeChannelAvatar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -72,15 +73,30 @@ class Channel extends Model
     }
 
     /**
-     * Toggle the muted state for the channel.
-     */
-    /**
      * Toggle the mute status of the channel.
      */
     public function toggleMute(): void
     {
         $this->muted_at = $this->isMuted() ? null : now();
         $this->save();
+    }
+
+    /**
+     * Dynamically fetches the Channel's avatar from YouTube.
+     *
+     * This is an HTTP request straight to YouTube and should be used sparingly.
+     * We're not storing this as we want the live response.
+     *
+     * This functionality is likely to change in the future, I'm not 100% satisfied with it.
+     * Perhaps cache it periodically to speed up querying this method? (using db cache driver)
+     * Or we store it locally and then a command to "refresh" the URL from YT every day?
+     * Ideally the fewest "moving parts" as possible, this is meant to be a light application.
+     *
+     * NOTE: as of 11/03/25 this is currently not being used anywhere.
+     */
+    public function getChannelAvatarUrl(): string
+    {
+        return (new ExtractYouTubeChannelAvatar)->execute($this);
     }
 
     /**
