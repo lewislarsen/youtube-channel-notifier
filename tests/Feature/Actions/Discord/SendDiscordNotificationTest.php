@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\SendDiscordNotificationAction;
+use App\Actions\Discord\SendDiscordNotificationAction;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Carbon;

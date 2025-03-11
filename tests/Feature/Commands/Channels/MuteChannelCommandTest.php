@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Console\Commands\MuteChannelCommand;
+use App\Console\Commands\Channels\MuteChannelCommand;
 use App\Models\Channel;
 
 it('can mute a channel', function (): void {

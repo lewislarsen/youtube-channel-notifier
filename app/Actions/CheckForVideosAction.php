@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Actions\Discord\SendDiscordNotificationAction;
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;

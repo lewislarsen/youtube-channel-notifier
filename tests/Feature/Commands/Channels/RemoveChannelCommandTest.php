@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Console\Commands\RemoveChannelCommand;
+use App\Console\Commands\Channels\RemoveChannelCommand;
 use App\Models\Channel;
 use App\Models\Video;
 

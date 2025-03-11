@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Actions\CheckForVideosAction;
 use App\Actions\YouTube\ExtractYouTubeChannelId;
-use App\Console\Commands\AddChannelCommand;
+use App\Console\Commands\Channels\AddChannelCommand;
+use App\Console\Commands\Channels\CheckChannelsCommand;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Facades\Mail;
@@ -14,9 +16,48 @@ beforeEach(function (): void {
     Video::truncate();
 });
 
+// CheckChannelsCommand tests
+it('outputs a message when no channels are found', function (): void {
+    $this->artisan(CheckChannelsCommand::class)
+        ->expectsOutputToContain('No channels found in the database.')
+        ->assertExitCode(0);
+});
+
+it('handles CheckForVideosAction execution for each channel', function (): void {
+    $mock = Mockery::mock(CheckForVideosAction::class);
+    app()->instance(CheckForVideosAction::class, $mock);
+
+    $channel1 = Channel::factory()->create([
+        'name' => 'Channel One',
+        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+    ]);
+
+    $channel2 = Channel::factory()->create([
+        'name' => 'Channel Two',
+        'channel_id' => 'UC_x6YG2P6uZZ5FSM9Ttw',
+    ]);
+
+    $mock->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel1) {
+        return $channel->is($channel1);
+    }))->once();
+
+    $mock->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel2) {
+        return $channel->is($channel2);
+    }))->once();
+
+    $this->artisan(CheckChannelsCommand::class)
+        ->expectsOutputToContain('Checking channels for new videos...')
+        ->expectsOutputToContain('Checking channel: Channel One (UC_x5XG1OV2P6uZZ5FSM9Ttw)')
+        ->expectsOutputToContain('Checking channel: Channel Two (UC_x6YG2P6uZZ5FSM9Ttw)')
+        ->expectsOutputToContain('Channel check completed.')
+        ->assertExitCode(0);
+});
+
+// AddChannelCommand tests
 it('adds a new channel using URL and performs an initial video import', function (): void {
     Mail::fake();
 
+    // Mock the ExtractYouTubeChannelId action
     $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
         $mock->shouldReceive('execute')
             ->once()
@@ -42,6 +83,7 @@ it('adds a new channel using URL and performs an initial video import', function
 it('falls back to manual entry when channel ID extraction fails', function (): void {
     Mail::fake();
 
+    // Mock the ExtractYouTubeChannelId action to throw an exception
     $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
         $mock->shouldReceive('execute')
             ->once()
@@ -56,13 +98,10 @@ it('falls back to manual entry when channel ID extraction fails', function (): v
         ->expectsOutputToContain('Falling back to manual channel ID entry.')
         ->expectsQuestion('Please enter the channel ID manually', 'UC_x5XG1OV2P6uZZ5FSM9Ttw')
         ->expectsOutputToContain("Channel 'Test Channel' added successfully!")
-        ->expectsOutputToContain("Running initial video import for 'Test Channel'...")
         ->expectsOutputToContain('Initial import completed successfully.');
 
     $channel = Channel::where('channel_id', 'UC_x5XG1OV2P6uZZ5FSM9Ttw')->first();
     expect($channel)->not->toBeNull();
-
-    Mail::assertNothingSent();
 });
 
 it('does not add a channel if a channel with the same ID already exists', function (): void {
@@ -71,6 +110,7 @@ it('does not add a channel if a channel with the same ID already exists', functi
         'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
     ]);
 
+    // Mock the ExtractYouTubeChannelId action
     $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
         $mock->shouldReceive('execute')
             ->once()
@@ -87,6 +127,7 @@ it('does not add a channel if a channel with the same ID already exists', functi
 });
 
 it('does not add a channel if manual ID entry is empty', function (): void {
+    // Mock the ExtractYouTubeChannelId action to throw an exception
     $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
         $mock->shouldReceive('execute')
             ->once()

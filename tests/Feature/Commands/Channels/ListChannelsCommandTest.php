@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Console\Commands\ListChannelsCommand;
+use App\Console\Commands\Channels\ListChannelsCommand;
 use App\Models\Channel;
 use App\Models\Video;
 use Carbon\Carbon;
