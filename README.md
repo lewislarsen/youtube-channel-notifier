@@ -31,6 +31,7 @@ YouTube Channel Notifier helps you stay updated with your favorite content creat
 - **Simple CLI Interface**: Manage everything through intuitive commands
 - **Privacy-Focused**: No YouTube API keys required, no data sharing with third parties
 - **Docker Ready**: Get up and running in minutes with automatic setup and persistence
+- **Smart Filtering**: Automatically filters out unwanted content like livestreams and trailers
 
 > [!IMPORTANT]  
 > This project is managed through simple CLI terminal commands and doesn't have a web interface for management.
@@ -214,6 +215,49 @@ ALERT_EMAILS=your@email.com,another@email.com
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
 ```
 
+### Video Filtering
+
+The application automatically filters out certain types of content by default. This is configured in `config/excluded-video-words.php`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Video Filtering Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This configuration holds settings for filtering out unwanted videos.
+    | Any video with a title containing these terms will be excluded
+    | from import and notifications to reduce alert noise.
+    |
+    */
+
+    'skip_terms' => [
+        'live',
+        'LIVE',
+        'premiere',
+        'trailer',
+        'teaser',
+        'preview',
+    ],
+
+];
+```
+
+By default, the application filters out:
+- Livestreams (containing "live" or "LIVE")
+- Premieres
+- Trailers
+- Teasers
+- Previews
+
+You can customize this list by editing the configuration file to add or remove terms based on your preferences.
+
 ## FAQ
 
 ### Does this application download or store videos?
@@ -232,7 +276,7 @@ No, and that's a good thing! The application uses YouTube's public RSS feeds, wh
 No, we can only detect publicly available videos that appear in the channel's RSS feed.
 
 ### Can I get notifications for livestreams?
-Currently, we focus on regular video uploads and filter out livestream content.
+By default, livestreams are filtered out. If you want to receive notifications for livestreams, you can edit the `config/excluded-video-words.php` file and remove 'live' and 'LIVE' from the skip terms.
 
 ### Does it support platforms other than YouTube?
 Not yet. Currently, the application is designed specifically for YouTube creators.

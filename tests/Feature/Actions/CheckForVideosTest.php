@@ -6,233 +6,52 @@ use App\Actions\CheckForVideosAction;
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-// Ensure the database is clean before running each test
 beforeEach(function (): void {
     Channel::truncate();
     Video::truncate();
 });
 
-it('sends a mailable if a new video is found', function (): void {
-    Config::set('app.alert_emails', 'email@example.com');
-    // Mock Mail facade
-    Mail::fake();
-
-    // Create a test channel with last_checked_at set
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw', // Example channel ID
-        'last_checked_at' => now()->subDay(), // Simulate that the channel has been checked before
-    ]);
-
-    // Mock HTTP response for the RSS feed with a new video
-    $rssResponse = <<<'XML'
-    <feed>
-        <entry>
-            <id>yt:video:5ltAy1W6k-Q</id>
-            <title>New Video Title</title>
-            <summary>Video description</summary>
-            <published>2025-01-01T00:00:00+00:00</published>
-        </entry>
-    </feed>
-    XML;
-
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-    ]);
-
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
-
-    // Assert that the email was sent
-    Mail::assertSent(NewVideoMail::class, function ($mail) {
-        return $mail->hasTo('email@example.com');
+describe('Core Video Detection', function (): void {
+    beforeEach(function (): void {
+        Mail::fake();
     });
 
-    // Assert that the new video was added to the database
-    expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
-});
+    it('does not send a mailable if no new videos are found', function (): void {
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
 
-it('does not send a mailable on first-time import', function (): void {
-    // Mock Mail facade
-    Mail::fake();
+        $rssResponse = <<<'XML'
+        <feed>
+        </feed>
+        XML;
 
-    // Create a test channel without last_checked_at
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw', // Example channel ID
-        'last_checked_at' => null, // Simulate first-time check
-    ]);
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
 
-    // Mock HTTP response for the RSS feed with new videos
-    $rssResponse = <<<'XML'
-    <feed>
-        <entry>
-            <id>yt:video:5ltAy1W6k-Q</id>
-            <title>New Video Title</title>
-            <summary>Video description</summary>
-            <published>2025-01-01T00:00:00+00:00</published>
-        </entry>
-    </feed>
-    XML;
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
 
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-    ]);
+        Mail::assertNothingSent();
+    });
 
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
+    it('sends a mailable if a new video is found', function (): void {
+        Config::set('app.alert_emails', 'email@example.com');
 
-    // Assert that no email was sent
-    Mail::assertNothingSent();
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
 
-    // Assert that the video was added to the database
-    expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
-});
-
-it('does not send a mailable if no new videos are found', function (): void {
-    // Mock Mail facade
-    Mail::fake();
-
-    // Create a test channel with last_checked_at set
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw', // Example channel ID
-        'last_checked_at' => now()->subDay(), // Simulate that the channel has been checked before
-    ]);
-
-    // Mock HTTP response for the RSS feed with no new videos
-    $rssResponse = <<<'XML'
-    <feed>
-    </feed>
-    XML;
-
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-    ]);
-
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
-
-    // Assert that no email was sent
-    Mail::assertNothingSent();
-});
-
-it('logs an error if the RSS feed fetch fails', function (): void {
-    Mail::fake();
-    // Mock the Log facade
-    Log::shouldReceive('error')->once();
-
-    // Create a test channel
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw', // Example channel ID
-    ]);
-
-    // Mock HTTP response for the RSS feed to fail
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response(null, 500),
-    ]);
-
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
-
-    // Assert that no email was sent
-    Mail::assertNothingSent();
-});
-
-it('logs an info message if the RSS feed is malformed and no emails are sent', function (): void {
-    Log::shouldReceive('info')->once();
-
-    Log::shouldReceive('debug')
-        ->twice()
-        ->andReturn(null);
-
-    // Mock Mail facade
-    Mail::fake();
-
-    // Create a test channel
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw', // Example channel ID
-    ]);
-
-    // Mock HTTP response for the malformed RSS feed
-    $rssResponse = <<<'XML'
-    <feed>
-        <!-- Malformed entry -->
-        <entry>
-            <id>yt:video:5ltAy1W6k-Q</id>
-            <title>New Video Title</title>
-            <summary>Video description</summary>
-        </entry>
-    </feed>
-    XML;
-
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-    ]);
-
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
-
-    // Assert that no email was sent
-    Mail::assertNothingSent();
-});
-
-it('ignores videos with the exact word LIVE in the title', function (): void {
-    Mail::fake();
-
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw', // Example channel ID
-        'last_checked_at' => now()->subDay(), // Simulate that the channel has been checked before
-    ]);
-
-    $rssResponse = <<<'XML'
-    <feed>
-        <entry>
-            <id>yt:video:5ltAy1W6k-Q</id>
-            <title>LIVE Video Title</title>
-            <summary>Video description</summary>
-            <published>2025-01-01T00:00:00+00:00</published>
-        </entry>
-    </feed>
-    XML;
-
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-    ]);
-
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
-
-    Mail::assertNothingSent();
-
-    expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeFalse();
-});
-
-// Essential Discord integration tests that should remain in this file
-
-it('sends both email and discord notifications for new videos', function (): void {
-    Config::set('app.alert_email', 'email@example.com');
-    Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
-
-    Mail::fake();
-
-    // Create a test channel with last_checked_at set
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-        'last_checked_at' => now()->subDay(),
-    ]);
-
-    // Mock HTTP responses
-    Http::fake([
-        // Mock the YouTube RSS feed
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response(<<<'XML'
+        $rssResponse = <<<'XML'
         <feed>
             <entry>
                 <id>yt:video:5ltAy1W6k-Q</id>
@@ -241,37 +60,29 @@ it('sends both email and discord notifications for new videos', function (): voi
                 <published>2025-01-01T00:00:00+00:00</published>
             </entry>
         </feed>
-        XML, 200),
+        XML;
 
-        // Mock the Discord webhook response
-        'https://discord.com/api/webhooks/test' => Http::response(null, 204),
-    ]);
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
 
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
 
-    // Assert that both notification types were sent
-    Mail::assertSent(NewVideoMail::class);
-    Http::assertSent(function ($request) {
-        return $request->url() === 'https://discord.com/api/webhooks/test';
+        Mail::assertSent(NewVideoMail::class, function ($mail) {
+            return $mail->hasTo('email@example.com');
+        });
+
+        expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
     });
-});
 
-it('does not send discord notifications on first-time import', function (): void {
-    Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
+    it('does not send a mailable on first-time import', function (): void {
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => null,
+        ]);
 
-    Mail::fake();
-
-    // Create a test channel without last_checked_at
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-        'last_checked_at' => null, // Simulate first-time check
-    ]);
-
-    // Mock HTTP response for the RSS feed
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response(<<<'XML'
+        $rssResponse = <<<'XML'
         <feed>
             <entry>
                 <id>yt:video:5ltAy1W6k-Q</id>
@@ -280,99 +91,491 @@ it('does not send discord notifications on first-time import', function (): void
                 <published>2025-01-01T00:00:00+00:00</published>
             </entry>
         </feed>
-        XML, 200),
-    ]);
+        XML;
 
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
 
-    // Assert that no notifications were sent
-    Mail::assertNothingSent();
-    Http::assertNotSent(function ($request) {
-        return str_contains((string) $request->url(), 'discord.com/api/webhooks');
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        Mail::assertNothingSent();
+
+        expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
     });
 });
 
-it('sends notification to multiple email addresses when configured', function (): void {
-    // Configure multiple email addresses
-    Config::set('app.alert_emails', ['email1@example.com', 'email2@example.com']);
-
-    // Mock Mail facade
-    Mail::fake();
-
-    // Create a test channel with last_checked_at set
-    $channel = Channel::factory()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-        'last_checked_at' => now()->subDay(), // Simulate that the channel has been checked before
-    ]);
-
-    // Mock HTTP response for the RSS feed with a new video
-    $rssResponse = <<<'XML'
-    <feed>
-        <entry>
-            <id>yt:video:5ltAy1W6k-Q</id>
-            <title>New Video Title</title>
-            <summary>Video description</summary>
-            <published>2025-01-01T00:00:00+00:00</published>
-        </entry>
-    </feed>
-    XML;
-
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-    ]);
-
-    // Execute the action
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
-
-    // Assert that the email was sent to both addresses
-    Mail::assertSent(NewVideoMail::class, function ($mail) {
-        return $mail->hasTo('email1@example.com') &&
-            $mail->hasTo('email2@example.com');
+describe('Error Handling', function (): void {
+    beforeEach(function (): void {
+        Mail::fake();
     });
 
-    // Assert that the new video was added to the database
-    expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
+    it('logs an error if the RSS feed fetch fails', function (): void {
+        Log::shouldReceive('error')->once();
+
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+        ]);
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response(null, 500),
+        ]);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        Mail::assertNothingSent();
+    });
+
+    it('logs an info message if the RSS feed is malformed and no emails are sent', function (): void {
+        Log::shouldReceive('info')->once();
+        Log::shouldReceive('warning')->once();
+
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        Mail::assertNothingSent();
+    });
 });
 
-it('does not send any notifications if the channel has been muted', function (): void {
-    Config::set('app.alert_emails', 'email@example.com');
-    Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
-    Mail::fake();
-
-    $channel = Channel::factory()->muted()->create([
-        'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-        'last_checked_at' => now()->subDay(), // Simulate that the channel has been checked before
-    ]);
-
-    $rssResponse = <<<'XML'
-    <feed>
-        <entry>
-            <id>yt:video:5ltAy1W6k-Q</id>
-            <title>New Video Title</title>
-            <summary>Video description</summary>
-            <published>2025-01-01T00:00:00+00:00</published>
-        </entry>
-    </feed>
-    XML;
-
-    Http::fake([
-        'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
-    ]);
-
-    $action = new CheckForVideosAction;
-    $action->execute($channel);
-
-    Mail::assertNotSent(NewVideoMail::class, function ($mail) {
-        return $mail->hasTo('email@example.com');
+describe('Filtering', function (): void {
+    beforeEach(function (): void {
+        Mail::fake();
     });
 
-    Http::assertNotSent(function ($request) {
-        return str_contains((string) $request->url(), 'discord.com/api/webhooks');
+    it('ignores videos with titles containing words from the skipped terms config', function (): void {
+        Config::set('excluded-video-words.skip_terms', [
+            'LIVE',
+            'Premiere',
+            'Trailer',
+        ]);
+
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>LIVE Video Title</title>
+                <summary>Video description</summary>
+                <published>2025-01-01T00:00:00+00:00</published>
+            </entry>
+            <entry>
+                <id>yt:video:6xxxx6W7Ttw</id>
+                <title>Premiere Event</title>
+                <summary>Another description</summary>
+                <published>2025-01-02T00:00:00+00:00</published>
+            </entry>
+            <entry>
+                <id>yt:video:7yyyy7X8Uuw</id>
+                <title>Normal Video Title</title>
+                <summary>Regular description</summary>
+                <published>2025-01-03T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        Mail::assertSent(NewVideoMail::class, function ($mail) {
+            $video = $mail->video;
+
+            return $video->video_id === '7yyyy7X8Uuw' && $video->title === 'Normal Video Title';
+        });
+
+        $this->assertDatabaseMissing('videos', [
+            'video_id' => '5ltAy1W6k-Q',
+        ]);
+
+        $this->assertDatabaseMissing('videos', [
+            'video_id' => '6xxxx6W7Ttw',
+        ]);
+
+        $this->assertDatabaseHas('videos', [
+            'video_id' => '7yyyy7X8Uuw',
+        ]);
     });
 
-    expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue()
-        ->and($channel->isMuted())->toBeTrue();
+    it('does not send any notifications if the channel has been muted', function (): void {
+        Config::set('app.alert_emails', 'email@example.com');
+        Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
+
+        $channel = Channel::factory()->muted()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+                <summary>Video description</summary>
+                <published>2025-01-01T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        Mail::assertNotSent(NewVideoMail::class);
+
+        Http::assertNotSent(function ($request) {
+            return str_contains((string) $request->url(), 'discord.com/api/webhooks');
+        });
+
+        expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue()
+            ->and($channel->isMuted())->toBeTrue();
+    });
+});
+
+describe('Notifications', function (): void {
+    describe('Email', function (): void {
+        beforeEach(function (): void {
+            Mail::fake();
+        });
+
+        it('sends notification to multiple email addresses when configured', function (): void {
+            Config::set('app.alert_emails', ['email1@example.com', 'email2@example.com']);
+
+            $channel = Channel::factory()->create([
+                'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+                'last_checked_at' => now()->subDay(),
+            ]);
+
+            $rssResponse = <<<'XML'
+            <feed>
+                <entry>
+                    <id>yt:video:5ltAy1W6k-Q</id>
+                    <title>New Video Title</title>
+                    <summary>Video description</summary>
+                    <published>2025-01-01T00:00:00+00:00</published>
+                </entry>
+            </feed>
+            XML;
+
+            Http::fake([
+                'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+            ]);
+
+            $action = new CheckForVideosAction;
+            $action->execute($channel);
+
+            Mail::assertSent(NewVideoMail::class, function ($mail) {
+                return $mail->hasTo('email1@example.com') &&
+                    $mail->hasTo('email2@example.com');
+            });
+
+            expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
+        });
+    });
+
+    describe('Discord', function (): void {
+        beforeEach(function (): void {
+            Mail::fake();
+        });
+
+        it('sends both email and discord notifications for new videos', function (): void {
+            Config::set('app.alert_emails', 'email@example.com');
+            Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
+
+            $channel = Channel::factory()->create([
+                'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+                'last_checked_at' => now()->subDay(),
+            ]);
+
+            Http::fake([
+                'https://www.youtube.com/feeds/videos.xml*' => Http::response(<<<'XML'
+                <feed>
+                    <entry>
+                        <id>yt:video:5ltAy1W6k-Q</id>
+                        <title>New Video Title</title>
+                        <summary>Video description</summary>
+                        <published>2025-01-01T00:00:00+00:00</published>
+                    </entry>
+                </feed>
+                XML, 200),
+
+                'https://discord.com/api/webhooks/test' => Http::response(null, 204),
+            ]);
+
+            $action = new CheckForVideosAction;
+            $action->execute($channel);
+
+            Mail::assertSent(NewVideoMail::class);
+            Http::assertSent(function ($request) {
+                return $request->url() === 'https://discord.com/api/webhooks/test';
+            });
+        });
+
+        it('does not send discord notifications on first-time import', function (): void {
+            Config::set('app.discord_webhook_url', 'https://discord.com/api/webhooks/test');
+
+            $channel = Channel::factory()->create([
+                'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+                'last_checked_at' => null,
+            ]);
+
+            Http::fake([
+                'https://www.youtube.com/feeds/videos.xml*' => Http::response(<<<'XML'
+                <feed>
+                    <entry>
+                        <id>yt:video:5ltAy1W6k-Q</id>
+                        <title>New Video Title</title>
+                        <summary>Video description</summary>
+                        <published>2025-01-01T00:00:00+00:00</published>
+                    </entry>
+                </feed>
+                XML, 200),
+            ]);
+
+            $action = new CheckForVideosAction;
+            $action->execute($channel);
+
+            Mail::assertNothingSent();
+            Http::assertNotSent(function ($request) {
+                return str_contains((string) $request->url(), 'discord.com/api/webhooks');
+            });
+        });
+    });
+});
+
+describe('UpdateLastChecked', function (): void {
+    it('updates the last_checked_at timestamp after execution', function (): void {
+        Mail::fake();
+
+        $initialDateTime = now();
+        $updatedDateTime = now()->addMinute();
+
+        Carbon::setTestNow($initialDateTime);
+
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        $initialLastChecked = $channel->last_checked_at->copy();
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+                <summary>Video description</summary>
+                <published>2025-01-01T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
+
+        Carbon::setTestNow($updatedDateTime);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        $channel->refresh();
+
+        expect($channel->last_checked_at->gt($initialLastChecked))->toBeTrue();
+
+        Carbon::setTestNow();
+    });
+});
+
+describe('MultipleVideos', function (): void {
+    beforeEach(function (): void {
+        Mail::fake();
+        Config::set('app.alert_emails', 'email@example.com');
+    });
+
+    it('processes and notifies about multiple new videos in a single run', function (): void {
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>First New Video</title>
+                <summary>Video description 1</summary>
+                <published>2025-01-01T00:00:00+00:00</published>
+            </entry>
+            <entry>
+                <id>yt:video:6mBgT3W7Ttw</id>
+                <title>Second New Video</title>
+                <summary>Video description 2</summary>
+                <published>2025-01-02T00:00:00+00:00</published>
+            </entry>
+            <entry>
+                <id>yt:video:7nCdR3X8Uuw</id>
+                <title>Third New Video</title>
+                <summary>Video description 3</summary>
+                <published>2025-01-03T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        expect(Video::count())->toBe(3);
+
+        Mail::assertSent(NewVideoMail::class, 3);
+
+        expect(Video::where('video_id', '5ltAy1W6k-Q')->first()->title)->toBe('First New Video')
+            ->and(Video::where('video_id', '6mBgT3W7Ttw')->first()->title)->toBe('Second New Video')
+            ->and(Video::where('video_id', '7nCdR3X8Uuw')->first()->title)->toBe('Third New Video');
+    });
+
+    it('skips existing videos when processing multiple entries', function (): void {
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        Video::create([
+            'video_id' => '5ltAy1W6k-Q',
+            'title' => 'Existing Video',
+            'description' => 'Already in database',
+            'published_at' => now(),
+            'channel_id' => $channel->id,
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>Existing Video With Updates</title>
+                <summary>Updated description</summary>
+                <published>2025-01-01T00:00:00+00:00</published>
+            </entry>
+            <entry>
+                <id>yt:video:6mBgT3W7Ttw</id>
+                <title>New Video</title>
+                <summary>New description</summary>
+                <published>2025-01-02T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse),
+        ]);
+
+        $initialVideoCount = Video::count();
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        expect(Video::count())->toBe($initialVideoCount + 1);
+
+        Mail::assertSent(NewVideoMail::class, 1);
+
+        $existingVideo = Video::where('video_id', '5ltAy1W6k-Q')->first();
+        expect($existingVideo->title)->toBe('Existing Video')
+            ->and($existingVideo->description)->toBe('Already in database');
+    });
+});
+
+describe('EmptyFeed', function (): void {
+    it('handles RSS feed with valid structure but no entries', function (): void {
+        Mail::fake();
+        Log::shouldReceive('info')->once();
+
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse),
+        ]);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        expect(Video::count())->toBe(0);
+
+        Mail::assertNothingSent();
+    });
+});
+
+describe('DateHandling', function (): void {
+    it('correctly parses and stores the published date from RSS feed', function (): void {
+        Mail::fake();
+        Config::set('app.alert_emails', 'email@example.com');
+
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => now()->subDay(),
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+                <summary>Video description</summary>
+                <published>2025-01-15T13:45:30+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
+
+        $action = new CheckForVideosAction;
+        $action->execute($channel);
+
+        $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
+
+        expect($video->published_at->format('Y-m-d H:i:s'))->toBe('2025-01-15 13:45:30')
+            ->and($video->published_at->timezone->getName())->toBe('UTC');
+    });
 });

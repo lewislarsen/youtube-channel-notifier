@@ -35,7 +35,10 @@ class CheckForVideosAction
         }
 
         $newVideos = $this->extractNewVideos($rssData, $channel);
+
         if (empty($newVideos)) {
+            Log::info("No new valid videos found after filtering for channel: {$channel->name}.");
+
             return;
         }
 
@@ -77,7 +80,7 @@ class CheckForVideosAction
     }
 
     /**
-     * Extracts new videos from the RSS feed data and filters out videos that already exist or contain the word "LIVE".
+     * Extracts new videos from the RSS feed data and filters out videos that already exist or contain any blocked words matching our filter.
      *
      * @param  object  $rssData  The RSS feed data.
      * @param  Channel  $channel  The channel to which the videos belong.
@@ -87,19 +90,43 @@ class CheckForVideosAction
     {
         $existingVideoIds = Video::where('channel_id', $channel->id)->pluck('video_id')->toArray();
         $newVideos = [];
+        $excludedWords = Config::get('excluded-video-words.skip_terms', []);
+
+        // Return empty array early if no entries in feed
+        if (! isset($rssData->entry) || count($rssData->entry) === 0) {
+            return [];
+        }
 
         foreach ($rssData->entry as $entry) {
             $videoId = str_replace('yt:video:', '', (string) $entry->id);
             $title = (string) $entry->title;
 
-            // Check if the title contains the exact word "LIVE"
-            if (stripos($title, 'LIVE') !== false && preg_match('/\bLIVE\b/', $title)) {
-                Log::debug("Video with title containing 'LIVE' found and ignored: {$title}");
+            // Skip videos that already exist in the database
+            if (in_array($videoId, $existingVideoIds, true)) {
+                Log::debug("Skipping existing video: {$title} ({$videoId})");
 
                 continue;
             }
 
-            if (in_array($videoId, $existingVideoIds, true)) {
+            // Check if title contains any excluded words
+            $shouldSkip = false;
+            foreach ($excludedWords as $excludedWord) {
+                // Case-insensitive match
+                if (stripos($title, (string) $excludedWord) !== false) {
+                    Log::debug("Skipping video with excluded term '{$excludedWord}': {$title} ({$videoId})");
+                    $shouldSkip = true;
+                    break;
+                }
+            }
+
+            if ($shouldSkip) {
+                continue;
+            }
+
+            // Ensure we have all required fields before adding to newVideos
+            if (! isset($entry->summary) || ! isset($entry->published)) {
+                Log::warning("Skipping video with missing data: {$title} ({$videoId})");
+
                 continue;
             }
 
@@ -135,17 +162,21 @@ class CheckForVideosAction
      */
     private function insertNewVideosAndNotify(array $newVideos, Channel $channel): void
     {
+        // Check if channel is muted before processing
+        if ($channel->isMuted()) {
+            // If channel is muted, just insert videos without sending notifications
+            foreach ($newVideos as $newVideo) {
+                $video = Video::create($newVideo);
+                Log::info("New video added (notifications suppressed - channel muted): {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
+            }
+
+            return;
+        }
+
         $sendDiscordNotificationAction = app(SendDiscordNotificationAction::class);
 
         foreach ($newVideos as $newVideo) {
-
             $video = Video::create($newVideo);
-
-            if ($channel->isMuted()) {
-                Log::info("Did not send notification(s) due to channel being muted. New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
-
-                return;
-            }
 
             Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
 
@@ -153,7 +184,7 @@ class CheckForVideosAction
                 $sendDiscordNotificationAction->execute($video);
             }
 
-            Log::info("New video added: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
+            Log::info("New video added and notifications sent: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
         }
     }
 }
