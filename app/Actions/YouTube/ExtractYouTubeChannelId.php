@@ -4,20 +4,31 @@ declare(strict_types=1);
 
 namespace App\Actions\YouTube;
 
+use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use RuntimeException;
 use Symfony\Component\DomCrawler\Crawler;
 
 class ExtractYouTubeChannelId
 {
     /**
+     * Whether to run in debug mode.
+     */
+    protected bool $debugMode = false;
+
+    /**
      * Execute the action.
      */
-    public function execute(string $channelUrl, bool $isDebugMode = false): string
+    public function execute(string $channelUrl, bool $debugMode = false): string
     {
+        $this->debugMode = $debugMode;
         $formattedUrl = $this->formatChannelUrl($channelUrl);
 
-        return $this->extractChannelIdWithSpecializedHeaders($formattedUrl, $isDebugMode);
+        $this->debug("Formatted URL: {$formattedUrl}");
+
+        return $this->extractChannelIdWithMultipleAttempts($formattedUrl);
     }
 
     /**
@@ -37,11 +48,10 @@ class ExtractYouTubeChannelId
     }
 
     /**
-     * Try to extract channel ID with specialized headers.
+     * Try multiple methods to extract the channel ID.
      */
-    private function extractChannelIdWithSpecializedHeaders(string $url, bool $isDebugMode): string
+    protected function extractChannelIdWithMultipleAttempts(string $url): string
     {
-        // Try with multiple user agents and header combinations
         $userAgents = [
             // Googlebot user agent (most effective at bypassing consent)
             'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
@@ -51,24 +61,35 @@ class ExtractYouTubeChannelId
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         ];
 
-        foreach ($userAgents as $userAgent) {
-            $html = $this->fetchPageWithCustomHeaders($url, [
+        $this->debug('Attempting channel ID extraction with '.count($userAgents).' different user agents');
+
+        foreach ($userAgents as $index => $userAgent) {
+            $this->debug('Attempt #'.($index + 1).' with user agent: '.$this->truncateUserAgent($userAgent));
+
+            $headers = [
                 'User-Agent' => $userAgent,
                 'Accept-Language' => 'en-US,en;q=0.9',
                 'Accept' => 'text/html,application/xhtml+xml',
-                // Set cookie for consent
                 'Cookie' => 'CONSENT=YES+cb; YSC=DwKYllHNwuw; VISITOR_INFO1_LIVE=C8lZLZhI35A;',
-            ]);
+            ];
 
-            // Check if we got a consent page
-            if (str_contains($html, 'consent.youtube.com')) {
-                continue;
-            }
+            try {
+                $html = $this->fetchPageWithCustomHeaders($url, $headers);
 
-            // Try extraction
-            $channelId = $this->extractChannelIdFromHtml($html);
-            if ($channelId) {
-                return $channelId;
+                if (str_contains($html, 'consent.youtube.com')) {
+                    $this->debug('Received consent page, skipping this attempt');
+
+                    continue;
+                }
+
+                $channelId = $this->extractChannelIdFromHtml($html);
+                if ($channelId) {
+                    $this->debug("Successfully extracted channel ID: {$channelId}");
+
+                    return $channelId;
+                }
+            } catch (Exception $e) {
+                $this->warn('Attempt failed: '.$e->getMessage());
             }
         }
 
@@ -80,6 +101,8 @@ class ExtractYouTubeChannelId
      */
     protected function fetchPageWithCustomHeaders(string $url, array $headers): string
     {
+        $this->debug("Fetching URL: {$url}");
+
         $response = Http::withHeaders($headers)
             ->withOptions([
                 'timeout' => 30,
@@ -87,77 +110,158 @@ class ExtractYouTubeChannelId
             ->get($url);
 
         if ($response->failed()) {
-            throw new RuntimeException("Failed to fetch the page. Status: {$response->status()}");
+            $errorMessage = "Failed to fetch the page. Status: {$response->status()}";
+            $this->warn($errorMessage);
+            throw new RuntimeException($errorMessage);
         }
+
+        $this->debug('Successfully fetched page, response length: '.strlen($response->body()).' bytes');
 
         return $response->body();
     }
 
     /**
-     * Master method to try all channel ID extraction methods.
+     * Extract channel ID from HTML content using multiple methods.
      */
-    private function extractChannelIdFromHtml(string $html): ?string
+    protected function extractChannelIdFromHtml(string $html): ?string
     {
+        $this->debug('Attempting to extract channel ID from HTML');
+
         // Method 1: Try direct regex extraction
         $channelId = $this->extractChannelIdWithRegex($html);
         if ($channelId) {
+            $this->debug("Successfully extracted channel ID with regex: {$channelId}");
+
             return $channelId;
         }
 
         // Method 2: Try DOM crawler
         try {
-            return $this->extractChannelIdWithDomCrawler($html);
-        } catch (RuntimeException) {
-            return null;
+            $channelId = $this->extractChannelIdWithDomCrawler($html);
+            if ($channelId) {
+                $this->debug("Successfully extracted channel ID with DOM crawler: {$channelId}");
+
+                return $channelId;
+            }
+        } catch (RuntimeException $e) {
+            $this->warn('DOM crawler extraction failed: '.$e->getMessage());
         }
+
+        $this->debug('Failed to extract channel ID from HTML');
+
+        return null;
     }
 
     /**
      * Extract channel ID using regular expressions.
      */
-    private function extractChannelIdWithRegex(string $html): ?string
+    protected function extractChannelIdWithRegex(string $html): ?string
     {
+        $this->debug('Attempting regex-based channel ID extraction');
+
         // Common channel ID patterns
         $patterns = [
             // iOS app link pattern
-            '~ios-app://544007664/[^"]+?/channel/([a-zA-Z0-9_-]{24})~',
-
+            '~ios-app://544007664/[^"]+?/channel/([a-zA-Z0-9_-]{24})~' => 'iOS app link',
             // JSON-LD pattern
-            '~"channelId"\s*:\s*"([a-zA-Z0-9_-]{24})"~',
-
+            '~"channelId"\s*:\s*"([a-zA-Z0-9_-]{24})"~' => 'JSON-LD data',
             // Meta tag pattern
-            '~<meta[^>]+content="[^"]*?channel_id=([a-zA-Z0-9_-]{24})[^"]*?"~i',
-
+            '~<meta[^>]+content="[^"]*?channel_id=([a-zA-Z0-9_-]{24})[^"]*?"~i' => 'Meta tag',
             // Canonical link pattern for channel
-            '~<link[^>]+rel="canonical"[^>]+href="https://www\.youtube\.com/channel/([a-zA-Z0-9_-]{24})"~i',
-
+            '~<link[^>]+rel="canonical"[^>]+href="https://www\.youtube\.com/channel/([a-zA-Z0-9_-]{24})"~i' => 'Canonical link',
             // Generic URL pattern
-            '~youtube\.com/channel/([a-zA-Z0-9_-]{24})~',
-
+            '~youtube\.com/channel/([a-zA-Z0-9_-]{24})~' => 'URL pattern',
             // Another metadata pattern
-            '~"externalId":"([a-zA-Z0-9_-]{24})"~',
-
+            '~"externalId":"([a-zA-Z0-9_-]{24})"~' => 'External ID metadata',
             // Embed URL pattern
-            '~embed/([a-zA-Z0-9_-]{24})~',
-
+            '~embed/([a-zA-Z0-9_-]{24})~' => 'Embed URL',
             // Browser tab API pattern
-            '~browseEndpoint":\{"browseId":"([a-zA-Z0-9_-]{24})~',
-
+            '~browseEndpoint":\{"browseId":"([a-zA-Z0-9_-]{24})~' => 'Browse endpoint',
             // Header renderer pattern
-            '~"c4TabbedHeaderRenderer"[^}]+"channelId":"([a-zA-Z0-9_-]{24})"~',
-
+            '~"c4TabbedHeaderRenderer"[^}]+"channelId":"([a-zA-Z0-9_-]{24})"~' => 'Header renderer',
             // API URL pattern
-            '~"webCommandMetadata"[^}]+"url":\s*"/channel/([a-zA-Z0-9_-]{24})"~',
-
+            '~"webCommandMetadata"[^}]+"url":\s*"/channel/([a-zA-Z0-9_-]{24})"~' => 'API URL',
             // Video owner pattern
-            '~"videoOwnerChannelId":"([a-zA-Z0-9_-]{24})"~',
-
+            '~"videoOwnerChannelId":"([a-zA-Z0-9_-]{24})"~' => 'Video owner',
             // Microformat pattern
-            '~"microformat"[^}]+"externalId":"([a-zA-Z0-9_-]{24})"~',
+            '~"microformat"[^}]+"externalId":"([a-zA-Z0-9_-]{24})"~' => 'Microformat',
         ];
 
-        foreach ($patterns as $pattern) {
+        foreach ($patterns as $pattern => $description) {
             if (preg_match($pattern, $html, $matches)) {
+                $this->debug("Found channel ID via {$description} pattern: {$matches[1]}");
+
+                return $matches[1];
+            }
+        }
+
+        $this->debug('No channel ID found with any regex pattern');
+
+        return null;
+    }
+
+    /**
+     * Extract the channel ID using Symfony's DomCrawler.
+     */
+    protected function extractChannelIdWithDomCrawler(string $html): ?string
+    {
+        $this->debug('Attempting DOM crawler-based channel ID extraction');
+
+        $crawler = new Crawler($html);
+
+        // Method 1: iOS app link
+        $channelId = $this->extractFromIosAppLink($crawler);
+        if ($channelId) {
+            return $channelId;
+        }
+
+        // Method 2: Canonical link
+        $channelId = $this->extractFromCanonicalLink($crawler);
+        if ($channelId) {
+            return $channelId;
+        }
+
+        // Method 3: Meta tags
+        $channelId = $this->extractFromMetaTags($crawler);
+        if ($channelId) {
+            return $channelId;
+        }
+
+        // Method 4: JSON-LD scripts
+        $channelId = $this->extractFromJsonLdScripts($crawler);
+        if ($channelId) {
+            return $channelId;
+        }
+
+        // Method 5: YouTube API initialization data
+        $channelId = $this->extractFromYtInitialData($crawler);
+        if ($channelId) {
+            return $channelId;
+        }
+
+        if ($this->debugMode) {
+            $this->saveHtmlForDebug($html, $crawler);
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract channel ID from iOS app link.
+     */
+    protected function extractFromIosAppLink(Crawler $crawler): ?string
+    {
+        $linkNode = $crawler->filterXPath('//head/link[@rel="alternate"][contains(@href, "ios-app://544007664/vnd.youtube")]');
+
+        $this->debug("iOS app link count: {$linkNode->count()}");
+
+        if ($linkNode->count() > 0) {
+            $href = $linkNode->attr('href');
+            $this->debug("iOS app link: {$href}");
+
+            if (preg_match('#/channel/([^"&?/]+)#', (string) $href, $matches)) {
+                $this->debug("Extracted channel ID from iOS app link: {$matches[1]}");
+
                 return $matches[1];
             }
         }
@@ -166,86 +270,144 @@ class ExtractYouTubeChannelId
     }
 
     /**
-     * Extract the channel ID using Symfony's DomCrawler.
+     * Extract channel ID from canonical link.
      */
-    private function extractChannelIdWithDomCrawler(string $html): string
+    protected function extractFromCanonicalLink(Crawler $crawler): ?string
     {
-        $crawler = new Crawler($html);
-
-        // Method 1: iOS app link
-        $linkNode = $crawler->filterXPath('//head/link[@rel="alternate"][contains(@href, "ios-app://544007664/vnd.youtube")]');
-
-        if ($linkNode->count() > 0) {
-            $href = $linkNode->attr('href');
-            if (preg_match('#/channel/([^"&?/]+)#', (string) $href, $matches)) {
-                return $matches[1];
-            }
-        }
-
-        // Method 2: Check for canonical link
         $canonicalNode = $crawler->filterXPath('//head/link[@rel="canonical"]');
+
+        $this->debug("Canonical link count: {$canonicalNode->count()}");
 
         if ($canonicalNode->count() > 0) {
             $href = $canonicalNode->attr('href');
+            $this->debug("Canonical link: {$href}");
+
             if (preg_match('#/channel/([^"&?/]+)#', (string) $href, $matches)) {
+                $this->debug("Extracted channel ID from canonical link: {$matches[1]}");
+
                 return $matches[1];
             }
         }
 
-        // Method 3: Check for meta tag with channel ID
+        return null;
+    }
+
+    /**
+     * Extract channel ID from meta tags.
+     */
+    protected function extractFromMetaTags(Crawler $crawler): ?string
+    {
         $metaNodes = $crawler->filterXPath('//meta[contains(@content, "channel_id")]');
+
+        $this->debug("Meta tags with channel_id count: {$metaNodes->count()}");
 
         foreach ($metaNodes as $metumNode) {
             // @phpstan-ignore-next-line
             $content = $metumNode->getAttribute('content');
+            $this->debug("Meta content: {$content}");
+
             if (preg_match('#channel_id=([^"&?/]+)#', $content, $matches)) {
+                $this->debug("Extracted channel ID from meta tag: {$matches[1]}");
+
                 return $matches[1];
             }
         }
 
-        // Method 4: Look for data in JSON-LD scripts
+        return null;
+    }
+
+    /**
+     * Extract channel ID from JSON-LD scripts.
+     */
+    protected function extractFromJsonLdScripts(Crawler $crawler): ?string
+    {
         $scriptNodes = $crawler->filterXPath('//script[@type="application/ld+json"]');
 
+        $this->debug("JSON-LD script count: {$scriptNodes->count()}");
+
         foreach ($scriptNodes as $scriptNode) {
-            $jsonContent = $scriptNode->textContent;
-            $data = json_decode($jsonContent, true, 512, JSON_THROW_ON_ERROR);
+            try {
+                $jsonContent = $scriptNode->textContent;
+                $data = json_decode($jsonContent, true, 512, JSON_THROW_ON_ERROR);
 
-            if (is_array($data)) {
-                // Check for channel ID in various possible locations in the JSON-LD
-                if (isset($data['channelId'])) {
-                    return $data['channelId'];
-                }
+                $this->debug('JSON-LD data keys: '.(is_array($data) ? implode(', ', array_keys($data)) : 'invalid data'));
 
-                if (isset($data['author']['identifier'])) {
-                    return $data['author']['identifier'];
+                if (is_array($data)) {
+                    if (isset($data['channelId'])) {
+                        $this->debug("Found channel ID in JSON-LD data: {$data['channelId']}");
+
+                        return $data['channelId'];
+                    }
+
+                    if (isset($data['author']['identifier'])) {
+                        $this->debug("Found channel ID in JSON-LD author data: {$data['author']['identifier']}");
+
+                        return $data['author']['identifier'];
+                    }
                 }
+            } catch (Exception $e) {
+                $this->warn('JSON-LD parsing error: '.$e->getMessage());
             }
         }
 
-        // Method 5: Search for YouTube API initialization data
+        return null;
+    }
+
+    /**
+     * Extract channel ID from YouTube initial data.
+     */
+    protected function extractFromYtInitialData(Crawler $crawler): ?string
+    {
         $ytInitialDataNodes = $crawler->filterXPath('//script[contains(text(), "ytInitialData")]');
 
+        $this->debug("ytInitialData script count: {$ytInitialDataNodes->count()}");
+
         foreach ($ytInitialDataNodes as $ytInitialDataNode) {
-            $scriptContent = $ytInitialDataNode->textContent;
-            if (preg_match('/var ytInitialData = (.+?});/', $scriptContent, $matches)) {
-                $jsonData = json_decode($matches[1], true);
+            try {
+                $scriptContent = $ytInitialDataNode->textContent;
+                if (preg_match('/var ytInitialData = (.+?});/', $scriptContent, $matches)) {
+                    $jsonData = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
 
-                if (is_array($jsonData)) {
-                    // Example extraction logic - adjust based on actual structure
-                    if (isset($jsonData['header']['c4TabbedHeaderRenderer']['channelId'])) {
-                        return $jsonData['header']['c4TabbedHeaderRenderer']['channelId'];
-                    }
+                    if (is_array($jsonData)) {
+                        if (isset($jsonData['header']['c4TabbedHeaderRenderer']['channelId'])) {
+                            $channelId = $jsonData['header']['c4TabbedHeaderRenderer']['channelId'];
+                            $this->debug("Found channel ID in ytInitialData header: {$channelId}");
 
-                    // Alternatively, traverse the structure recursively to find channelId
-                    $channelId = $this->findKeyInArray('channelId', $jsonData);
-                    if ($channelId) {
-                        return $channelId;
+                            return $channelId;
+                        }
+
+                        $channelId = $this->findKeyInArray('channelId', $jsonData);
+                        if ($channelId) {
+                            $this->debug("Found channel ID in ytInitialData via recursive search: {$channelId}");
+
+                            return $channelId;
+                        }
                     }
                 }
+            } catch (Exception $e) {
+                $this->warn('ytInitialData parsing error: '.$e->getMessage());
             }
         }
 
-        throw new RuntimeException('Could not extract channel ID using any of the DOM crawler methods.');
+        return null;
+    }
+
+    /**
+     * Save HTML to a file for debugging purposes.
+     */
+    protected function saveHtmlForDebug(string $html, Crawler $crawler): void
+    {
+        $filename = storage_path('logs/youtube_channel_page_'.\Carbon\Carbon::now()->getTimestamp().'.html');
+        file_put_contents($filename, $html);
+        $this->debug("Saved HTML to file for inspection: {$filename}");
+
+        $this->debug('All link tags in head:');
+        $allLinks = $crawler->filterXPath('//head/link');
+        $allLinks->each(function (Crawler $crawler): void {
+            $rel = $crawler->attr('rel') ?? 'no-rel';
+            $href = $crawler->attr('href') ?? 'no-href';
+            $this->debug("Link rel=\"{$rel}\" href=\"{$href}\"");
+        });
     }
 
     /**
@@ -253,12 +415,10 @@ class ExtractYouTubeChannelId
      */
     protected function findKeyInArray(string $needle, array $haystack): ?string
     {
-        // If the key exists directly
         if (isset($haystack[$needle]) && is_string($haystack[$needle])) {
             return $haystack[$needle];
         }
 
-        // Search recursively
         foreach ($haystack as $key => $value) {
             if ($key === $needle && is_string($value)) {
                 return $value;
@@ -273,5 +433,33 @@ class ExtractYouTubeChannelId
         }
 
         return null;
+    }
+
+    /**
+     * Truncate user agent for cleaner debug logs.
+     */
+    protected function truncateUserAgent(string $userAgent): string
+    {
+        return Str::limit($userAgent, 30);
+    }
+
+    /**
+     * Log debug message.
+     */
+    protected function debug(string $message): void
+    {
+        if ($this->debugMode) {
+            Log::debug("[YouTubeExtractor] {$message}");
+        }
+    }
+
+    /**
+     * Log warning message.
+     */
+    protected function warn(string $message): void
+    {
+        if ($this->debugMode) {
+            Log::warning("[YouTubeExtractor] {$message}");
+        }
     }
 }
