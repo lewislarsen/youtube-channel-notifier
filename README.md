@@ -125,17 +125,18 @@ php artisan videos:list
 php artisan channels:check
 ```
 
-### Finding a YouTube Channel ID
+### Finding a YouTube Channel ID Manually
 
-When adding a channel, you'll need the channel ID. Here's how to find it:
+**This is only necessary if the automatic channel ID extraction fails!**
+
+When adding a channel, we try our best to automatically determine the ID from their @youtubehandle, however if this fails, here's how to do it manually:
 
 1. Visit the YouTube channel's page
 2. View the page source (right-click → View Page Source)
 3. Search for `itemprop="identifier" content="`
-4. The ID appears after this text
+4. The ID appears after this text as a long string.
 
-> [!NOTE]  
-> This method is a bit clumsy. Any PRs to automate this reliably via extracting it from the page would be greatly appreciated!
+If you want to make sure this is correct, visit https://www.youtube.com/channel/ (with their ID appended) in your browser and see if it loads their page.
 
 ## Standard Installation
 
