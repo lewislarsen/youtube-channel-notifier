@@ -40,7 +40,7 @@ class MuteChannelCommand extends BaseCommand
         $channel = $channel->fresh();
 
         if ($channel->isMuted()) {
-            $this->components->success("The channel '{$channelName}' has been muted. You will no longer receive video notifications.");
+            $this->components->success("The channel '{$channelName}' has been muted. You will no longer receive notifications about their uploads.");
 
             return;
         }

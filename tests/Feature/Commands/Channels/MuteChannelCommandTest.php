@@ -9,7 +9,7 @@ it('can mute a channel', function (): void {
     $channel = Channel::factory()->unmuted()->create();
 
     $this->artisan(MuteChannelCommand::class, ['name' => $channel->name])
-        ->expectsOutputToContain("The channel '{$channel->name}' has been muted. You will no longer receive video notifications.");
+        ->expectsOutputToContain("The channel '{$channel->name}' has been muted. You will no longer receive notifications about their uploads.");
 
     $channel = $channel->refresh();
 
@@ -21,7 +21,7 @@ it('can mute a channel via interactive prompt', function (): void {
 
     $this->artisan(MuteChannelCommand::class)
         ->expectsQuestion('Enter the channel name', $channel->name)
-        ->expectsOutputToContain("The channel '{$channel->name}' has been muted. You will no longer receive video notifications.");
+        ->expectsOutputToContain("The channel '{$channel->name}' has been muted. You will no longer receive notifications about their uploads.");
 
     $channel = $channel->refresh();
 
