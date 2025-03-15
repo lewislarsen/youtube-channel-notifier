@@ -9,6 +9,7 @@ use App\Actions\YouTube\ExtractYouTubeChannelId;
 use App\Models\Channel;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 /**
  * Class AddChannelCommand
@@ -40,6 +41,8 @@ class AddChannelCommand extends Command
         $name = $this->ask('Enter the channel name');
         $channelUrl = $this->ask('Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)');
 
+        $channelUrl = $this->formatChannelUrl($channelUrl);
+
         $this->components->info("Extracting channel ID from: {$channelUrl}");
 
         try {
@@ -65,6 +68,48 @@ class AddChannelCommand extends Command
         }
 
         $this->createChannel($name, $channelId);
+    }
+
+    /**
+     * Format channel URL to ensure it has proper format with @ for handles.
+     */
+    private function formatChannelUrl(string $channelUrl): string
+    {
+        $channelUrl = trim($channelUrl);
+
+        if (empty($channelUrl) || Str::startsWith($channelUrl, '@')) {
+            return $channelUrl;
+        }
+
+        if (Str::startsWith($channelUrl, ['http://', 'https://', 'www.'])) {
+            return $this->formatYouTubeUrl($channelUrl);
+        }
+
+        return '@'.$channelUrl;
+    }
+
+    /**
+     * Format a full YouTube URL to ensure proper @ format if needed.
+     */
+    private function formatYouTubeUrl(string $url): string
+    {
+        if (! Str::contains($url, 'youtube.com/')) {
+            return $url;
+        }
+
+        if (Str::contains($url, '@') ||
+            Str::contains($url, ['channel/', 'c/', 'user/'])) {
+            return $url;
+        }
+
+        $parts = explode('/', rtrim($url, '/'));
+        $lastPart = end($parts);
+
+        if (empty($lastPart)) {
+            return $url;
+        }
+
+        return Str::replaceLast($lastPart, '@'.$lastPart, $url);
     }
 
     /**

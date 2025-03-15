@@ -103,3 +103,87 @@ it('does not add a channel if manual ID entry is empty', function (): void {
 
     expect(Channel::count())->toBe(0);
 });
+
+it('adds @ to a channel handle that does not have it', function (): void {
+    Mail::fake();
+
+    $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
+        $mock->shouldReceive('execute')
+            ->once()
+            ->with('@testchannel', false)
+            ->andReturn('UC_x5XG1OV2P6uZZ5FSM9Ttw');
+    });
+
+    $this->artisan(AddChannelCommand::class)
+        ->expectsQuestion('Enter the channel name', 'Test Channel')
+        ->expectsQuestion('Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)', 'testchannel')
+        ->expectsOutputToContain('Extracting channel ID from: @testchannel')
+        ->expectsOutputToContain('Extracted channel ID: UC_x5XG1OV2P6uZZ5FSM9Ttw')
+        ->expectsOutputToContain("Channel 'Test Channel' added successfully!");
+
+    $channel = Channel::where('channel_id', 'UC_x5XG1OV2P6uZZ5FSM9Ttw')->first();
+    expect($channel)->not->toBeNull();
+});
+
+it('adds @ to a channel handle in a YouTube URL', function (): void {
+    Mail::fake();
+
+    $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
+        $mock->shouldReceive('execute')
+            ->once()
+            ->with('https://www.youtube.com/@testchannel', false)
+            ->andReturn('UC_x5XG1OV2P6uZZ5FSM9Ttw');
+    });
+
+    $this->artisan(AddChannelCommand::class)
+        ->expectsQuestion('Enter the channel name', 'Test Channel')
+        ->expectsQuestion('Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)', 'https://www.youtube.com/testchannel')
+        ->expectsOutputToContain('Extracting channel ID from: https://www.youtube.com/@testchannel')
+        ->expectsOutputToContain('Extracted channel ID: UC_x5XG1OV2P6uZZ5FSM9Ttw')
+        ->expectsOutputToContain("Channel 'Test Channel' added successfully!");
+
+    $channel = Channel::where('channel_id', 'UC_x5XG1OV2P6uZZ5FSM9Ttw')->first();
+    expect($channel)->not->toBeNull();
+});
+
+it('leaves channel URLs with @ unchanged', function (): void {
+    Mail::fake();
+
+    $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
+        $mock->shouldReceive('execute')
+            ->once()
+            ->with('https://www.youtube.com/@testchannel', false)
+            ->andReturn('UC_x5XG1OV2P6uZZ5FSM9Ttw');
+    });
+
+    $this->artisan(AddChannelCommand::class)
+        ->expectsQuestion('Enter the channel name', 'Test Channel')
+        ->expectsQuestion('Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)', 'https://www.youtube.com/@testchannel')
+        ->expectsOutputToContain('Extracting channel ID from: https://www.youtube.com/@testchannel')
+        ->expectsOutputToContain('Extracted channel ID: UC_x5XG1OV2P6uZZ5FSM9Ttw')
+        ->expectsOutputToContain("Channel 'Test Channel' added successfully!");
+
+    $channel = Channel::where('channel_id', 'UC_x5XG1OV2P6uZZ5FSM9Ttw')->first();
+    expect($channel)->not->toBeNull();
+});
+
+it('leaves channel/custom/user URLs unchanged', function (): void {
+    Mail::fake();
+
+    $this->mock(ExtractYouTubeChannelId::class, function (MockInterface $mock): void {
+        $mock->shouldReceive('execute')
+            ->once()
+            ->with('https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw', false)
+            ->andReturn('UC_x5XG1OV2P6uZZ5FSM9Ttw');
+    });
+
+    $this->artisan(AddChannelCommand::class)
+        ->expectsQuestion('Enter the channel name', 'Test Channel')
+        ->expectsQuestion('Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)', 'https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw')
+        ->expectsOutputToContain('Extracting channel ID from: https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw')
+        ->expectsOutputToContain('Extracted channel ID: UC_x5XG1OV2P6uZZ5FSM9Ttw')
+        ->expectsOutputToContain("Channel 'Test Channel' added successfully!");
+
+    $channel = Channel::where('channel_id', 'UC_x5XG1OV2P6uZZ5FSM9Ttw')->first();
+    expect($channel)->not->toBeNull();
+});
