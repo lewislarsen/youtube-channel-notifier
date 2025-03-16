@@ -1,6 +1,6 @@
-# YouTube Channel Notifier
+# YouTube Channel Notifier (YCN) Project
 
-> A lightweight Laravel application that keeps you connected with your favorite YouTube creators by delivering friendly notifications whenever they publish new videos.
+> A lightweight Laravel application that keeps you connected with your favourite YouTube creators by delivering friendly notifications when new videos are published.
 
 
 <div align="center">
@@ -22,23 +22,23 @@
 
 ## Introduction
 
-YouTube Channel Notifier helps you stay updated with your favorite content creators even if you don't have a Google account any more. Never miss a video from channels you care about — we'll let you know whenever something new gets published through friendly email or Discord notifications.
+YouTube Channel Notifier (YCN) is a small web application that keeps track of your favourite YouTube creators and notifies you when they publish new videos. It is intended to be a robust little tool for individuals who still want to watch videos from their favourite creators but are unable or unwilling to have a Google account.
+
 
 ## Key Features
 
-- **Effortless Channel Tracking**: Easily add and manage YouTube channels you love
-- **Flexible Notifications**: Choose between email alerts, Discord messages, or both
-- **Simple CLI Interface**: Manage everything through intuitive commands
+- **Effortless Channel Tracking**: Easily add your favourite YouTubers
+- **Flexible Notifications**: Can deliver notifications via email or discord
+- **Simple CLI Interface**: Manage everything through intuitive commands in your terminal
 - **Privacy-Focused**: No YouTube API keys required, no data sharing with third parties
-- **Docker Ready**: Get up and running in minutes with automatic setup and persistence
-- **Smart Filtering**: Automatically filters out unwanted content like livestreams and trailers
+- **Docker Ready**: Get up and running in minutes with Docker support
 
 > [!IMPORTANT]  
-> This project is managed through simple CLI terminal commands and doesn't have a web interface for management.
+> This project is managed through simple CLI terminal commands and may not be suitable for everybody.
 
 ## Quick Start with Docker
 
-The fastest way to get notified about new videos from your favorite creators:
+The fastest way to get started:
 
 ### 1. Build the Docker image
 
@@ -218,7 +218,7 @@ DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
 
 ### Video Filtering
 
-The application automatically filters out certain types of content by default. This is configured in `config/excluded-video-words.php`:
+The project automatically attempts to filters out certain types of content by default. This is configured in `config/excluded-video-words.php`:
 
 ```php
 <?php
@@ -257,7 +257,7 @@ By default, the application filters out:
 - Teasers
 - Previews
 
-You can customize this list by editing the configuration file to add or remove terms based on your preferences.
+You can customize this list by editing the configuration file.
 
 ## FAQ
 
@@ -274,24 +274,26 @@ No, and that's a good thing! The application uses YouTube's public RSS feeds, wh
 - Simpler setup for you
 
 ### Does it work with private/unlisted videos?
-No, we can only detect publicly available videos that appear in the channel's RSS feed.
+No, we can only detect publicly available videos that appear in the channel's public RSS feed.
 
 ### Can I get notifications for livestreams?
-By default, livestreams are filtered out. If you want to receive notifications for livestreams, you can edit the `config/excluded-video-words.php` file and remove 'live' and 'LIVE' from the skip terms.
+By default, we attempt to filter out livestreams. If you want to receive notifications for (likely) livestreams, you can edit the `config/excluded-video-words.php` file and remove 'live' and 'LIVE' from the skip terms.
 
 ### Does it support platforms other than YouTube?
-Not yet. Currently, the application is designed specifically for YouTube creators.
+There are no plans to support platforms other than YouTube.
 
 ### How can I request a new notification channel?
-We'd love to hear your ideas! Open an issue in the repository and we'll consider adding more notification options.
+Please create an issue in the repository and I'll get back to you. 
 
 ## Support & Community
 
-If you encounter any issues or have ideas for improvements, please open an issue on our repository. We're always looking for ways to make YouTube Channel Notifier better for everyone!
+If you encounter any issues or have ideas for improvements, please open an issue.
 
 ## Contributing
 
-Contributions are warmly welcomed! If you'd like to help improve the project, please feel free to submit a Pull Request and we'll review it as soon as possible.
+Contributions are welcomed! If you'd like to help improve the project, please feel free to submit a Pull Request, and I'll give it a read as soon as I can.
+
+I ask that any PRs have tests included (where relevant). We want to make sure this tool is reliable.
 
 ## Testing
 
