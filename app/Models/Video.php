@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\VideoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Video extends Model
 {
+    /** @use HasFactory<VideoFactory> */
     use HasFactory;
 
     /**
@@ -30,7 +32,7 @@ class Video extends Model
     /**
      * Get the channel that owns the video.
      *
-     * @return BelongsTo The relationship instance between the video and its channel.
+     * @return BelongsTo<Channel, $this> The relationship instance between the video and its channel.
      */
     public function channel(): BelongsTo
     {

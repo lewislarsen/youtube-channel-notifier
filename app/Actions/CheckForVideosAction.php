@@ -79,7 +79,7 @@ class CheckForVideosAction
      *
      * @param  object  $rssData  The RSS feed data.
      * @param  Channel  $channel  The channel to which the videos belong.
-     * @return array An array of new videos.
+     * @return array<int, array<string, mixed>> An array of new videos.
      */
     private function extractNewVideos(object $rssData, Channel $channel): array
     {
@@ -114,7 +114,7 @@ class CheckForVideosAction
     /**
      * Performs the first-time import of new videos for a channel.
      *
-     * @param  array  $newVideos  An array of new videos to insert.
+     * @param  array<int, array<string, mixed>>  $newVideos  An array of new videos to insert.
      * @param  Channel  $channel  The channel to which the videos belong.
      */
     private function firstTimeImport(array $newVideos, Channel $channel): void
@@ -126,7 +126,7 @@ class CheckForVideosAction
     /**
      * Inserts new videos into the database and sends notification emails.
      *
-     * @param  array  $newVideos  An array of new videos to insert and notify.
+     * @param  array<int, array<string, mixed>>  $newVideos  An array of new videos to insert and notify.
      * @param  Channel  $channel  The channel to which the videos belong.
      */
     private function insertNewVideosAndNotify(array $newVideos, Channel $channel): void
@@ -187,7 +187,7 @@ class CheckForVideosAction
      * Get existing video IDs for a channel.
      *
      * @param  Channel  $channel  The channel for which to get existing video IDs.
-     * @return array An array of existing video IDs.
+     * @return array<int, string> An array of existing video IDs.
      */
     private function getExistingVideoIds(Channel $channel): array
     {
@@ -220,7 +220,7 @@ class CheckForVideosAction
      * Check if a video already exists.
      *
      * @param  string  $videoId  The video ID to check.
-     * @param  array  $existingVideoIds  An array of existing video IDs.
+     * @param  array<int, string>  $existingVideoIds  An array of existing video IDs.
      * @return bool True if the video exists, false otherwise.
      */
     private function isExistingVideo(string $videoId, array $existingVideoIds): bool
@@ -243,7 +243,7 @@ class CheckForVideosAction
      * Check if a video title contains any excluded words.
      *
      * @param  string  $title  The title to check.
-     * @param  array  $excludedWords  An array of excluded words.
+     * @param  array<int|string, string>  $excludedWords  An array of excluded words.
      * @return bool True if the title should be skipped, false otherwise.
      */
     private function shouldSkipByTitle(string $title, array $excludedWords): bool
@@ -277,7 +277,7 @@ class CheckForVideosAction
      * @param  Channel  $channel  The channel to which the video belongs.
      * @param  string  $videoId  The ID of the video.
      * @param  string  $title  The title of the video.
-     * @return array The created video data.
+     * @return array<string, mixed> The created video data.
      */
     private function createVideoData(object $entry, Channel $channel, string $videoId, string $title): array
     {
@@ -293,7 +293,7 @@ class CheckForVideosAction
     /**
      * Check if there are no new videos.
      *
-     * @param  array  $newVideos  An array of new videos.
+     * @param  array<int, array<string, mixed>>  $newVideos  An array of new videos.
      * @param  Channel  $channel  The channel to which the videos belong.
      * @return bool True if there are no new videos, false otherwise.
      */
@@ -311,7 +311,7 @@ class CheckForVideosAction
     /**
      * Process new videos based on whether this is a first-time import or not.
      *
-     * @param  array  $newVideos  An array of new videos.
+     * @param  array<int, array<string, mixed>>  $newVideos  An array of new videos.
      * @param  Channel  $channel  The channel to which the videos belong.
      */
     private function processNewVideos(array $newVideos, Channel $channel): void
@@ -336,7 +336,7 @@ class CheckForVideosAction
      * Log a first-time import.
      *
      * @param  Channel  $channel  The channel for which the import was performed.
-     * @param  array  $newVideos  An array of new videos.
+     * @param  array<int, array<string, mixed>>  $newVideos  An array of new videos.
      */
     private function logFirstTimeImport(Channel $channel, array $newVideos): void
     {
@@ -346,7 +346,7 @@ class CheckForVideosAction
     /**
      * Insert videos without sending notifications.
      *
-     * @param  array  $newVideos  An array of new videos to insert.
+     * @param  array<int, array<string, mixed>>  $newVideos  An array of new videos to insert.
      * @param  Channel  $channel  The channel to which the videos belong.
      */
     private function insertVideosWithoutNotification(array $newVideos, Channel $channel): void
@@ -360,7 +360,7 @@ class CheckForVideosAction
     /**
      * Insert videos and send notifications.
      *
-     * @param  array  $newVideos  An array of new videos to insert.
+     * @param  array<int, array<string, mixed>>  $newVideos  An array of new videos to insert.
      * @param  Channel  $channel  The channel to which the videos belong.
      */
     private function insertVideosWithNotification(array $newVideos, Channel $channel): void

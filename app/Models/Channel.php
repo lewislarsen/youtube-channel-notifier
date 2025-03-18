@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Actions\YouTube\ExtractYouTubeChannelAvatar;
+use Database\Factories\ChannelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Log;
  */
 class Channel extends Model
 {
+    /** @use HasFactory<ChannelFactory> */
     use HasFactory;
 
     /**
@@ -40,7 +42,7 @@ class Channel extends Model
     /**
      * Get the videos associated with the channel.
      *
-     * @return HasMany The relationship instance between the channel and its videos.
+     * @return HasMany<Video, $this> The relationship instance between the channel and its videos.
      */
     public function videos(): HasMany
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\YouTube;
 
 use Exception;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -98,6 +99,10 @@ class ExtractYouTubeChannelId
 
     /**
      * Fetch a web page with custom headers.
+     *
+     * @param  array<string, mixed>  $headers
+     *
+     * @throws ConnectionException
      */
     protected function fetchPageWithCustomHeaders(string $url, array $headers): string
     {
@@ -412,6 +417,8 @@ class ExtractYouTubeChannelId
 
     /**
      * Recursively find a key in a nested array.
+     *
+     * @param  array<string, mixed>  $haystack
      */
     protected function findKeyInArray(string $needle, array $haystack): ?string
     {
