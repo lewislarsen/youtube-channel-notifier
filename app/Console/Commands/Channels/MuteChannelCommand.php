@@ -6,6 +6,7 @@ namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
 use Illuminate\Database\Console\Migrations\BaseCommand;
+use function Laravel\Prompts\suggest;
 
 class MuteChannelCommand extends BaseCommand
 {
@@ -25,7 +26,15 @@ class MuteChannelCommand extends BaseCommand
 
     public function handle(): void
     {
-        $channelName = $this->argument('name') ?? $this->ask('Enter the channel name');
+        $channelName = $this->argument('name') ?? suggest(
+            label: 'Enter the channel name',
+            options: fn (string $value) => $value !== ''
+                ? Channel::whereLike('name', "%{$value}%")->pluck('name', 'id')->all()
+                : [],
+            placeholder: 'E.g. Settled',
+            required: true,
+            hint: 'This is the label of the channel you have set.'
+        );
 
         $channel = $this->findChannel($channelName);
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Channels;
 
+use function Laravel\Prompts\suggest;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\confirm;
 use App\Models\Channel;
 use Illuminate\Console\Command;
 
@@ -34,7 +37,15 @@ class RemoveChannelCommand extends Command
      */
     public function handle(): void
     {
-        $channelName = $this->ask('Enter the channel name');
+        $channelName = suggest(
+            label: 'Enter the channel name',
+            options: fn (string $value) => $value !== ''
+                ? Channel::whereLike('name', "%{$value}%")->pluck('name', 'id')->all()
+                : [],
+            placeholder: 'E.g. Settled',
+            required: true,
+            hint: 'This is the label of the channel you have set.'
+        );
 
         $channel = $this->findChannel($channelName);
 
@@ -68,7 +79,12 @@ class RemoveChannelCommand extends Command
      */
     protected function confirmRemoval(string $channelName): bool
     {
-        return $this->confirm("Are you sure you want to remove the channel '{$channelName}' and all related data?");
+        return confirm(
+            label: "Are you sure you want to remove the channel '{$channelName}' and all related data?",
+            default: false,
+            yes: 'Remove channel',
+            no: 'Do not remove channel'
+        );
     }
 
     /**
