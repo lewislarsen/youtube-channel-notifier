@@ -6,6 +6,7 @@ namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
 use Illuminate\Database\Console\Migrations\BaseCommand;
+
 use function Laravel\Prompts\suggest;
 
 class MuteChannelCommand extends BaseCommand

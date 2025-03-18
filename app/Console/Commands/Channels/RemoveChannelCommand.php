@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Channels;
 
-use function Laravel\Prompts\suggest;
-use function Laravel\Prompts\text;
-use function Laravel\Prompts\confirm;
 use App\Models\Channel;
 use Illuminate\Console\Command;
+
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\suggest;
 
 /**
  * Class RemoveChannelCommand
