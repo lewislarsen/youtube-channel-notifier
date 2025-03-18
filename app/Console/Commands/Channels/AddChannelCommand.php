@@ -11,6 +11,8 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
+use function Laravel\Prompts\text;
+
 /**
  * Class AddChannelCommand
  *
@@ -38,8 +40,16 @@ class AddChannelCommand extends Command
      */
     public function handle(ExtractYouTubeChannelId $extractYouTubeChannelId): void
     {
-        $name = $this->ask('Enter the channel name');
-        $channelUrl = $this->ask('Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)');
+        $name = text(
+            label: 'Channel label?',
+            required: true,
+            hint: 'Please enter a memorable name for the channel; usually the channels name on YouTube.'
+        );
+        $channelUrl = text(
+            label: 'Channel URL/@handle?',
+            required: true,
+            hint: 'Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)',
+        );
 
         $channelUrl = $this->formatChannelUrl($channelUrl);
 
@@ -58,13 +68,11 @@ class AddChannelCommand extends Command
             }
 
             $this->components->info('Falling back to manual channel ID entry.');
-            $channelId = $this->ask('Please enter the channel ID manually');
-
-            if (empty($channelId)) {
-                $this->components->error('Channel ID is required.');
-
-                return;
-            }
+            $channelId = text(
+                label: 'Channel ID?',
+                required: true,
+                hint: 'Please consult the README on GitHub for more information.',
+            );
         }
 
         $this->createChannel($name, $channelId);
