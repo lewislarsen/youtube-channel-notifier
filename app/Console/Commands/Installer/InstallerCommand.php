@@ -135,7 +135,7 @@ class InstallerCommand extends Command
             $mailPort = text('SMTP Port', '587');
             $mailUsername = text('SMTP Username (usually your email address)');
             $mailPassword = password('SMTP Password (input will be hidden)');
-            $mailEncryption = select(
+            $mailEncryption = (string) select(
                 label: 'SMTP Encryption Type',
                 options: ['tls', 'ssl', 'none'],
                 default: 'tls',

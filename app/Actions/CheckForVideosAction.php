@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use SimpleXMLElement;
 
 /**
  * Class CheckForVideosAction
@@ -32,7 +33,7 @@ class CheckForVideosAction
     {
         $rssData = $this->fetchRssFeed($channel);
 
-        if (is_null($rssData)) {
+        if (! $rssData instanceof \SimpleXMLElement) {
             return;
         }
 
@@ -50,9 +51,9 @@ class CheckForVideosAction
      * Fetches the RSS feed for a given channel.
      *
      * @param  Channel  $channel  The channel for which to fetch the RSS feed.
-     * @return object|null The RSS feed data or null if the fetch failed or no videos found.
+     * @return SimpleXMLElement|null The RSS feed data or null if the fetch failed or no videos found.
      */
-    private function fetchRssFeed(Channel $channel): ?object
+    private function fetchRssFeed(Channel $channel): ?SimpleXMLElement
     {
         $rssUrl = $this->buildRssUrl($channel);
         $response = Http::get($rssUrl);
@@ -65,7 +66,7 @@ class CheckForVideosAction
 
         $rssData = simplexml_load_string($response->body());
 
-        if ($this->isInvalidRssData($rssData)) {
+        if ($rssData === false || $this->isInvalidRssData($rssData)) {
             $this->logNoVideosFound($channel);
 
             return null;
@@ -77,11 +78,11 @@ class CheckForVideosAction
     /**
      * Extracts new videos from the RSS feed data and filters out videos that already exist or contain any blocked words matching our filter.
      *
-     * @param  object  $rssData  The RSS feed data.
+     * @param  SimpleXMLElement  $rssData  The RSS feed data.
      * @param  Channel  $channel  The channel to which the videos belong.
      * @return array<int, array<string, mixed>> An array of new videos.
      */
-    private function extractNewVideos(object $rssData, Channel $channel): array
+    private function extractNewVideos(SimpleXMLElement $rssData, Channel $channel): array
     {
         $existingVideoIds = $this->getExistingVideoIds($channel);
         $excludedWords = Config::get('excluded-video-words.skip_terms', []);
@@ -165,12 +166,12 @@ class CheckForVideosAction
     /**
      * Check if the RSS data is invalid.
      *
-     * @param  mixed  $rssData  The RSS data to check.
+     * @param  SimpleXMLElement|false  $rssData  The RSS data to check.
      * @return bool True if the data is invalid, false otherwise.
      */
     private function isInvalidRssData($rssData): bool
     {
-        return ! $rssData || ! isset($rssData->entry);
+        return $rssData === false || ! isset($rssData->entry);
     }
 
     /**
@@ -197,10 +198,10 @@ class CheckForVideosAction
     /**
      * Check if the RSS data has no entries.
      *
-     * @param  object  $rssData  The RSS data to check.
+     * @param  SimpleXMLElement  $rssData  The RSS data to check.
      * @return bool True if the data has no entries, false otherwise.
      */
-    private function hasNoEntries(object $rssData): bool
+    private function hasNoEntries(SimpleXMLElement $rssData): bool
     {
         return ! isset($rssData->entry) || count($rssData->entry) === 0;
     }
@@ -208,10 +209,10 @@ class CheckForVideosAction
     /**
      * Extract a video ID from an RSS entry.
      *
-     * @param  object  $entry  The RSS entry.
+     * @param  SimpleXMLElement  $entry  The RSS entry.
      * @return string The extracted video ID.
      */
-    private function extractVideoId(object $entry): string
+    private function extractVideoId(SimpleXMLElement $entry): string
     {
         return str_replace('yt:video:', '', (string) $entry->id);
     }
@@ -273,13 +274,13 @@ class CheckForVideosAction
     /**
      * Create video data from an RSS entry.
      *
-     * @param  object  $entry  The RSS entry.
+     * @param  SimpleXMLElement  $entry  The RSS entry.
      * @param  Channel  $channel  The channel to which the video belongs.
      * @param  string  $videoId  The ID of the video.
      * @param  string  $title  The title of the video.
      * @return array<string, mixed> The created video data.
      */
-    private function createVideoData(object $entry, Channel $channel, string $videoId, string $title): array
+    private function createVideoData(SimpleXMLElement $entry, Channel $channel, string $videoId, string $title): array
     {
         return [
             'video_id' => $videoId,
