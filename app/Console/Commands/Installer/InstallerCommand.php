@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\password;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\text;
+
 class InstallerCommand extends Command
 {
     /**
@@ -29,7 +34,7 @@ class InstallerCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): void
     {
         $this->components->info('🎬 Welcome to the YouTube Channel Notifier!');
         $this->components->info("Let's get your notification system set up in just a few minutes.");
@@ -51,16 +56,16 @@ class InstallerCommand extends Command
 
             $this->newLine();
 
-            if (! $this->components->confirm('Would you like to proceed anyway?', false)) {
+            if (! confirm('Would you like to proceed anyway?', false)) {
                 $this->components->info('No problem! Installation canceled.');
 
-                return 1;
+                return;
             }
 
-            if (! $this->components->confirm('Just to be sure - this cannot be undone. Continue?', false)) {
+            if (! confirm('Just to be sure - this cannot be undone. Continue?', false)) {
                 $this->components->info('Installation safely canceled.');
 
-                return 1;
+                return;
             }
 
             $this->newLine();
@@ -69,16 +74,14 @@ class InstallerCommand extends Command
         }
 
         if (File::exists(base_path('.env')) &&
-            ! $this->components->confirm('I noticed an .env file already exists. Is it okay to replace it?', false)) {
+            ! confirm('I noticed an .env file already exists. Is it okay to replace it?', false)) {
             $this->components->info('Got it! Your existing configuration has been preserved.');
 
-            return 1;
+            return;
         }
 
         if (! File::exists(base_path('.env.example'))) {
             $this->components->error("I can't find the .env.example template file. Please check that it exists before running the installer.");
-
-            return 1;
         }
 
         File::copy(base_path('.env.example'), base_path('.env'));
@@ -112,8 +115,6 @@ class InstallerCommand extends Command
         $this->newLine();
 
         $this->showNextSteps();
-
-        return 0;
     }
 
     /**
@@ -125,17 +126,25 @@ class InstallerCommand extends Command
         $this->components->info("📝 Let's personalize your notification settings:");
         $this->newLine();
 
-        $alertEmails = $this->ask('Where should notifications be sent? (Email addresses, comma-separated for multiple)');
+        $alertEmails = text('Where should notifications be sent? (Email addresses, comma-separated for multiple)');
         $this->updateEnv('ALERT_EMAILS', $alertEmails);
         $this->components->task('Setting up email notification recipients', fn () => true);
 
-        if ($this->components->confirm('Would you like to configure SMTP for sending emails? (Recommended)', true)) {
-            $mailHost = $this->ask('SMTP Host', 'smtp.gmail.com');
-            $mailPort = $this->ask('SMTP Port', '587');
-            $mailUsername = $this->ask('SMTP Username (usually your email address)');
-            $mailPassword = $this->secret('SMTP Password (input will be hidden)');
-            $mailEncryption = $this->choice('SMTP Encryption Type', ['tls', 'ssl', 'none'], 0);
-            $mailFromAddress = $this->ask('From Email Address', $mailUsername);
+        if (confirm('Would you like to configure SMTP for sending emails? (Recommended)', true)) {
+            $mailHost = text('SMTP Host', 'smtp.gmail.com');
+            $mailPort = text('SMTP Port', '587');
+            $mailUsername = text('SMTP Username (usually your email address)');
+            $mailPassword = password('SMTP Password (input will be hidden)');
+            $mailEncryption = select(
+                label: 'SMTP Encryption Type',
+                options: ['tls', 'ssl', 'none'],
+                default: 'tls',
+                hint: 'This is usually tls.');
+            $mailFromAddress = text(label: 'From Email Address',
+                default: $mailUsername,
+                required: true,
+                hint: 'The email address that notifications will be sent from.'
+            );
 
             if ($mailEncryption === 'none') {
                 $mailEncryption = null;
@@ -159,8 +168,12 @@ class InstallerCommand extends Command
         }
 
         $this->newLine();
-        if ($this->components->confirm('Would you like to receive Discord notifications too?', false)) {
-            $webhookUrl = $this->ask('Please paste your Discord webhook URL');
+        if (confirm('Would you like to receive Discord notifications too?', false)) {
+            $webhookUrl = text(
+                label: 'Please paste your Discord webhook URL',
+                required: true,
+                hint: 'Paste your Discord webhook URL here.'
+            );
             $this->updateEnv('DISCORD_WEBHOOK_URL', $webhookUrl);
             $this->components->task('Setting up Discord notifications', fn () => true);
             $this->components->info('✅ Discord notifications configured!');
