@@ -27,3 +27,16 @@ it('outputs a message if it cannot find a channel', function (): void {
         'name' => 'does-not-exist',
     ]);
 });
+
+it('prevents renaming to a name that already exists', function (): void {
+    Channel::factory()->create(['name' => 'First Channel']);
+    $channelToRename = Channel::factory()->create(['name' => 'Second Channel']);
+
+    $this->artisan(RenameChannelCommand::class)
+        ->expectsQuestion('Current channel name?', 'Second Channel')
+        ->expectsQuestion('New channel name?', 'First Channel')
+        ->expectsOutputToContain("A channel with the name 'First Channel' already exists. Channel names must be unique.");
+
+    $channelToRename->refresh();
+    $this->assertEquals('Second Channel', $channelToRename->getAttribute('name'));
+});
