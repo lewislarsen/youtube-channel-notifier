@@ -113,6 +113,9 @@ php artisan channels:remove
 
 # Mute a channel to stop receiving notifications
 php artisan channels:mute
+
+# Rename an existing channel you've added!
+php artisan channels:rename
 ```
 
 ### Video Management
