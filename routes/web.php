@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Mail\NewVideoMail;
+use App\Models\Channel;
+use App\Models\Video;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'index')->name('index');
@@ -11,10 +14,10 @@ Route::get('/mail', function () {
         abort(404);
     }
 
-    $channel = \App\Models\Channel::factory()->create();
-    $video = \App\Models\Video::factory()->create([
+    $channel = Channel::factory()->create();
+    $video = Video::factory()->create([
         'channel_id' => $channel->id,
     ]);
 
-    return (new \App\Mail\NewVideoMail($video, $channel))->render();
+    return (new NewVideoMail($video, $channel))->render();
 });
