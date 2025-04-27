@@ -45,7 +45,7 @@ class CheckForVideos
     {
         $rssData = $this->fetchRssFeed->execute($channel);
 
-        if (!$rssData instanceof \SimpleXMLElement) {
+        if (! $rssData instanceof \SimpleXMLElement) {
             return;
         }
 

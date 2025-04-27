@@ -17,9 +17,7 @@ use Illuminate\Support\Facades\Mail;
  */
 class SendVideoNotifications
 {
-    public function __construct(private readonly SendDiscordNotification $sendDiscordNotification)
-    {
-    }
+    public function __construct(private readonly SendDiscordNotification $sendDiscordNotification) {}
 
     /**
      * Send all configured notifications for a new video.

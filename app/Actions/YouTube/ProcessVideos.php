@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Log;
  */
 class ProcessVideos
 {
-    public function __construct(private readonly SendVideoNotifications $sendVideoNotifications)
-    {
-    }
+    public function __construct(private readonly SendVideoNotifications $sendVideoNotifications) {}
 
     /**
      * Process new videos based on whether this is a first-time import or not.
