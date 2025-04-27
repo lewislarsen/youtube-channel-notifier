@@ -119,6 +119,9 @@ php artisan channels:rename
 
 # View statistics about your channels
 php artisan other:stats
+
+# Sends a test email to all `ALERT_EMAILS` set in the .ENV. 
+php artisan other:mail-test
 ```
 
 ### Video Management
