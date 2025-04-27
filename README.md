@@ -274,7 +274,7 @@ You can customize this list by editing the configuration file.
 Not at all! We only track metadata (title, publish date, URL) about videos through public RSS feeds. No video content is ever downloaded, stored, or processed.
 
 ### How often does it check for new videos?
-The notifier checks every 5 minutes, so you'll know about new content shortly after it's published.
+The notifier checks every 5 minutes. YouTube may take longer to update their RSS feeds, so you may not see notifications immediately after a video is published.
 
 ### Does this use the YouTube API?
 No, and that's a good thing! The application uses YouTube's public RSS feeds, which means:
@@ -292,7 +292,10 @@ By default, we attempt to filter out livestreams. If you want to receive notific
 There are no plans to support platforms other than YouTube.
 
 ### How can I request a new notification channel?
-Please create an issue in the repository and I'll get back to you. 
+Please create an issue in the repository and I'll get back to you.
+
+### What about shorts?
+In the RSS feed, shorts are indistinguishable from regular longform videos. The notifier will notify you of all new videos, including shorts.
 
 ## Support & Community
 
