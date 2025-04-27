@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\CheckForVideosAction;
+use App\Actions\CheckForVideos;
 use App\Console\Commands\Channels\CheckChannelsCommand;
 use App\Models\Channel;
 use App\Models\Video;
@@ -19,8 +19,8 @@ it('outputs a message when no channels are found', function (): void {
 });
 
 it('handles CheckForVideosAction execution for each channel', function (): void {
-    $mock = Mockery::mock(CheckForVideosAction::class);
-    app()->instance(CheckForVideosAction::class, $mock);
+    $mock = Mockery::mock(CheckForVideos::class);
+    app()->instance(CheckForVideos::class, $mock);
 
     $channel1 = Channel::factory()->create([
         'name' => 'Channel One',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Channels;
 
-use App\Actions\CheckForVideosAction;
+use App\Actions\CheckForVideos;
 use App\Models\Channel;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +46,7 @@ class CheckChannelsCommand extends Command
 
         $this->components->info('Checking channels for new videos...');
 
-        $checkForVideosAction = app(CheckForVideosAction::class);
+        $checkForVideosAction = app(CheckForVideos::class);
 
         foreach ($channels as $channel) {
             Log::debug('Checking channel "'.$channel->name.'" for new videos...');

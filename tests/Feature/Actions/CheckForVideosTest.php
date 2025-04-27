@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\CheckForVideosAction;
+use App\Actions\CheckForVideos;
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
 use App\Models\Video;
@@ -37,7 +37,7 @@ describe('Core Video Detection', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         Mail::assertNothingSent();
@@ -66,7 +66,7 @@ describe('Core Video Detection', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         Mail::assertSent(NewVideoMail::class, function ($mail) {
@@ -97,7 +97,7 @@ describe('Core Video Detection', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         Mail::assertNothingSent();
@@ -122,7 +122,7 @@ describe('Error Handling', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response(null, 500),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         Mail::assertNothingSent();
@@ -173,7 +173,7 @@ describe('Filtering', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         Mail::assertSent(NewVideoMail::class, function ($mail) {
@@ -219,7 +219,7 @@ describe('Filtering', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         Mail::assertNotSent(NewVideoMail::class);
@@ -262,7 +262,7 @@ describe('Notifications', function (): void {
                 'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
             ]);
 
-            $action = new CheckForVideosAction;
+            $action = new CheckForVideos;
             $action->execute($channel);
 
             Mail::assertSent(NewVideoMail::class, function ($mail) {
@@ -303,7 +303,7 @@ describe('Notifications', function (): void {
                 'https://discord.com/api/webhooks/test' => Http::response(null, 204),
             ]);
 
-            $action = new CheckForVideosAction;
+            $action = new CheckForVideos;
             $action->execute($channel);
 
             Mail::assertSent(NewVideoMail::class);
@@ -333,7 +333,7 @@ describe('Notifications', function (): void {
                 XML, 200),
             ]);
 
-            $action = new CheckForVideosAction;
+            $action = new CheckForVideos;
             $action->execute($channel);
 
             Mail::assertNothingSent();
@@ -377,7 +377,7 @@ describe('UpdateLastChecked', function (): void {
 
         Carbon::setTestNow($updatedDateTime);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         $channel->refresh();
@@ -427,7 +427,7 @@ describe('MultipleVideos', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         expect(Video::count())->toBe(3);
@@ -476,7 +476,7 @@ describe('MultipleVideos', function (): void {
 
         $initialVideoCount = Video::count();
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         expect(Video::count())->toBe($initialVideoCount + 1);
@@ -508,7 +508,7 @@ describe('EmptyFeed', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         expect(Video::count())->toBe(0);
@@ -542,7 +542,7 @@ describe('DateHandling', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        $action = new CheckForVideosAction;
+        $action = new CheckForVideos;
         $action->execute($channel);
 
         $video = Video::where('video_id', '5ltAy1W6k-Q')->first();

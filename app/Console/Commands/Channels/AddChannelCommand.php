@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Channels;
 
-use App\Actions\CheckForVideosAction;
+use App\Actions\CheckForVideos;
 use App\Actions\YouTube\ExtractYouTubeChannelId;
 use App\Models\Channel;
 use Exception;
@@ -160,7 +160,7 @@ class AddChannelCommand extends Command
     private function importVideos(Channel $channel): void
     {
         $this->components->info("Running initial video import for '{$channel->name}'...");
-        app(CheckForVideosAction::class)->execute($channel);
+        app(CheckForVideos::class)->execute($channel);
         $this->components->success('Initial import completed successfully.');
     }
 }

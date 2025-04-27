@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\Discord\SendDiscordNotificationAction;
+use App\Actions\Notifications\SendDiscordNotification;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
@@ -38,7 +38,7 @@ it('sends a discord notification successfully', function (): void {
     ]);
 
     // Execute the action
-    $action = new SendDiscordNotificationAction;
+    $action = new SendDiscordNotification;
     $result = $action->execute($video);
 
     // Assert the result is true
@@ -64,7 +64,7 @@ it('returns false when discord webhook is not configured', function (): void {
     $video = Video::factory()->create(['channel_id' => $channel->id]);
 
     // Execute the action
-    $action = new SendDiscordNotificationAction;
+    $action = new SendDiscordNotification;
     $result = $action->execute($video);
 
     // Assert the result is false
@@ -92,7 +92,7 @@ it('handles error responses from discord', function (): void {
     ]);
 
     // Execute the action
-    $action = new SendDiscordNotificationAction;
+    $action = new SendDiscordNotification;
     $result = $action->execute($video);
 
     // Assert the result is false
@@ -118,7 +118,7 @@ it('handles exceptions during discord notification', function (): void {
         ->andThrow(new Exception('Connection failed'));
 
     // Execute the action
-    $action = new SendDiscordNotificationAction;
+    $action = new SendDiscordNotification;
     $result = $action->execute($video);
 
     // Assert the result is false

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Discord;
+namespace App\Actions\Notifications;
 
 use App\Models\Video;
 use Exception;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
-class SendDiscordNotificationAction
+class SendDiscordNotification
 {
     /**
      * Execute the action to send a Discord notification for a new video.
