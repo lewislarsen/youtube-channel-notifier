@@ -19,5 +19,5 @@ Route::get('/mail', function () {
         'channel_id' => $channel->id,
     ]);
 
-    return new NewVideoMail($video, $channel)->render();
+    return (new NewVideoMail($video, $channel))->render();
 });
