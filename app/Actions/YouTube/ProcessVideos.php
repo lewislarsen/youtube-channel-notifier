@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Log;
  *
  * This action processes new videos based on channel settings.
  */
-class ProcessVideos
+readonly class ProcessVideos
 {
-    public function __construct(private readonly SendVideoNotifications $sendVideoNotifications) {}
+    public function __construct(private SendVideoNotifications $sendVideoNotifications) {}
 
     /**
      * Process new videos based on whether this is a first-time import or not.
@@ -60,7 +60,7 @@ class ProcessVideos
                 continue;
             }
 
-            $this->sendVideoNotifications->execute($video, $channel);
+            $this->sendVideoNotifications->execute($video);
             Log::info("New video added and notifications sent: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
         }
     }

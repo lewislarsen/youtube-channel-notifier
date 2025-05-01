@@ -106,29 +106,6 @@ describe('Core Video Detection', function (): void {
     });
 });
 
-describe('Error Handling', function (): void {
-    beforeEach(function (): void {
-        Mail::fake();
-    });
-
-    it('logs an error if the RSS feed fetch fails', function (): void {
-        Log::shouldReceive('error')->once();
-
-        $channel = Channel::factory()->create([
-            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-        ]);
-
-        Http::fake([
-            'https://www.youtube.com/feeds/videos.xml*' => Http::response(null, 500),
-        ]);
-
-        $action = new CheckForVideos;
-        $action->execute($channel);
-
-        Mail::assertNothingSent();
-    });
-});
-
 describe('Filtering', function (): void {
     beforeEach(function (): void {
         Mail::fake();

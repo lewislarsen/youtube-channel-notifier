@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Notifications;
 
-use App\Mail\NewVideoMail;
-use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * Class SendVideoNotifications
@@ -17,29 +14,30 @@ use Illuminate\Support\Facades\Mail;
  */
 class SendVideoNotifications
 {
-    public function __construct(private readonly SendDiscordNotification $sendDiscordNotification) {}
+    public function __construct(private readonly SendDiscordNotification $sendDiscordNotification,
+        private readonly SendEmailNotification $sendEmailNotification) {}
 
     /**
      * Send all configured notifications for a new video.
      *
      * @param  Video  $video  The new video.
-     * @param  Channel  $channel  The channel to which the video belongs.
      */
-    public function execute(Video $video, Channel $channel): void
+    public function execute(Video $video): void
     {
-        $this->sendEmailNotification($video, $channel);
+        $this->sendEmailNotification($video);
         $this->sendDiscordNotification($video);
     }
 
     /**
-     * Send an email notification for a new video.
+     * Send an email notification to all emails for a new video.
      *
      * @param  Video  $video  The new video.
-     * @param  Channel  $channel  The channel to which the video belongs.
      */
-    private function sendEmailNotification(Video $video, Channel $channel): void
+    private function sendEmailNotification(Video $video): void
     {
-        Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
+        if (Config::get('app.alert_emails')) {
+            $this->sendEmailNotification->execute($video);
+        }
     }
 
     /**

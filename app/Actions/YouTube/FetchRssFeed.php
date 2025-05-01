@@ -61,7 +61,7 @@ class FetchRssFeed
      * @param  SimpleXMLElement|false  $rssData  The RSS data to check.
      * @return bool True if the data is invalid, false otherwise.
      */
-    private function isInvalidRssData($rssData): bool
+    private function isInvalidRssData(SimpleXMLElement|false $rssData): bool
     {
         return $rssData === false || ! isset($rssData->entry);
     }
