@@ -181,6 +181,20 @@ class InstallerCommand extends Command
             $this->components->info('No problem! You can always add Discord notifications later.');
         }
 
+        $this->newLine();
+        if (confirm('Would you like to specify a URL to send POST request notifications to?', false)) {
+            $POSTWebhookURL = text(
+                label: 'Please specify the URL',
+                required: true,
+                hint: 'The URL to which POST requests will be sent.'
+            );
+            $this->updateEnv('POST_WEBHOOK_URL', $POSTWebhookURL);
+            $this->components->task('Setting up POST Webhook notifications', fn () => true);
+            $this->components->info('✅ POST Webhook notifications configured!');
+        } else {
+            $this->components->info('No problem! You can always configure this later.');
+        }
+
         $this->updateEnv('LOG_LEVEL', 'info');
 
         $this->newLine();

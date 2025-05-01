@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Config;
 class SendVideoNotifications
 {
     public function __construct(private readonly SendDiscordNotification $sendDiscordNotification,
-        private readonly SendEmailNotification $sendEmailNotification) {}
+        private readonly SendEmailNotification $sendEmailNotification,
+        private readonly SendWebhookNotification $sendWebhookNotification,
+    ) {}
 
     /**
      * Send all configured notifications for a new video.
@@ -26,6 +28,7 @@ class SendVideoNotifications
     {
         $this->sendEmailNotification($video);
         $this->sendDiscordNotification($video);
+        $this->sendWebhookNotification($video);
     }
 
     /**
@@ -49,6 +52,18 @@ class SendVideoNotifications
     {
         if (Config::get('app.discord_webhook_url')) {
             $this->sendDiscordNotification->execute($video);
+        }
+    }
+
+    /**
+     * Send a webhook notification for a new video if the webhook URL is configured.
+     *
+     * @param  Video  $video  The new video.
+     */
+    private function sendWebhookNotification(Video $video): void
+    {
+        if (Config::get('app.webhook_post_url')) {
+            $this->sendWebhookNotification->execute($video);
         }
     }
 }

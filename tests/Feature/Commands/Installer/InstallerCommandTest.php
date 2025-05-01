@@ -40,7 +40,8 @@ it('creates an env file with basic settings', function (): void {
     $this->artisan('app:install')
         ->expectsQuestion('Where should notifications be sent? (Email addresses, comma-separated for multiple)', 'test@example.com')
         ->expectsConfirmation('Would you like to configure SMTP for sending emails? (Recommended)', 'no')
-        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no');
+        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no')
+        ->expectsConfirmation('Would you like to specify a URL to send POST request notifications to?', 'no');
 
     expect(File::exists(base_path('.env')))->toBeTrue();
     $envContent = File::get(base_path('.env'));
@@ -58,7 +59,8 @@ it('configures multiple email addresses correctly', function (): void {
     $this->artisan('app:install')
         ->expectsQuestion('Where should notifications be sent? (Email addresses, comma-separated for multiple)', 'test1@example.com,test2@example.com')
         ->expectsConfirmation('Would you like to configure SMTP for sending emails? (Recommended)', 'no')
-        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no');
+        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no')
+        ->expectsConfirmation('Would you like to specify a URL to send POST request notifications to?', 'no');
 
     $envContent = File::get(base_path('.env'));
 
@@ -79,7 +81,8 @@ it('configures SMTP settings correctly', function (): void {
         ->expectsQuestion('SMTP Password (input will be hidden)', 'password123')
         ->expectsChoice('SMTP Encryption Type', 'tls', ['tls', 'ssl', 'none'])
         ->expectsQuestion('From Email Address', 'noreply@example.com')
-        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no');
+        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no')
+        ->expectsConfirmation('Would you like to specify a URL to send POST request notifications to?', 'no');
 
     $envContent = File::get(base_path('.env'));
 
@@ -102,12 +105,30 @@ it('configures Discord webhook correctly', function (): void {
         ->expectsQuestion('Where should notifications be sent? (Email addresses, comma-separated for multiple)', 'test@example.com')
         ->expectsConfirmation('Would you like to configure SMTP for sending emails? (Recommended)', 'no')
         ->expectsConfirmation('Would you like to receive Discord notifications too?', 'yes')
-        ->expectsQuestion('Please paste your Discord webhook URL', 'https://discord.com/api/webhooks/123456/abcdef');
+        ->expectsQuestion('Please paste your Discord webhook URL', 'https://discord.com/api/webhooks/123456/abcdef')
+        ->expectsConfirmation('Would you like to specify a URL to send POST request notifications to?', 'no');
 
     $envContent = File::get(base_path('.env'));
 
     expect($envContent)
         ->toContain('DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/123456/abcdef');
+});
+
+it('configures post webhook url correctly', function (): void {
+    if (File::exists(base_path('.env'))) {
+        File::delete(base_path('.env'));
+    }
+
+    $this->artisan('app:install')
+        ->expectsQuestion('Where should notifications be sent? (Email addresses, comma-separated for multiple)', 'test@example.com')
+        ->expectsConfirmation('Would you like to configure SMTP for sending emails? (Recommended)', 'no')
+        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no')
+        ->expectsConfirmation('Would you like to specify a URL to send POST request notifications to?', 'yes')
+        ->expectsQuestion('Please specify the URL', 'https://example.com/webhook');
+    $envContent = File::get(base_path('.env'));
+
+    expect($envContent)
+        ->toContain('POST_WEBHOOK_URL=https://example.com/webhook');
 });
 
 it('handles "no encryption" option correctly', function (): void {
@@ -124,7 +145,8 @@ it('handles "no encryption" option correctly', function (): void {
         ->expectsQuestion('SMTP Password (input will be hidden)', 'password123')
         ->expectsChoice('SMTP Encryption Type', 'none', ['tls', 'ssl', 'none'])
         ->expectsQuestion('From Email Address', 'noreply@example.com')
-        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no');
+        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no')
+        ->expectsConfirmation('Would you like to specify a URL to send POST request notifications to?', 'no');
 
     $envContent = File::get(base_path('.env'));
 
@@ -157,7 +179,8 @@ it('properly handles values with spaces in env file', function (): void {
         ->expectsQuestion('SMTP Password (input will be hidden)', 'password with spaces')
         ->expectsChoice('SMTP Encryption Type', 'tls', ['tls', 'ssl', 'none'])
         ->expectsQuestion('From Email Address', 'noreply@example.com')
-        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no');
+        ->expectsConfirmation('Would you like to receive Discord notifications too?', 'no')
+        ->expectsConfirmation('Would you like to specify a URL to send POST request notifications to?', 'no');
 
     $envContent = File::get(base_path('.env'));
 

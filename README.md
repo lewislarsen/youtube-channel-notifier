@@ -28,7 +28,7 @@ YouTube Channel Notifier (YCN) is a small web application that keeps track of yo
 ## Key Features
 
 - **Effortless Channel Tracking**: Easily add your favourite YouTubers
-- **Flexible Notifications**: Can deliver notifications via email or discord
+- **Flexible Notifications**: Can deliver notifications via email, discord or a POST webhook to a custom URL
 - **Simple CLI Interface**: Manage everything through intuitive commands in your terminal
 - **Privacy-Focused**: No YouTube API keys required, no data sharing with third parties
 - **Docker Ready**: Get up and running in minutes with Docker support
@@ -58,6 +58,7 @@ docker run -d --name youtube-notifier \
   -e MAIL_FROM_ADDRESS=your@email.com \
   -e ALERT_EMAILS=recipient1@email.com,recipient2@email.com \
   -e DISCORD_WEBHOOK_URL=your-discord-webhook-url \
+  -e POST_WEBHOOK_URL=your-post-webhook-url \
   youtube-channel-notifier
 ```
 
@@ -122,6 +123,9 @@ php artisan other:stats
 
 # Sends a test email to all `ALERT_EMAILS` set in the .ENV. 
 php artisan other:mail-test
+
+# Sends a POST request to the `POST_WEBHOOK_URL` set in the .ENV.
+php artisan other:post-test
 ```
 
 ### Video Management
@@ -224,6 +228,25 @@ ALERT_EMAILS=your@email.com,another@email.com
 ```env
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
 ```
+
+#### POST Webhook Notification
+
+By populating `POST_WEBHOOK_URL` in your `.env`, the notifier will send a POST request to the specified URL with the video details. The request body will be in JSON format:
+
+```json
+{
+    "title": "How to Build a Simple Neural Network from Scratch",
+    "video_url": "https://www.youtube.com/watch?v=abc123xyz",
+    "thumbnail": "https://i.ytimg.com/vi/abc123xyz/maxresdefault.jpg",
+    "published_at": "2023-10-01 12:00:00",
+    "published_at_formatted": "01 Oct 2023 12:00 PM",
+    "channel": {
+        "label": "Tech Academy",
+        "url": "https://www.youtube.com/channel/UCtech123"
+    }
+}
+```
+
 
 ### Video Filtering
 

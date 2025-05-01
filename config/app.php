@@ -150,4 +150,20 @@ return [
     */
 
     'discord_webhook_url' => env('DISCORD_WEBHOOK_URL', null),
+
+    /*
+     * -------------------------------------------------------------------------
+     * Webhook POST URL
+     * -------------------------------------------------------------------------
+     *
+     * This value is the URL for the webhook that will be used to send
+     * notifications to the specified endpoint.
+     *
+     * You can set this in your ".env" file to ensure that notifications
+     * are sent to the appropriate endpoint.
+     *
+     * The URL should be a valid endpoint that can handle POST requests.
+     *
+     */
+    'webhook_post_url' => env('WEBHOOK_POST_URL', null),
 ];
