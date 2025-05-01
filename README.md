@@ -123,6 +123,9 @@ php artisan other:stats
 
 # Sends a test email to all `ALERT_EMAILS` set in the .ENV. 
 php artisan other:mail-test
+
+# Sends a POST request to the `POST_WEBHOOK_URL` set in the .ENV.
+php artisan other:post-test
 ```
 
 ### Video Management
