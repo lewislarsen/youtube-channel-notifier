@@ -128,7 +128,7 @@ it('configures post webhook url correctly', function (): void {
     $envContent = File::get(base_path('.env'));
 
     expect($envContent)
-        ->toContain('POST_WEBHOOK_URL=https://example.com/webhook');
+        ->toContain('WEBHOOK_POST_URL=https://example.com/webhook');
 });
 
 it('handles "no encryption" option correctly', function (): void {

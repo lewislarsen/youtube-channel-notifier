@@ -188,7 +188,7 @@ class InstallerCommand extends Command
                 required: true,
                 hint: 'The URL to which POST requests will be sent.'
             );
-            $this->updateEnv('POST_WEBHOOK_URL', $POSTWebhookURL);
+            $this->updateEnv('WEBHOOK_POST_URL', $POSTWebhookURL);
             $this->components->task('Setting up POST Webhook notifications', fn () => true);
             $this->components->info('✅ POST Webhook notifications configured!');
         } else {

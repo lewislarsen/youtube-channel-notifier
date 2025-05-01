@@ -58,7 +58,7 @@ docker run -d --name youtube-notifier \
   -e MAIL_FROM_ADDRESS=your@email.com \
   -e ALERT_EMAILS=recipient1@email.com,recipient2@email.com \
   -e DISCORD_WEBHOOK_URL=your-discord-webhook-url \
-  -e POST_WEBHOOK_URL=your-post-webhook-url \
+  -e WEBHOOK_POST_URL=your-post-webhook-url \
   youtube-channel-notifier
 ```
 
@@ -124,7 +124,7 @@ php artisan other:stats
 # Sends a test email to all `ALERT_EMAILS` set in the .ENV. 
 php artisan other:mail-test
 
-# Sends a POST request to the `POST_WEBHOOK_URL` set in the .ENV.
+# Sends a POST request to the `WEBHOOK_POST_URL` set in the .ENV.
 php artisan other:post-test
 ```
 
@@ -231,7 +231,7 @@ DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your-webhook-url
 
 #### POST Webhook Notification
 
-By populating `POST_WEBHOOK_URL` in your `.env`, the notifier will send a POST request to the specified URL with the video details. The request body will be in JSON format:
+By populating `WEBHOOK_POST_URL` in your `.env`, the notifier will send a POST request to the specified URL with the video details. The request body will be in JSON format:
 
 ```json
 {
