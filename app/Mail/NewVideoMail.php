@@ -52,7 +52,7 @@ class NewVideoMail extends Mailable
      */
     protected function getSubject(): string
     {
-        return sprintf('%s - New Video: %s', $this->channel->name, $this->video->title);
+        return sprintf('New Upload: %s - "%s"', $this->channel->name, $this->video->title);
     }
 
     /**

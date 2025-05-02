@@ -10,11 +10,11 @@ declare(strict_types=1);
             <tr>
                 <td align="center">
                     <a href="{{ $url }}" style="display: inline-block;">
-                        <h1 style="color: #ffffff; font-size: 28px; font-weight: bold; margin: 0; text-align: center;">{{ $slot }}</h1>
+                        <h1 style="color: #fc0032; font-size: 28px; font-weight: bold; margin: 0; text-align: center;">{{ $slot }}</h1>
                     </a>
                 </td>
             </tr>
         </table>
     </td>
 </tr>
-<?php 
+<?php

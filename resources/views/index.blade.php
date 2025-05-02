@@ -43,7 +43,7 @@ declare(strict_types=1);
     <style>
         /* Force the background color */
         html {
-            background-color: #f9fafb; /* gray-50 */
+            background-color: #e6e6e6; /* gray-50 */
         }
 
         html.dark {
@@ -51,7 +51,7 @@ declare(strict_types=1);
         }
 
         body {
-            background-color: #f9fafb; /* gray-50 */
+            background-color: #e6e6e6; /* gray-50 */
         }
 
         .dark body {

@@ -21,7 +21,7 @@ it('builds the mailable correctly', function (): void {
     $mailable = new NewVideoMail($video, $channel);
 
     expect($mailable->envelope()->subject)
-        ->toBe('TestChannel - New Video: Test Video');
+        ->toBe('New Upload: TestChannel - "Test Video"');
 
     $content = $mailable->content();
 

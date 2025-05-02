@@ -26,8 +26,8 @@ declare(strict_types=1);
  {{-- Footer --}}
 <x-slot:footer>
 <x-mail::footer>
-{{ Config::get('app.name') }} Project. <a href="https://github.com/lewislarsen/youtube-channel-notifier">View on GitHub</a>
+Automated notification from the <a href="https://github.com/lewislarsen/youtube-channel-notifier">{{ Config::get('app.name') }}</a> Project.
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>
-<?php 
+<?php
