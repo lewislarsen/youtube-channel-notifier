@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Notifications;
 
+use App\Enums\Colour;
 use App\Models\Video;
 use Exception;
 use Illuminate\Support\Facades\Config;
@@ -31,7 +32,7 @@ class SendDiscordNotification
             'title' => $video->getAttribute('title'),
             'description' => $video->getAttribute('description'),
             'url' => $video->getYoutubeUrl(),
-            'color' => 0xFF0000, // YouTube red
+            'color' => Colour::YouTube_Red->value,
             'timestamp' => $video->getIsoPublishedDate(),
             'thumbnail' => [
                 'url' => $video->getThumbnailUrl('maxresdefault'),

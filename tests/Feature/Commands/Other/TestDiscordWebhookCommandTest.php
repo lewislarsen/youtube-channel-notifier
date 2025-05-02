@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Console\Commands\Other\TestDiscordWebhookCommand;
+use App\Enums\Colour;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -41,7 +42,7 @@ it('can send a test Discord notification if the webhook URL is set', function ()
                 'title' => 'Test Notification',
                 'description' => 'This is a test notification from the application.',
                 'url' => 'https://example.com',
-                'color' => 0xFF0000, // YouTube red
+                'color' => Colour::YouTube_Red->value,
                 'timestamp' => $now->toIso8601String(),
                 'thumbnail' => [
                     'url' => 'https://example.com/assets/white-full.png',

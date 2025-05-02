@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Other;
 
+use App\Enums\Colour;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
@@ -44,7 +45,7 @@ class TestDiscordWebhookCommand extends Command
             'title' => 'Test Notification',
             'description' => 'This is a test notification from the application.',
             'url' => config('app.url', 'https://example.com'),
-            'color' => 0xFF0000, // YouTube red
+            'color' => Colour::YouTube_Red->value,
             'timestamp' => Carbon::now()->toIso8601String(),
             'thumbnail' => [
                 'url' => URL::asset('assets/white-full.png'),
