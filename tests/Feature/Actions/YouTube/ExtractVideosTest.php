@@ -21,12 +21,14 @@ describe('ExtractVideos', function (): void {
         ]);
 
         $rssXml = <<<'XML'
-        <feed>
+        <feed xmlns:media="http://search.yahoo.com/mrss/">
             <entry>
                 <id>yt:video:5ltAy1W6k-Q</id>
                 <title>New Video Title</title>
-                <summary>Video description</summary>
                 <published>2025-01-01T00:00:00+00:00</published>
+                <media:group>
+                 <media:description>This is my video description!</media:description>
+                </media:group>
             </entry>
         </feed>
         XML;
@@ -40,7 +42,7 @@ describe('ExtractVideos', function (): void {
             ->and(count($newVideos))->toBe(1)
             ->and($newVideos[0]['video_id'])->toBe('5ltAy1W6k-Q')
             ->and($newVideos[0]['title'])->toBe('New Video Title')
-            ->and($newVideos[0]['description'])->toBe('Video description')
+            ->and($newVideos[0]['description'])->toBe('This is my video description!')
             ->and($newVideos[0]['channel_id'])->toBe($channel->id);
     });
 
@@ -191,6 +193,57 @@ describe('ExtractVideos', function (): void {
 
         expect($newVideos[0]['published_at'])->toBeInstanceOf(Carbon::class)
             ->and($newVideos[0]['published_at']->format('Y-m-d H:i:s'))->toBe('2025-01-15 13:45:30');
+    });
+
+    it('correctly extracts the description', function (): void {
+        $channel = Channel::factory()->create();
+
+        $rssXml = <<<'XML'
+        <feed xmlns:media="http://search.yahoo.com/mrss/">
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+                <published>2025-01-01T00:00:00+00:00</published>
+                <media:group>
+                 <media:description>This is my video description!</media:description>
+                </media:group>
+            </entry>
+        </feed>
+        XML;
+
+        $rssData = simplexml_load_string($rssXml);
+
+        $action = new ExtractVideos;
+        $newVideos = $action->execute($rssData, $channel);
+
+        expect($newVideos[0]['description'])->toBe('This is my video description!');
+    });
+
+    it('truncates the description if it is over the specified character limit', function (): void {
+        // this character limit is set to 10k in ExtractVideos
+        $channel = Channel::factory()->create();
+        $longDescription = str_repeat('a', 10001); // 10,001 characters
+
+        $rssXml = <<<XML
+  <feed xmlns:media="http://search.yahoo.com/mrss/">
+            <entry>
+                <id>yt:video:5ltAy1W6k-Q</id>
+                <title>New Video Title</title>
+                <published>2025-01-01T00:00:00+00:00</published>
+                <media:group>
+                <media:description>{$longDescription}</media:description>
+                </media:group>
+            </entry>
+        </feed>
+XML;
+
+        $rssData = simplexml_load_string($rssXml);
+
+        $action = new ExtractVideos;
+        $newVideos = $action->execute($rssData, $channel);
+
+        expect(strlen((string) $newVideos[0]['description']))->toBe(10000)
+            ->and($newVideos[0]['description'])->toBe(substr($longDescription, 0, 10000));
     });
 
     it('handles a feed with no entries', function (): void {

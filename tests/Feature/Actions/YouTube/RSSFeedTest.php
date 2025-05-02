@@ -37,7 +37,8 @@ describe('FetchRssFeed', function (): void {
 
         expect($result)->toBeInstanceOf(SimpleXMLElement::class)
             ->and((string) $result->entry->id)->toBe('yt:video:5ltAy1W6k-Q')
-            ->and((string) $result->entry->title)->toBe('New Video Title');
+            ->and((string) $result->entry->title)->toBe('New Video Title')
+            ->and((string) $result->entry->summary)->toBe('Video description');
     });
 
     it('returns null when the response fails', function (): void {

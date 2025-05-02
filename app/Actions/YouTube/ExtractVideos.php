@@ -38,6 +38,7 @@ class ExtractVideos
         foreach ($rssData->entry as $entry) {
             $videoId = $this->extractVideoId($entry);
             $title = (string) $entry->title;
+            $description = $this->extractVideoDescription($entry);
 
             if (in_array($videoId, $existingVideoIds, true)) {
                 Log::debug("Skipping existing video: {$title} ({$videoId})");
@@ -49,7 +50,7 @@ class ExtractVideos
                 continue;
             }
 
-            $newVideos[] = $this->createVideoData($entry, $channel, $videoId, $title);
+            $newVideos[] = $this->createVideoData($entry, $channel, $videoId, $title, $description);
         }
 
         if (empty($newVideos)) {
@@ -82,6 +83,34 @@ class ExtractVideos
     }
 
     /**
+     * Extract the video description from the nested RSS data.
+     */
+    private function extractVideoDescription(SimpleXMLElement $entry): ?string
+    {
+        $MAX_TEXT_LENGTH = 10000; // 10k characters
+
+        $namespaces = $entry->getNamespaces(true);
+
+        if (! isset($namespaces['media'])) {
+            return null;
+        }
+
+        $mediaGroup = $entry->children($namespaces['media'])->group;
+
+        if (! $mediaGroup || ! isset($mediaGroup->description)) {
+            return null;
+        }
+
+        $description = (string) $mediaGroup->description;
+
+        if (strlen($description) > $MAX_TEXT_LENGTH) {
+            return substr($description, 0, $MAX_TEXT_LENGTH);
+        }
+
+        return $description;
+    }
+
+    /**
      * Check if a video title contains any excluded words.
      *
      * @param  string  $title  The title to check.
@@ -110,14 +139,16 @@ class ExtractVideos
      * @param  string  $title  The title of the video.
      * @return array<string, mixed> The created video data.
      */
-    private function createVideoData(SimpleXMLElement $entry, Channel $channel, string $videoId, string $title): array
+    private function createVideoData(SimpleXMLElement $entry, Channel $channel, string $videoId, string $title, ?string $description): array
     {
         return [
             'video_id' => $videoId,
             'title' => $title,
-            'description' => (string) $entry->summary,
+            'description' => $description,
             'published_at' => Carbon::parse((string) $entry->published),
             'channel_id' => $channel->id,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ];
     }
 }
