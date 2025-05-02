@@ -30,6 +30,7 @@ it('displays complete statistics with all sections', function (): void {
 
     Config::set('app.alert_emails', ['test@example.com', 'admin@example.com']);
     Config::set('app.discord_webhook_url', 'https://discord.com/webhook/test');
+    Config::set('app.webhook_post_url', 'https://example.com/webhook');
 
     $this->artisan(StatisticsCommand::class)
         ->expectsOutputToContain('Fetching real-time statistics - no caching is active')
@@ -52,7 +53,8 @@ it('displays complete statistics with all sections', function (): void {
                 ['', '', ''],
                 ['📧 NOTIFICATION SETTINGS', 'Email Notifications', 'Enabled'],
                 ['', 'Discord Notifications', 'Enabled'],
-                ['', 'Total Active Methods', 2],
+                ['', 'POST Webhook Notification', 'Enabled'],
+                ['', 'Total Active Methods', 3],
                 ['', 'Email Recipients', 'test@example.com, admin@example.com'],
                 ['', '', ''],
                 ['🔕 MUTED CHANNELS', 'Since '.$mutedChannel->muted_at->format('Y-m-d H:i:s').' ('.$mutedChannel->muted_at->diffForHumans().')',
@@ -75,6 +77,7 @@ it('displays statistics with no muted channels', function (): void {
 
     Config::set('app.alert_emails', ['test@example.com']);
     Config::set('app.discord_webhook_url', '');
+    Config::set('app.webhook_post_url', '');
 
     // Execute command and verify output - should exclude muted channels section
     $this->artisan(StatisticsCommand::class)
@@ -98,6 +101,7 @@ it('displays statistics with no muted channels', function (): void {
                 ['', '', ''],
                 ['📧 NOTIFICATION SETTINGS', 'Email Notifications', 'Enabled'],
                 ['', 'Discord Notifications', 'Disabled'],
+                ['', 'POST Webhook Notification', 'Disabled'],
                 ['', 'Total Active Methods', 1],
                 ['', 'Email Recipients', 'test@example.com'],
                 ['', '', ''],
@@ -113,6 +117,7 @@ it('displays statistics with no videos tracked', function (): void {
 
     Config::set('app.alert_emails', []);
     Config::set('app.discord_webhook_url', '');
+    Config::set('app.webhook_post_url', '');
 
     $this->artisan(StatisticsCommand::class)
         ->expectsOutputToContain('Fetching real-time statistics - no caching is active')
@@ -130,6 +135,7 @@ it('displays statistics with no videos tracked', function (): void {
                 ['', '', ''],
                 ['📧 NOTIFICATION SETTINGS', 'Email Notifications', 'Disabled'],
                 ['', 'Discord Notifications', 'Disabled'],
+                ['', 'POST Webhook Notification', 'Disabled'],
                 ['', 'Total Active Methods', 0],
                 ['', '', ''],
             ]

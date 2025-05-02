@@ -85,13 +85,16 @@ class StatisticsCommand extends Command
 
         $alertEmails = Config::get('app.alert_emails', []);
         $discordWebhook = Config::get('app.discord_webhook_url');
+        $postWebhook = Config::get('app.webhook_post_url');
         $emailStatus = ! empty($alertEmails) ? 'Enabled' : 'Disabled';
         $discordStatus = ! empty($discordWebhook) ? 'Enabled' : 'Disabled';
+        $postWebhookStatus = ! empty($postWebhook) ? 'Enabled' : 'Disabled';
 
         $notifications = [
             'Email Notifications' => $emailStatus,
             'Discord Notifications' => $discordStatus,
-            'Total Active Methods' => (! empty($alertEmails) ? 1 : 0) + (! empty($discordWebhook) ? 1 : 0),
+            'POST Webhook Notification' => $postWebhookStatus,
+            'Total Active Methods' => (! empty($alertEmails) ? 1 : 0) + (! empty($discordWebhook) ? 1 : 0) + (! empty($postWebhook) ? 1 : 0),
         ];
 
         if (! empty($alertEmails)) {
