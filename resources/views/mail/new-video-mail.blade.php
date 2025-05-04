@@ -30,7 +30,7 @@ Watch on YouTube
 
 
 <x-mail::subcopy>
-You're receiving this email because you added "{{ $videoCreator }}" to your list of channels to be monitored. For available commands and documentation, visit our <a href="https://github.com/lewislarsen/youtube-channel-notifier/wiki/Notifications">GitHub</a> docs.
+You're receiving this email because you added "{{ $videoCreator }}" to your list of channels to be monitored. For available commands and documentation, visit our <a href="https://github.com/lewislarsen/youtube-channel-notifier?tab=readme-ov-file#youtube-channel-notifier-ycn-project">GitHub</a> repository.
 </x-mail::subcopy>
 </x-mail::message>
 <?php
