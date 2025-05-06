@@ -47,9 +47,10 @@ class MuteChannelCommand extends BaseCommand
 
         $channel->toggleMute();
 
-        $channel = $channel->fresh();
+        /** @var Channel $freshChannel */
+        $freshChannel = $channel->fresh();
 
-        if ($channel->isMuted()) {
+        if ($freshChannel->isMuted()) {
             $this->components->success("The channel '{$channelName}' has been muted. You will no longer receive notifications about their uploads.");
 
             return;

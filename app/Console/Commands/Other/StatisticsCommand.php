@@ -65,7 +65,7 @@ class StatisticsCommand extends Command
         ]);
 
         $latestChannel = Channel::latest('created_at')->first();
-        if ($latestChannel) {
+        if ($latestChannel && $latestChannel->created_at instanceof Carbon) {
             $this->addTableSection($tableData, '🆕 LATEST CHANNEL', [
                 'Channel Name' => $latestChannel->name,
                 'Channel URL' => $latestChannel->getChannelUrl(),
@@ -74,7 +74,7 @@ class StatisticsCommand extends Command
         }
 
         $latestVideo = Video::latest('created_at')->first();
-        if ($latestVideo) {
+        if ($latestVideo && $latestVideo->created_at instanceof Carbon) {
             $this->addTableSection($tableData, '🎬 LATEST VIDEO', [
                 'Video Title' => $latestVideo->title,
                 'Video URL' => $latestVideo->getYoutubeUrl(),
@@ -108,9 +108,11 @@ class StatisticsCommand extends Command
             Channel::whereNotNull('muted_at')
                 ->get()
                 ->each(function ($channel) use (&$mutedChannelsInfo): void {
-                    $channelInfo = $channel->name.' ('.$channel->getChannelUrl().')';
-                    $mutedChannelsInfo['Since '.$channel->muted_at->format('Y-m-d H:i:s').
-                    ' ('.$this->humanReadableTime($channel->muted_at).')'] = $channelInfo;
+                    if ($channel->muted_at instanceof Carbon) {
+                        $channelInfo = $channel->name.' ('.$channel->getChannelUrl().')';
+                        $mutedChannelsInfo['Since '.$channel->muted_at->format('Y-m-d H:i:s').
+                        ' ('.$this->humanReadableTime($channel->muted_at).')'] = $channelInfo;
+                    }
                 });
 
             $this->addTableSection($tableData, '🔕 MUTED CHANNELS', $mutedChannelsInfo);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Notifications;
 
 use App\Enums\Colour;
+use App\Models\Channel;
 use App\Models\Video;
 use Exception;
 use Illuminate\Support\Facades\Config;
@@ -22,6 +23,9 @@ class SendDiscordNotification
      */
     public function execute(Video $video): bool
     {
+        /** @var Channel $channel */
+        $channel = $video->channel;
+
         $webhookUrl = Config::get('app.discord_webhook_url');
 
         if (empty($webhookUrl)) {
@@ -43,12 +47,12 @@ class SendDiscordNotification
         ];
 
         $embed['author'] = [
-            'name' => $video->channel->getAttribute('name'),
-            'url' => $video->channel->getChannelUrl(),
+            'name' => $channel->getAttribute('name'),
+            'url' => $channel->getChannelUrl(),
         ];
 
         $payload = [
-            'content' => '🎬 **New Video Alert!** Check out this new upload from '.$video->channel->getAttribute('name'),
+            'content' => '🎬 **New Video Alert!** Check out this new upload from '.$channel->getAttribute('name'),
             'embeds' => [$embed],
             'avatar_url' => URL::asset('assets/white-full.png'),
             'username' => Config::get('app.name'),

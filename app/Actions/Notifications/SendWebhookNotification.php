@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Notifications;
 
+use App\Models\Channel;
 use App\Models\Video;
 use Exception;
 use Illuminate\Http\Client\RequestException;
@@ -20,6 +21,9 @@ class SendWebhookNotification
             return false;
         }
 
+        /** @var Channel $channel */
+        $channel = $video->channel;
+
         try {
             $externalRequest = Http::post($webhookUrl, [
                 'title' => $video->getAttribute('title'),
@@ -28,8 +32,8 @@ class SendWebhookNotification
                 'published_at' => $video->getAttribute('published_at')->toDateTimeString(),
                 'published_at_formatted' => $video->getFormattedPublishedDate(),
                 'channel' => [
-                    'label' => $video->channel->getAttribute('name'),
-                    'url' => $video->channel->getChannelUrl(),
+                    'label' => $channel->getAttribute('name'),
+                    'url' => $channel->getChannelUrl(),
                 ],
             ]);
 

@@ -229,7 +229,7 @@ class InstallerCommand extends Command
             $content .= "\n{$key}={$value}";
         }
 
-        File::put($envFile, $content);
+        File::put($envFile, (string) $content);
     }
 
     /**
