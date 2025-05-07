@@ -10,6 +10,7 @@ use App\Models\Channel;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 use function Laravel\Prompts\text;
 
@@ -43,11 +44,27 @@ class AddChannelCommand extends Command
         $name = text(
             label: 'Channel label?',
             required: true,
+            validate: [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('channels', 'name'),
+            ],
             hint: 'Please enter a memorable name for the channel; usually the channels name on YouTube.'
         );
+
         $channelUrl = text(
             label: 'Channel URL/@handle?',
             required: true,
+            validate: [
+                'required',
+                'string',
+                function ($attribute, $value, $fail): void {
+                    if (str_contains($value, ' ')) {
+                        $fail('The :attribute cannot contain spaces.');
+                    }
+                },
+            ],
             hint: 'Enter the channel URL or handle (e.g., https://www.youtube.com/@channelname or @channelname)',
         );
 

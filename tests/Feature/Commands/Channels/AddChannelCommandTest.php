@@ -186,3 +186,24 @@ it('leaves channel/custom/user URLs unchanged', function (): void {
     $channel = Channel::where('channel_id', 'UC_x5XG1OV2P6uZZ5FSM9Ttw')->first();
     expect($channel)->not->toBeNull();
 });
+
+it('shows a message if the label name has already been taken', function (): void {
+    $channel = Channel::factory()->create(['name' => 'Existing Channel']);
+
+    $this->artisan(AddChannelCommand::class)
+        ->expectsQuestion('Channel label?', 'Existing Channel')
+        ->expectsOutputToContain('The answer has already been taken.');
+
+    expect(Channel::count())->toBe(1)
+        ->and(Channel::first()->id)->toBe($channel->id)
+        ->and(Channel::first()->name)->toBe('Existing Channel');
+});
+
+it('does not allow spaces in channel url field', function (): void {
+    $this->artisan(AddChannelCommand::class)
+        ->expectsQuestion('Channel label?', 'Test Channel')
+        ->expectsQuestion('Channel URL/@handle?', 'https://www.youtube.com/@test channel')
+        ->expectsOutputToContain('The answer cannot contain spaces.');
+
+    expect(Channel::count())->toBe(0);
+});
