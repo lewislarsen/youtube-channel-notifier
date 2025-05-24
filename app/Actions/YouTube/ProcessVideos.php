@@ -61,6 +61,10 @@ readonly class ProcessVideos
             }
 
             $this->sendVideoNotifications->execute($video);
+
+            // These videos are ones that have been notified about, not initially imported.
+            // This allows us to distinguish between first-time imports and new videos.
+            $video->markAsNotified();
             Log::info("New video added and notifications sent: {$video->title} ({$video->video_id}) for channel: {$channel->name}.");
         }
     }

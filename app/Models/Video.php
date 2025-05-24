@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\VideoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,7 +28,7 @@ class Video extends Model
      */
     public $guarded = [];
 
-    public $casts = ['published_at' => 'datetime'];
+    public $casts = ['published_at' => 'datetime', 'notified_at' => 'datetime'];
 
     /**
      * Get the channel that owns the video.
@@ -71,5 +72,21 @@ class Video extends Model
     public function getIsoPublishedDate(): string
     {
         return $this->published_at->toIso8601String();
+    }
+
+    /**
+     *  Mark the video as notified.
+     */
+    public function markAsNotified(): bool
+    {
+        return $this->update(['notified_at' => Carbon::now()]);
+    }
+
+    /**
+     * Check if the video has been notified.
+     */
+    public function isNotified(): bool
+    {
+        return ! is_null($this->notified_at);
     }
 }

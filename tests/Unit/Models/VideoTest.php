@@ -49,3 +49,23 @@ it('formats published date as ISO8601 for Discord', function (): void {
     expect($video->getIsoPublishedDate())
         ->toBe($publishDate->toIso8601String());
 });
+
+it('marks the videos notification column as true', function (): void {
+
+    $video = Video::factory()->create(['notified_at' => null]);
+
+    expect($video->markAsNotified())->toBeTrue()
+        ->and($video->notified_at)->toBeInstanceOf(Carbon::class);
+});
+
+it('returns true if the video has been notified', function (): void {
+    $video = Video::factory()->create(['notified_at' => Carbon::now()]);
+
+    expect($video->isNotified())->toBeTrue();
+});
+
+it('returns false if the video has not been notified', function (): void {
+    $video = Video::factory()->create(['notified_at' => null]);
+
+    expect($video->isNotified())->toBeFalse();
+});

@@ -73,7 +73,11 @@ describe('Core Video Detection', function (): void {
             return $mail->hasTo('email@example.com');
         });
 
-        expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
+        $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
+
+        $this->assertTrue($video->exists);
+        $this->assertNotNull($video->notified_at);
+        $this->assertTrue($video->isNotified());
     });
 
     it('does not send a mailable on first-time import', function (): void {
@@ -102,7 +106,11 @@ describe('Core Video Detection', function (): void {
 
         Mail::assertNothingSent();
 
-        expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
+        $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
+
+        $this->assertTrue($video->exists);
+        $this->assertNull($video->notified_at);
+        $this->assertFalse($video->isNotified());
     });
 });
 
@@ -205,7 +213,10 @@ describe('Filtering', function (): void {
             return str_contains((string) $request->url(), 'discord.com/api/webhooks');
         });
 
-        expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue()
+        $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
+
+        expect($video->exists())->toBeTrue()
+            ->and($video->isNotified())->toBeFalse()
             ->and($channel->isMuted())->toBeTrue();
     });
 });
@@ -247,7 +258,10 @@ describe('Notifications', function (): void {
                     $mail->hasTo('email2@example.com');
             });
 
-            expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeTrue();
+            $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
+
+            $this->assertTrue($video->exists);
+            $this->assertTrue($video->isNotified());
         });
     });
 
