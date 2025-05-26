@@ -39,12 +39,21 @@ class ListChannelsCommand extends Command
         $channels = Channel::orderBy('created_at', 'desc')->get();
 
         $this->table(
-            ['Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL', 'Muted'],
+            ['Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted'],
             $channels->map(function (Channel $channel) {
+
+                $latestNotifiedVideo = $channel->videos()
+                    ->whereNotNull('notified_at')
+                    ->orderBy('notified_at', 'desc')
+                    ->first();
+
                 return [
                     $channel->name,
                     $channel->videos()->count(),
                     Carbon::parse($channel->last_checked_at)->diffForHumans(),
+                    $latestNotifiedVideo
+                        ? Carbon::parse($latestNotifiedVideo->notified_at)->diffForHumans()
+                        : '—',
                     $channel->getChannelUrl(),
                     $channel->isMuted() ? '✔' : '✘',
                 ];

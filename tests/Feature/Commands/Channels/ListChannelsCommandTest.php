@@ -17,12 +17,20 @@ it('displays a list of channels', function (): void {
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
         ], $channels->map(function (Channel $channel) {
+            $latestNotifiedVideo = $channel->videos()
+                ->whereNotNull('notified_at')
+                ->orderBy('notified_at', 'desc')
+                ->first();
+
             return [
                 $channel->name,
                 $channel->videos()->count(),
                 Carbon::parse($channel->last_checked_at)->diffForHumans(),
+                $latestNotifiedVideo
+                    ? Carbon::parse($latestNotifiedVideo->notified_at)->diffForHumans()
+                    : '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
             ];
@@ -32,7 +40,7 @@ it('displays a list of channels', function (): void {
 it('displays an empty table when no channels exist', function (): void {
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
         ], []);
 });
 
@@ -42,12 +50,13 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
         ], [
             [
                 $mutedChannel->name,
                 $mutedChannel->videos()->count(),
                 Carbon::parse($mutedChannel->last_checked_at)->diffForHumans(),
+                '—',
                 $mutedChannel->getChannelUrl(),
                 '✔',
             ],
@@ -55,6 +64,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
                 $unmutedChannel->name,
                 $unmutedChannel->videos()->count(),
                 Carbon::parse($unmutedChannel->last_checked_at)->diffForHumans(),
+                '—',
                 $unmutedChannel->getChannelUrl(),
                 '✘',
             ],
@@ -77,12 +87,13 @@ it('orders channels by most recently created', function (): void {
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
         ], [
             [
                 $newChannel->name,
                 $newChannel->videos()->count(),
                 Carbon::parse($newChannel->last_checked_at)->diffForHumans(),
+                '—',
                 $newChannel->getChannelUrl(),
                 $newChannel->isMuted() ? '✔' : '✘',
             ],
@@ -90,6 +101,7 @@ it('orders channels by most recently created', function (): void {
                 $middleChannel->name,
                 $middleChannel->videos()->count(),
                 Carbon::parse($middleChannel->last_checked_at)->diffForHumans(),
+                '—',
                 $middleChannel->getChannelUrl(),
                 $middleChannel->isMuted() ? '✔' : '✘',
             ],
@@ -97,8 +109,68 @@ it('orders channels by most recently created', function (): void {
                 $oldChannel->name,
                 $oldChannel->videos()->count(),
                 Carbon::parse($oldChannel->last_checked_at)->diffForHumans(),
+                '—',
                 $oldChannel->getChannelUrl(),
                 $oldChannel->isMuted() ? '✔' : '✘',
+            ],
+        ]);
+});
+
+it('displays last notification correctly when videos have notified_at timestamps', function (): void {
+    $channel = Channel::factory()->create();
+
+    Video::factory()->for($channel)->create([
+        'notified_at' => now()->subDays(5),
+    ]);
+    Video::factory()->for($channel)->create([
+        'notified_at' => now()->subDays(2), // This should be the latest
+    ]);
+    Video::factory()->for($channel)->create([
+        'notified_at' => now()->subDays(7),
+    ]);
+
+    Video::factory()->for($channel)->create([
+        'notified_at' => null,
+    ]);
+
+    $latestNotifiedVideo = $channel->videos()
+        ->whereNotNull('notified_at')
+        ->orderBy('notified_at', 'desc')
+        ->first();
+
+    $this->artisan(ListChannelsCommand::class)
+        ->expectsTable([
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+        ], [
+            [
+                $channel->name,
+                $channel->videos()->count(),
+                Carbon::parse($channel->last_checked_at)->diffForHumans(),
+                Carbon::parse($latestNotifiedVideo->notified_at)->diffForHumans(),
+                $channel->getChannelUrl(),
+                $channel->isMuted() ? '✔' : '✘',
+            ],
+        ]);
+});
+
+it('displays em dash when no videos have been notified', function (): void {
+    $channel = Channel::factory()->create();
+
+    Video::factory()->count(3)->for($channel)->create([
+        'notified_at' => null,
+    ]);
+
+    $this->artisan(ListChannelsCommand::class)
+        ->expectsTable([
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+        ], [
+            [
+                $channel->name,
+                $channel->videos()->count(),
+                Carbon::parse($channel->last_checked_at)->diffForHumans(),
+                '—',
+                $channel->getChannelUrl(),
+                $channel->isMuted() ? '✔' : '✘',
             ],
         ]);
 });
