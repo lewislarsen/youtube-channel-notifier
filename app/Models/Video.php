@@ -63,7 +63,7 @@ class Video extends Model
      */
     public function getFormattedPublishedDate(): string
     {
-        return $this->published_at->format('d M Y h:i A');
+        return Carbon::parse($this->published_at)->setTimezone(config('app.timezone'))->format('d M Y h:i A');
     }
 
     /**
@@ -71,7 +71,7 @@ class Video extends Model
      */
     public function getIsoPublishedDate(): string
     {
-        return $this->published_at->toIso8601String();
+        return Carbon::parse($this->published_at)->setTimezone(config('app.timezone'))->toIso8601String();
     }
 
     /**

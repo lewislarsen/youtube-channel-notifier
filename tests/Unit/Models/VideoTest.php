@@ -50,6 +50,38 @@ it('formats published date as ISO8601 for Discord', function (): void {
         ->toBe($publishDate->toIso8601String());
 });
 
+it('formats published date as ISO8601 according to app timezone configuration', function (): void {
+    $publishDate = Carbon::create(2023, 5, 15, 14, 30, 0, 'UTC');
+    $video = Video::factory()->create([
+        'published_at' => $publishDate,
+    ]);
+    $defaultIsoDate = $video->getIsoPublishedDate();
+    config(['app.timezone' => 'America/New_York']);
+    $video->refresh();
+    $newTimezoneIsoDate = $video->getIsoPublishedDate();
+
+    expect($newTimezoneIsoDate)
+        ->not->toBe($defaultIsoDate)
+        ->and($newTimezoneIsoDate)
+        ->toBe('2023-05-15T10:30:00-04:00');
+});
+
+it('formats published date according to app timezone configuration', function (): void {
+    $publishDate = Carbon::create(2023, 5, 15, 14, 30, 0, 'UTC');
+    $video = Video::factory()->create([
+        'published_at' => $publishDate,
+    ]);
+    $defaultFormattedDate = $video->getFormattedPublishedDate();
+    config(['app.timezone' => 'America/New_York']);
+    $video->refresh();
+    $newTimezoneFormattedDate = $video->getFormattedPublishedDate();
+
+    expect($newTimezoneFormattedDate)
+        ->not->toBe($defaultFormattedDate)
+        ->and($newTimezoneFormattedDate)
+        ->toBe('15 May 2023 10:30 AM');
+});
+
 it('marks the videos notification column as true', function (): void {
 
     $video = Video::factory()->create(['notified_at' => null]);
