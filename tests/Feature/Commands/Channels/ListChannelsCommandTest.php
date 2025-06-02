@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Console\Commands\Channels\ListChannelsCommand;
 use App\Models\Channel;
 use App\Models\Video;
-use Carbon\Carbon;
 
 it('displays a list of channels', function (): void {
     $channels = Channel::factory()->count(3)->create();
@@ -27,10 +26,8 @@ it('displays a list of channels', function (): void {
             return [
                 $channel->name,
                 $channel->videos()->count(),
-                Carbon::parse($channel->last_checked_at)->diffForHumans(),
-                $latestNotifiedVideo
-                    ? Carbon::parse($latestNotifiedVideo->notified_at)->diffForHumans()
-                    : '—',
+                $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $latestNotifiedVideo?->notified_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
             ];
@@ -55,7 +52,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
             [
                 $mutedChannel->name,
                 $mutedChannel->videos()->count(),
-                Carbon::parse($mutedChannel->last_checked_at)->diffForHumans(),
+                $mutedChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 '—',
                 $mutedChannel->getChannelUrl(),
                 '✔',
@@ -63,7 +60,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
             [
                 $unmutedChannel->name,
                 $unmutedChannel->videos()->count(),
-                Carbon::parse($unmutedChannel->last_checked_at)->diffForHumans(),
+                $unmutedChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 '—',
                 $unmutedChannel->getChannelUrl(),
                 '✘',
@@ -92,7 +89,7 @@ it('orders channels by most recently created', function (): void {
             [
                 $newChannel->name,
                 $newChannel->videos()->count(),
-                Carbon::parse($newChannel->last_checked_at)->diffForHumans(),
+                $newChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 '—',
                 $newChannel->getChannelUrl(),
                 $newChannel->isMuted() ? '✔' : '✘',
@@ -100,7 +97,7 @@ it('orders channels by most recently created', function (): void {
             [
                 $middleChannel->name,
                 $middleChannel->videos()->count(),
-                Carbon::parse($middleChannel->last_checked_at)->diffForHumans(),
+                $middleChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 '—',
                 $middleChannel->getChannelUrl(),
                 $middleChannel->isMuted() ? '✔' : '✘',
@@ -108,7 +105,7 @@ it('orders channels by most recently created', function (): void {
             [
                 $oldChannel->name,
                 $oldChannel->videos()->count(),
-                Carbon::parse($oldChannel->last_checked_at)->diffForHumans(),
+                $oldChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 '—',
                 $oldChannel->getChannelUrl(),
                 $oldChannel->isMuted() ? '✔' : '✘',
@@ -145,8 +142,8 @@ it('displays last notification correctly when videos have notified_at timestamps
             [
                 $channel->name,
                 $channel->videos()->count(),
-                Carbon::parse($channel->last_checked_at)->diffForHumans(),
-                Carbon::parse($latestNotifiedVideo->notified_at)->diffForHumans(),
+                $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $latestNotifiedVideo->notified_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
             ],
@@ -167,7 +164,7 @@ it('displays em dash when no videos have been notified', function (): void {
             [
                 $channel->name,
                 $channel->videos()->count(),
-                Carbon::parse($channel->last_checked_at)->diffForHumans(),
+                $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                 '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',

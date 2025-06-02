@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 /**
@@ -50,10 +49,8 @@ class ListChannelsCommand extends Command
                 return [
                     $channel->name,
                     $channel->videos()->count(),
-                    Carbon::parse($channel->last_checked_at)->diffForHumans(),
-                    $latestNotifiedVideo
-                        ? Carbon::parse($latestNotifiedVideo->notified_at)->diffForHumans()
-                        : '—',
+                    $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                    $latestNotifiedVideo?->notified_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                     $channel->getChannelUrl(),
                     $channel->isMuted() ? '✔' : '✘',
                 ];

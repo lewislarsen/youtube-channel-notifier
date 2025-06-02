@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Actions\YouTube\ExtractYouTubeChannelAvatar;
+use Carbon\Carbon;
 use Database\Factories\ChannelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +38,7 @@ class Channel extends Model
     protected $casts = [
         'muted_at' => 'datetime',
         'published_at' => 'datetime',
+        'last_checked_at' => 'datetime',
     ];
 
     /**
@@ -54,7 +56,7 @@ class Channel extends Model
      */
     public function updateLastChecked(): void
     {
-        $this->update(['last_checked_at' => now()]);
+        $this->update(['last_checked_at' => Carbon::now()->utc()]);
         Log::debug("Check for videos completed for channel: {$this->name}.");
     }
 

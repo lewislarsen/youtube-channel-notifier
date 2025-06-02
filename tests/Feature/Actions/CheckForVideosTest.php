@@ -511,6 +511,7 @@ describe('EmptyFeed', function (): void {
 describe('DateHandling', function (): void {
     it('correctly parses and stores the published date from RSS feed', function (): void {
         Mail::fake();
+        Date::setTestNow(now('UTC'));
         Config::set('app.alert_emails', 'email@example.com');
 
         $channel = Channel::factory()->create([

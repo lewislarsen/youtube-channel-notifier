@@ -30,8 +30,8 @@ class ListVideosCommand extends Command
                 return [
                     $video->title,
                     $video->channel->name ?? 'Unknown',
-                    Carbon::parse($video->published_at)->diffForHumans(),
-                    $video->notified_at ? Carbon::parse($video->notified_at)->diffForHumans() : '—',
+                    Carbon::parse($video->published_at)->setTimezone(config('app.timezone'))->diffForHumans(),
+                    $video->notified_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
                     $video->getYoutubeUrl(),
                 ];
             })->toArray()
