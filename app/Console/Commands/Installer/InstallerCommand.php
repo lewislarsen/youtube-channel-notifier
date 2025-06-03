@@ -41,39 +41,6 @@ class InstallerCommand extends Command
         $this->components->info("Let's get your notification system set up in just a few minutes.");
         $this->newLine();
 
-        if (App::environment('production') && ! $this->option('force')) {
-            $this->components->error('⚠️ Production Environment Detected!');
-            $this->newLine();
-
-            $this->components->warn(
-                'Running this installer in production might affect your existing setup:'
-            );
-
-            $this->components->bulletList([
-                'Your current environment settings may be overwritten',
-                'Database migrations will run (potentially affecting existing data)',
-                'A new application key will be generated (invalidating existing encrypted values)',
-            ]);
-
-            $this->newLine();
-
-            if (! confirm('Would you like to proceed anyway?', false)) {
-                $this->components->info('No problem! Installation canceled.');
-
-                return;
-            }
-
-            if (! confirm('Just to be sure - this cannot be undone. Continue?', false)) {
-                $this->components->info('Installation safely canceled.');
-
-                return;
-            }
-
-            $this->newLine();
-            $this->components->info('Continuing with installation in production environment...');
-            $this->newLine();
-        }
-
         if (File::exists(base_path('.env')) &&
             ! confirm('I noticed an .env file already exists. Is it okay to replace it?', false)) {
             $this->components->info('Got it! Your existing configuration has been preserved.');
