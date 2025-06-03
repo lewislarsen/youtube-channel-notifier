@@ -26,8 +26,8 @@ it('displays a list of channels', function (): void {
             return [
                 $channel->name,
                 $channel->videos()->count(),
-                $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
-                $latestNotifiedVideo?->notified_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $channel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
+                $latestNotifiedVideo?->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
             ];
@@ -52,7 +52,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
             [
                 $mutedChannel->name,
                 $mutedChannel->videos()->count(),
-                $mutedChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $mutedChannel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 '—',
                 $mutedChannel->getChannelUrl(),
                 '✔',
@@ -60,7 +60,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
             [
                 $unmutedChannel->name,
                 $unmutedChannel->videos()->count(),
-                $unmutedChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $unmutedChannel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 '—',
                 $unmutedChannel->getChannelUrl(),
                 '✘',
@@ -89,7 +89,7 @@ it('orders channels by most recently created', function (): void {
             [
                 $newChannel->name,
                 $newChannel->videos()->count(),
-                $newChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $newChannel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 '—',
                 $newChannel->getChannelUrl(),
                 $newChannel->isMuted() ? '✔' : '✘',
@@ -97,7 +97,7 @@ it('orders channels by most recently created', function (): void {
             [
                 $middleChannel->name,
                 $middleChannel->videos()->count(),
-                $middleChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $middleChannel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 '—',
                 $middleChannel->getChannelUrl(),
                 $middleChannel->isMuted() ? '✔' : '✘',
@@ -105,7 +105,7 @@ it('orders channels by most recently created', function (): void {
             [
                 $oldChannel->name,
                 $oldChannel->videos()->count(),
-                $oldChannel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $oldChannel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 '—',
                 $oldChannel->getChannelUrl(),
                 $oldChannel->isMuted() ? '✔' : '✘',
@@ -142,8 +142,8 @@ it('displays last notification correctly when videos have notified_at timestamps
             [
                 $channel->name,
                 $channel->videos()->count(),
-                $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
-                $latestNotifiedVideo->notified_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $channel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
+                $latestNotifiedVideo->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
             ],
@@ -164,7 +164,7 @@ it('displays em dash when no videos have been notified', function (): void {
             [
                 $channel->name,
                 $channel->videos()->count(),
-                $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                $channel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',

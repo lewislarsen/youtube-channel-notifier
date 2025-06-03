@@ -5,14 +5,14 @@ declare(strict_types=1);
 use App\Models\Video;
 use Illuminate\Support\Carbon;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->originalTimezone = config('app.timezone');
     config(['app.timezone' => 'UTC']);
     Date::setTestNow(now('UTC'));
     Carbon::setTestNow();
 });
 
-afterEach(function () {
+afterEach(function (): void {
     config(['app.timezone' => $this->originalTimezone]);
     Carbon::setTestNow();
 });
@@ -54,7 +54,7 @@ it('formats published date for human-readable display with Europe/London timezon
         'published_at' => $publishDate,
     ]);
 
-    config(['app.timezone' => 'Europe/London']);
+    config(['app.user_timezone' => 'Europe/London']);
     $video->refresh();
 
     $londonBstFormattedDate = $video->getFormattedPublishedDate();
@@ -69,7 +69,7 @@ it('formats published date for human-readable display with Europe/London timezon
         'published_at' => $publishDate,
     ]);
 
-    config(['app.timezone' => 'Europe/London']);
+    config(['app.user_timezone' => 'Europe/London']);
     $video->refresh();
     $londonGmtFormattedDate = $video->getFormattedPublishedDate();
 
@@ -84,7 +84,7 @@ it('formats published date as ISO8601 according to app timezone configuration', 
     ]);
 
     $defaultIsoDate = $video->getIsoPublishedDate();
-    config(['app.timezone' => 'America/New_York']);
+    config(['app.user_timezone' => 'America/New_York']);
     $video->refresh();
     $newTimezoneIsoDate = $video->getIsoPublishedDate();
 
@@ -102,7 +102,7 @@ it('formats published date according to app timezone configuration', function ()
 
     $defaultFormattedDate = $video->getFormattedPublishedDate();
 
-    config(['app.timezone' => 'America/New_York']);
+    config(['app.user_timezone' => 'America/New_York']);
     $video->refresh();
     $newTimezoneFormattedDate = $video->getFormattedPublishedDate();
 

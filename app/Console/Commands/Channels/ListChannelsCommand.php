@@ -49,8 +49,8 @@ class ListChannelsCommand extends Command
                 return [
                     $channel->name,
                     $channel->videos()->count(),
-                    $channel->last_checked_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
-                    $latestNotifiedVideo?->notified_at?->setTimezone(config('app.timezone'))->diffForHumans() ?? '—',
+                    $channel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
+                    $latestNotifiedVideo?->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                     $channel->getChannelUrl(),
                     $channel->isMuted() ? '✔' : '✘',
                 ];

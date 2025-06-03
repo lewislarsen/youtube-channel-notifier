@@ -63,7 +63,7 @@ class Video extends Model
      */
     public function getFormattedPublishedDate(): string
     {
-        return Carbon::parse($this->published_at)->utc()->setTimezone(config('app.timezone'))->format('d M Y h:i A');
+        return Carbon::parse($this->published_at)->setTimezone(config('app.user_timezone'))->format('d M Y h:i A');
     }
 
     /**
@@ -71,7 +71,7 @@ class Video extends Model
      */
     public function getIsoPublishedDate(): string
     {
-        return Carbon::parse($this->published_at)->utc()->setTimezone(config('app.timezone'))->toIso8601String();
+        return Carbon::parse($this->published_at)->setTimezone(config('app.user_timezone'))->toIso8601String();
     }
 
     /**
@@ -79,7 +79,7 @@ class Video extends Model
      */
     public function markAsNotified(): bool
     {
-        return $this->update(['notified_at' => Carbon::now()->utc]);
+        return $this->update(['notified_at' => Carbon::now()]);
     }
 
     /**

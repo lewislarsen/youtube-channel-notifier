@@ -145,10 +145,10 @@ class ExtractVideos
             'video_id' => $videoId,
             'title' => $title,
             'description' => $description,
-            'published_at' => Carbon::parse((string) $entry->published)->utc(),
+            'published_at' => Carbon::parse((string) $entry->published),
             'channel_id' => $channel->id,
-            'created_at' => Carbon::now()->utc(),
-            'updated_at' => Carbon::now()->utc(),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ];
     }
 }

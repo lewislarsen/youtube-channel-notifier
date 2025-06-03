@@ -166,4 +166,21 @@ return [
      *
      */
     'webhook_post_url' => env('WEBHOOK_POST_URL', null),
+
+    /*
+     * -------------------------------------------------------------------------
+     * User Timezone
+     * -------------------------------------------------------------------------
+     *
+     * This value determines the timezone used for displaying dates and times
+     * to users throughout the application. This is separate from the application
+     * timezone (APP_TIMEZONE) which is used for internal operations and database
+     * storage. The user timezone affects how timestamps are presented in the UI,
+     * notifications, and user-facing reports.
+     *
+     * You can set this in your ".env" file using USER_TIMEZONE.
+     * Common values: 'America/New_York', 'Europe/London', 'Asia/Tokyo', etc.
+     *
+     */
+    'user_timezone' => env('USER_TIMEZONE', 'UTC'),
 ];

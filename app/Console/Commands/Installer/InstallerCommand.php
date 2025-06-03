@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\password;
+use function Laravel\Prompts\search;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 
@@ -126,6 +127,9 @@ class InstallerCommand extends Command
         $this->components->info("📝 Let's personalize your notification settings:");
         $this->newLine();
 
+        // Configure timezone first
+        $this->configureTimezone();
+
         $alertEmails = text('Where should notifications be sent? (Email addresses, comma-separated for multiple)');
         $this->updateEnv('ALERT_EMAILS', $alertEmails);
         $this->components->task('Setting up email notification recipients', fn () => true);
@@ -199,6 +203,57 @@ class InstallerCommand extends Command
 
         $this->newLine();
         $this->components->info('✨ Configuration complete! Your settings have been saved.');
+    }
+
+    /**
+     * Configure the user timezone.
+     */
+    private function configureTimezone(): void
+    {
+        $this->components->info('🌍 Let\'s set your timezone for accurate notification timing:');
+        $this->newLine();
+
+        $commonTimezones = config('timezones.common');
+
+        $timezoneChoice = select(
+            label: 'Choose your timezone',
+            options: array_merge($commonTimezones, ['other' => 'Other (search for specific timezone)']),
+            default: 'UTC',
+            hint: 'This will be used for notification timestamps.'
+        );
+
+        if ($timezoneChoice === 'other') {
+            // Get all available timezones
+            $allTimezones = timezone_identifiers_list();
+
+            // Filtered timezones based on user input
+            $selectedTimezone = search(
+                label: 'Search for your timezone',
+                options: function (string $value) use ($allTimezones): array {
+                    if (strlen($value) < 2) {
+                        return [];
+                    }
+
+                    return array_values(array_filter($allTimezones, function ($timezone) use ($value) {
+                        return stripos($timezone, $value) !== false;
+                    }));
+                },
+                placeholder: 'Type to search (e.g., "New_York", "London", "Tokyo")...',
+                hint: 'Start typing your city or region name'
+            );
+
+            // Force type to string|null only
+            $selectedTimezone = is_string($selectedTimezone) ? $selectedTimezone : null;
+        } else {
+            $selectedTimezone = $timezoneChoice;
+        }
+
+        $this->updateEnv('USER_TIMEZONE', (string) $selectedTimezone);
+        $this->components->task("Setting timezone to {$selectedTimezone}", fn () => true);
+
+        $this->newLine();
+        $this->components->info("✅ Timezone configured: {$selectedTimezone}");
+        $this->newLine();
     }
 
     /**
