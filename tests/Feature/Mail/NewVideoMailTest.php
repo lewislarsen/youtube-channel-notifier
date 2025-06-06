@@ -72,3 +72,29 @@ it('sends the mailable to multiple email addresses', function (): void {
             && $mail->hasTo('another@example.com');
     });
 });
+
+it('translates the mailable into another language', function (): void {
+    Config::set('app.locale', 'en');
+
+    $channel = Channel::factory()->create(['name' => 'TestChannel']);
+    $video = Video::factory()->make([
+        'channel_id' => $channel->id,
+        'title' => 'Test Video',
+        'video_id' => '5ltAy1W6k-Q',
+        'published_at' => Carbon::now(),
+    ]);
+
+    $mailable = new NewVideoMail($video, $channel);
+
+    expect($mailable->envelope()->subject)
+        ->toBe(__('email.subject_new_upload', ['channel' => $channel->name, 'title' => $video->title]));
+
+    $renderedContent = $mailable->render();
+
+    expect($renderedContent)
+        ->toContain(__('email.new_upload_from', ['creator' => $channel->name]))
+        ->toContain(__('email.creator_uploaded_video', ['creator' => $channel->name]))
+        ->toContain(__('email.published_date', ['date' => $video->getFormattedPublishedDate()]))
+        ->toContain(__('email.watch_on_youtube'))
+        ->toContain(__('email.notification_reason', ['creator' => $channel->name]));
+});

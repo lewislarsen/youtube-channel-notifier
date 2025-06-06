@@ -326,6 +326,11 @@ In the RSS feed, shorts are indistinguishable from regular longform videos. The 
 ### How do I set my timezone?
 You can set your timezone in the `.env` file using the `USER_TIMEZONE` variable. You can find a list of supported timezones in the [PHP documentation](https://www.php.net/manual/en/timezones.php).
 
+### How do I set my language?
+You can set your preferred language in the `.env` file using the `USER_LANGUAGE` variable. The application currently supports English but can be extended to support other languages in the future.
+
+If you want to help with translations, please open an issue or submit a pull request with your language files.
+
 ## Support & Community
 
 If you encounter any issues or have ideas for improvements, please open an issue.

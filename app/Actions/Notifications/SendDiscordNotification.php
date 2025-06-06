@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Notifications;
 
+use App;
 use App\Enums\Colour;
 use App\Models\Channel;
 use App\Models\Video;
@@ -23,6 +24,8 @@ class SendDiscordNotification
      */
     public function execute(Video $video): bool
     {
+        App::setLocale(config('app.user_language', 'en'));
+
         /** @var Channel $channel */
         $channel = $video->channel;
 
@@ -52,7 +55,7 @@ class SendDiscordNotification
         ];
 
         $payload = [
-            'content' => '🎬 **New Video Alert!** Check out this new upload from '.$channel->getAttribute('name'),
+            'content' => __('discord.new_video_alert', ['channel' => $channel->getAttribute('name')]),
             'embeds' => [$embed],
             'avatar_url' => URL::asset('assets/white-full.png'),
             'username' => Config::get('app.name'),

@@ -31,7 +31,9 @@ class NewVideoMail extends Mailable
     public function __construct(
         public Video $video,
         public Channel $channel
-    ) {}
+    ) {
+        $this->locale = config('app.user_language', 'en');
+    }
 
     /**
      * Get the message envelope.
@@ -52,7 +54,10 @@ class NewVideoMail extends Mailable
      */
     protected function getSubject(): string
     {
-        return sprintf('New Upload: %s - "%s"', $this->channel->name, $this->video->title);
+        return __('email.subject_new_upload', [
+            'channel' => $this->channel->name,
+            'title' => $this->video->title,
+        ]);
     }
 
     /**

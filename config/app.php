@@ -183,4 +183,22 @@ return [
      *
      */
     'user_timezone' => env('USER_TIMEZONE', 'UTC'),
+
+    /*
+     * -------------------------------------------------------------------------
+     * User Language/Locale
+     * -------------------------------------------------------------------------
+     *
+     * This value determines the language/locale used for displaying content
+     * to users throughout the application. This is separate from the application
+     * locale (APP_LOCALE) which is used for internal operations and fallback
+     * translations. The user language affects how content is presented in the UI,
+     * notifications, and user-facing messages.
+     *
+     * You can set this in your ".env" file using USER_LANGUAGE.
+     * Common values: 'en', 'ja', 'es', 'fr', 'de', 'zh', etc.
+     * For full locale codes: 'en_US', 'ja_JP', 'es_ES', 'fr_FR', etc.
+     *
+     */
+    'user_language' => env('USER_LANGUAGE', 'en'),
 ];
