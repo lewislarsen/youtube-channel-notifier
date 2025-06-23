@@ -38,7 +38,7 @@ class ListChannelsCommand extends Command
         $channels = Channel::orderBy('created_at', 'desc')->get();
 
         $this->table(
-            ['Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted'],
+            ['Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note'],
             $channels->map(function (Channel $channel) {
 
                 $latestNotifiedVideo = $channel->videos()
@@ -53,6 +53,7 @@ class ListChannelsCommand extends Command
                     $latestNotifiedVideo?->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                     $channel->getChannelUrl(),
                     $channel->isMuted() ? '✔' : '✘',
+                    $channel->note ?: '—',
                 ];
             })->toArray()
         );
