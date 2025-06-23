@@ -118,6 +118,9 @@ php artisan channels:mute
 # Rename an existing channel you've added!
 php artisan channels:rename
 
+# Add a note to a channel (viewable with the `list` command)
+php artisan channels:note
+
 # View statistics about your channels
 php artisan other:stats
 

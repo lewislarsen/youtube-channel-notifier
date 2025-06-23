@@ -16,7 +16,7 @@ it('displays a list of channels', function (): void {
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
         ], $channels->map(function (Channel $channel) {
             $latestNotifiedVideo = $channel->videos()
                 ->whereNotNull('notified_at')
@@ -30,6 +30,7 @@ it('displays a list of channels', function (): void {
                 $latestNotifiedVideo?->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
+                $channel->note ?? '—',
             ];
         })->toArray());
 });
@@ -37,7 +38,7 @@ it('displays a list of channels', function (): void {
 it('displays an empty table when no channels exist', function (): void {
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
         ], []);
 });
 
@@ -47,7 +48,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
         ], [
             [
                 $mutedChannel->name,
@@ -56,6 +57,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
                 '—',
                 $mutedChannel->getChannelUrl(),
                 '✔',
+                $mutedChannel->note ?? '—',
             ],
             [
                 $unmutedChannel->name,
@@ -64,6 +66,7 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
                 '—',
                 $unmutedChannel->getChannelUrl(),
                 '✘',
+                $unmutedChannel->note ?? '—',
             ],
         ]);
 });
@@ -84,7 +87,7 @@ it('orders channels by most recently created', function (): void {
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
         ], [
             [
                 $newChannel->name,
@@ -93,6 +96,7 @@ it('orders channels by most recently created', function (): void {
                 '—',
                 $newChannel->getChannelUrl(),
                 $newChannel->isMuted() ? '✔' : '✘',
+                $newChannel->note ?? '—',
             ],
             [
                 $middleChannel->name,
@@ -101,6 +105,7 @@ it('orders channels by most recently created', function (): void {
                 '—',
                 $middleChannel->getChannelUrl(),
                 $middleChannel->isMuted() ? '✔' : '✘',
+                $middleChannel->note ?? '—',
             ],
             [
                 $oldChannel->name,
@@ -109,6 +114,7 @@ it('orders channels by most recently created', function (): void {
                 '—',
                 $oldChannel->getChannelUrl(),
                 $oldChannel->isMuted() ? '✔' : '✘',
+                $oldChannel->note ?? '—',
             ],
         ]);
 });
@@ -137,7 +143,7 @@ it('displays last notification correctly when videos have notified_at timestamps
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
         ], [
             [
                 $channel->name,
@@ -146,6 +152,7 @@ it('displays last notification correctly when videos have notified_at timestamps
                 $latestNotifiedVideo->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
+                $channel->note ?? '—',
             ],
         ]);
 });
@@ -159,7 +166,7 @@ it('displays em dash when no videos have been notified', function (): void {
 
     $this->artisan(ListChannelsCommand::class)
         ->expectsTable([
-            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted',
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
         ], [
             [
                 $channel->name,
@@ -168,6 +175,53 @@ it('displays em dash when no videos have been notified', function (): void {
                 '—',
                 $channel->getChannelUrl(),
                 $channel->isMuted() ? '✔' : '✘',
+                $channel->note ?? '—',
             ],
         ]);
+});
+
+it('displays note content when channel has a note', function (): void {
+    $channel = Channel::factory()->create([
+        'note' => 'This is a test note',
+    ]);
+
+    $this->artisan(ListChannelsCommand::class)
+        ->expectsTable([
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
+        ], [
+            [
+                $channel->name,
+                $channel->videos()->count(),
+                $channel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
+                '—',
+                $channel->getChannelUrl(),
+                $channel->isMuted() ? '✔' : '✘',
+                'This is a test note',
+            ],
+        ]);
+
+    $this->assertEquals('This is a test note', $channel->note);
+});
+
+it('displays em dash when channel has no note', function (): void {
+    $channel = Channel::factory()->create([
+        'note' => null,
+    ]);
+
+    $this->artisan(ListChannelsCommand::class)
+        ->expectsTable([
+            'Name', 'Videos Stored', 'Last Video Grabbed', 'Last Notification', 'Channel URL', 'Muted', 'Note',
+        ], [
+            [
+                $channel->name,
+                $channel->videos()->count(),
+                $channel->last_checked_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
+                '—',
+                $channel->getChannelUrl(),
+                $channel->isMuted() ? '✔' : '✘',
+                '—',
+            ],
+        ]);
+
+    $this->assertNull($channel->note);
 });

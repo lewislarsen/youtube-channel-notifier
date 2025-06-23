@@ -28,6 +28,7 @@ class ChannelFactory extends Factory
             'channel_id' => fake()->regexify('[A-Za-z0-9_-]{24}'), // Mimics YouTube channel ID format
             'last_checked_at' => null, // Initial state for new channels
             'muted_at' => null,
+            'note' => fake()->optional(0.3)->sentence(), // Optional note with 30% chance of being set
         ];
     }
 
