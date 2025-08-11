@@ -32,5 +32,5 @@ Route::get('/mail/weekly-summary', function () {
         'created_at' => now()->subDays(3),
     ]);
 
-    return new WeeklySummaryMail($videos)->render();
+    return (new WeeklySummaryMail($videos))->render();
 });
