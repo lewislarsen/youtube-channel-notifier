@@ -44,6 +44,7 @@ class DispatchWeeklySummaryCommand extends Command
         }
 
         $lastWeeksVideos = Video::where('created_at', '>=', now()->subWeek())
+            ->whereNotNull('notified_at') // Only include videos that we've notified the user about
             ->orderBy('created_at', 'desc')
             ->with('channel')
             ->get();
