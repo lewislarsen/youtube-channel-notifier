@@ -43,7 +43,11 @@ it('sends an email containing the last weeks emails', function (): void {
     Config::set('app.alert_emails', ['user@email.com']);
     Mail::fake();
 
+    // We're only sending emails that the user have been notified about
+    // We import all available videos from newly added creators
+    // so we could flood this email if handled incorrectly
     Video::factory()->count(5)->create([
+        'notified_at' => now()->subDays(2),
         'created_at' => now()->subDays(3), // Ensure these are within the last week
     ]);
 
@@ -54,5 +58,6 @@ it('sends an email containing the last weeks emails', function (): void {
     Mail::assertSent(WeeklySummaryMail::class);
 
     expect(Video::where('created_at', '>=', now()->subWeek())->count())->toBe(5)
-        ->and(Video::where('created_at', '<', now()->subWeek())->count())->toBe(0);
+        ->and(Video::where('created_at', '<', now()->subWeek())->count())->toBe(0)
+        ->and(Video::where('notified_at', '>=', now()->subWeek())->count())->toBe(5);
 });
