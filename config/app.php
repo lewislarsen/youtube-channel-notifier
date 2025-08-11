@@ -201,4 +201,22 @@ return [
      *
      */
     'user_language' => env('USER_LANGUAGE', 'en'),
+
+    /*
+     * -------------------------------------------------------------------------
+     * Dispatch Weekly Summary Email
+     * -------------------------------------------------------------------------
+     * This value determines whether the application should dispatch
+     * the weekly summary email to users.
+     * You can set this in your ".env" file using
+     * `DISPATCH_WEEKLY_SUMMARY_EMAIL`.
+     * It should be set to `true` or `false`.
+     *
+     * Example:
+     * DISPATCH_WEEKLY_SUMMARY_EMAIL=true
+     * This will enable the weekly summary email feature.
+     *
+     * Default: false
+     */
+    'dispatch_weekly_summary_email' => (bool) env('DISPATCH_WEEKLY_SUMMARY_EMAIL', false),
 ];

@@ -253,6 +253,14 @@ By populating `WEBHOOK_POST_URL` in your `.env`, the notifier will send a POST r
 }
 ```
 
+### Weekly Notification Emails
+
+You can enable weekly summary emails to receive a digest of all new videos from your tracked channels. Set the following in your `.env` file:
+
+```env
+DISPATCH_WEEKLY_SUMMARY_EMAIL=true
+```
+
 
 ### Video Filtering
 
