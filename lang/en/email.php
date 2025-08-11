@@ -9,4 +9,8 @@ return [
     'notification_reason' => 'You\'re receiving this email because you added ":creator" to your list of channels to be monitored.',
     'documentation_link' => 'For available commands and documentation, visit our <a href=":github_url">GitHub</a> repository.',
     'automated_notification' => 'Automated notification from the <a href=":github_url">:app_name</a> Project.',
+    'weekly_summary_subject' => 'Your Weekly Summary',
+    'weekly_summary_intro' => 'Here\'s your weekly summary of new uploads from the past week.',
+    'weekly_summary_notification_reason' => 'You\'re receiving this email because you enabled Weekly Summaries.',
+    'by_creator' => 'by :creator',
 ];
