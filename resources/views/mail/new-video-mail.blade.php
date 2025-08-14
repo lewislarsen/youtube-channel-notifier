@@ -27,6 +27,10 @@ declare(strict_types=1);
 {{ __('email.watch_on_youtube') }}
 </x-mail::button>
 
+<p style="text-align: center; color: #6b7280; font-size: 14px;">
+{!! __('email.alternative_watch_link', ['link' => $videoUrl]) !!}
+</p>
+
 <x-mail::subcopy>
 {!! __('email.notification_reason', ['creator' => $videoCreator]) !!} {!! __('email.documentation_link', ['github_url' => 'https://github.com/lewislarsen/youtube-channel-notifier?tab=readme-ov-file#youtube-channel-notifier-ycn-project']) !!}
 </x-mail::subcopy>
