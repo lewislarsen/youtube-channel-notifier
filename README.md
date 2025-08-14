@@ -260,6 +260,7 @@ You can enable weekly summary emails to receive a digest of all new videos from 
 ```env
 DISPATCH_WEEKLY_SUMMARY_EMAIL=true
 ```
+Please note that by default, this feature is disabled. 
 
 
 ### Video Filtering
@@ -308,10 +309,10 @@ You can customize this list by editing the configuration file.
 ## FAQ
 
 ### Does this application download or store videos?
-Not at all! We only track metadata (title, publish date, URL) about videos through public RSS feeds. No video content is ever downloaded, stored, or processed.
+Not at all! We only track metadata (title, publish date, URL, description) about videos through public RSS feeds. No video content is ever downloaded, stored, or processed.
 
 ### How often does it check for new videos?
-The notifier checks every 5 minutes. YouTube may take longer to update their RSS feeds, so you may not see notifications immediately after a video is published.
+The notifier checks every 5 minutes. YouTube typically takes 20-30 minutes for new videos to appear on their RSS feeds, so you may not see notifications immediately after a video is published.
 
 ### Does this use the YouTube API?
 No, and that's a good thing! The application uses YouTube's public RSS feeds, which means:
@@ -332,7 +333,7 @@ There are no plans to support platforms other than YouTube.
 Please create an issue in the repository and I'll get back to you.
 
 ### What about shorts?
-In the RSS feed, shorts are indistinguishable from regular longform videos. The notifier will notify you of all new videos, including shorts.
+Unfortunately, YouTube's RSS feed does not distinguish between regular videos and shorts. As a result, we cannot filter out shorts at this time. 
 
 ### How do I set my timezone?
 You can set your timezone in the `.env` file using the `USER_TIMEZONE` variable. You can find a list of supported timezones in the [PHP documentation](https://www.php.net/manual/en/timezones.php).
