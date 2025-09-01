@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Summaries;
 
+use App\Actions\Summaries\FetchRecentVideosForSummary;
 use App\Mail\WeeklySummaryMail;
 use App\Models\Video;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
@@ -26,6 +28,12 @@ class DispatchWeeklySummaryCommand extends Command
      */
     protected $description = 'Triggers the dispatch of the weekly summary email.';
 
+    public function __construct(
+        private readonly FetchRecentVideosForSummary $fetchRecentVideosForSummary
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      */
@@ -43,21 +51,24 @@ class DispatchWeeklySummaryCommand extends Command
             return;
         }
 
-        $lastWeeksVideos = Video::where('created_at', '>=', now()->subWeek())
-            ->whereNotNull('notified_at') // Only include videos that we've notified the user about
-            ->orderBy('created_at', 'desc')
-            ->with('channel')
-            ->get();
+        $weekdays = $this->fetchRecentVideosForSummary->execute();
 
-        if ($lastWeeksVideos->isEmpty()) {
-            $this->components->info('No new uploads found for the past week.');
+        if (empty($weekdays)) {
+            $this->components->info('No new uploads found for weekdays in the past week.');
 
             return;
         }
 
-        $this->info("Found {$lastWeeksVideos->count()} videos for the weekly summary.");
+        $totalVideos = collect($weekdays)->sum(function (array $day): int {
+            /** @var Collection<int, Video> $videos */
+            $videos = $day['videos'];
 
-        Mail::to(Config::get('app.alert_emails'))->send(new WeeklySummaryMail($lastWeeksVideos));
+            return $videos->count();
+        });
+
+        $this->info("Found {$totalVideos} videos across ".count($weekdays).' weekdays for the weekly summary.');
+
+        Mail::to(Config::get('app.alert_emails'))->send(new WeeklySummaryMail($weekdays));
 
         $this->components->success('Weekly summary email dispatched successfully.');
     }

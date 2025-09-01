@@ -8,12 +8,18 @@ declare(strict_types=1);
 
 {{ __('email.weekly_summary_intro') }}
 
-@foreach($videos as $video)
+@foreach($weekdays as $dateString => $dayData)
+<div style="margin: 40px 0 30px 0;">
+<h2 style="font-size: 22px; color: #1f2937; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb;">
+{{ __('email.weekday_' . strtolower($dayData['date']->format('l'))) }} - {{ $dayData['date']->format('M j, Y') }}
+</h2>
+
+@foreach($dayData['videos'] as $video)
 <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #f9fafb;">
 <div style="display: flex; align-items: center; margin-bottom: 15px;">
 <div style="flex: 1;">
 <h3 style="margin: 0 0 5px 0; font-size: 18px; color: #1f2937;">
- <a href="{{ $video->getYoutubeUrl() }}" style="text-decoration: none; color: #1f2937;">
+<a href="{{ $video->getYoutubeUrl() }}" style="text-decoration: none; color: #1f2937;">
 {{ $video->title }}
 </a>
 </h3>
@@ -21,7 +27,7 @@ declare(strict_types=1);
 @if(isset($video->channel))
 {!! __('email.by_creator', ['creator' => '<a href="' . $video->channel->getChannelUrl() . '" style="color: #dc2626; text-decoration: none;">' . $video->channel->name . '</a>']) !!}
 • {{ $video->getFormattedPublishedDate() }}
- @endif
+@endif
 </p>
 </div>
 </div>
@@ -40,6 +46,8 @@ declare(strict_types=1);
 {{ __('email.watch_on_youtube') }}
 </x-mail::button>
 </div>
+</div>
+@endforeach
 </div>
 @endforeach
 <x-mail::subcopy>

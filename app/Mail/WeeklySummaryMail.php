@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Models\Video;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Support\Collection;
 
 /**
  * Class WeeklySummaryMail
  *
  * This mailable class is responsible for sending a weekly summary email
- * containing a collection of videos.
+ * containing videos grouped by weekdays.
  */
 class WeeklySummaryMail extends Mailable
 {
     /**
      * Create a new message instance.
      *
-     * @param  Collection<int, Video>  $videos  A collection of video instances to include in the summary email.
+     * @param  array<string, array{date: \Carbon\Carbon, videos: \Illuminate\Database\Eloquent\Collection<int, \App\Models\Video>}>  $weekdays  An array of weekdays with their videos, grouped by date.
      */
-    public function __construct(private readonly Collection $videos)
+    public function __construct(private readonly array $weekdays)
     {
         $this->locale = config('app.user_language', 'en');
     }
@@ -54,7 +52,7 @@ class WeeklySummaryMail extends Mailable
         return new Content(
             markdown: 'mail.weekly-summary-mail',
             with: [
-                'videos' => $this->videos,
+                'weekdays' => $this->weekdays,
                 'locale' => $this->locale,
             ]
         );

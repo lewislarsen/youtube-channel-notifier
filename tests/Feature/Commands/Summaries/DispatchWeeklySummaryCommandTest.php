@@ -32,7 +32,7 @@ it('outputs a message when no new uploads are found for the past week', function
     ]);
 
     $this->artisan(DispatchWeeklySummaryCommand::class)
-        ->expectsOutputToContain('No new uploads found for the past week.')
+        ->expectsOutputToContain('No new uploads found for weekdays in the past week.')
         ->assertExitCode(0);
 
     expect(Video::where('created_at', '>=', now()->subWeek())->count())->toBe(0);
