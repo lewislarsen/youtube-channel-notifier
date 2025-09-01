@@ -14,4 +14,11 @@ return [
     'weekly_summary_intro' => 'Here\'s your weekly summary of new uploads from the past week.',
     'weekly_summary_notification_reason' => 'You\'re receiving this email because you enabled Weekly Summaries.',
     'by_creator' => 'by :creator',
+    'weekday_monday' => 'Monday',
+    'weekday_tuesday' => 'Tuesday',
+    'weekday_wednesday' => 'Wednesday',
+    'weekday_thursday' => 'Thursday',
+    'weekday_friday' => 'Friday',
+    'weekday_saturday' => 'Saturday',
+    'weekday_sunday' => 'Sunday',
 ];
