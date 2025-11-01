@@ -174,6 +174,8 @@ cd youtube-channel-notifier
 
 # Install dependencies
 composer install
+npm install
+npm run build
 
 # Run our friendly interactive installer
 php artisan app:install
