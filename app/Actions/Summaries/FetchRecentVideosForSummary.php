@@ -18,8 +18,11 @@ class FetchRecentVideosForSummary
      */
     public function execute(): array
     {
-        $lastWeeksVideos = Video::where('created_at', '>=', now()->subWeek())
-            ->whereNotNull('notified_at') // Only include videos that we've notified the user about
+        $startOfLastWeek = now()->subWeek()->startOfWeek();
+        $endOfLastWeek = $startOfLastWeek->copy()->endOfWeek();
+
+        $lastWeeksVideos = Video::whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
+            ->whereNotNull('notified_at')
             ->orderBy('created_at', 'asc')
             ->with('channel')
             ->get();
