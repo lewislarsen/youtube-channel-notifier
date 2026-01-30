@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Console\Commands\Summaries\DispatchWeeklySummaryCommand;
 use App\Mail\WeeklySummaryMail;
 use App\Models\Video;
+use Illuminate\Support\Facades\Date;
 
 it('outputs a message when weekly summary dispatch is disabled', function (): void {
     Config::set('app.dispatch_weekly_summary_email', false);
@@ -43,26 +44,24 @@ it('sends an email containing the last weeks emails', function (): void {
     Config::set('app.alert_emails', ['user@email.com']);
     Mail::fake();
 
-    // Freeze time - November 1st, 2025 (Saturday)
-    $now = \Illuminate\Support\Facades\Date::parse('2025-11-01 12:00:00');
-    $this->travel($now);
+    $now = Date::parse('2025-11-01 12:00:00');
+    $this->travelTo($now);
 
-    // Last week's range: Oct 20 (Mon) - Oct 26 (Sun)
     $startOfLastWeek = $now->copy()->subWeek()->startOfWeek(); // Oct 20 (Monday)
+    $startOfLastWeek->copy()->endOfWeek(); // Oct 26 (Sunday)
 
-    // Create videos across different days of last week
     Video::factory()->count(2)->create([
-        'notified_at' => $startOfLastWeek->copy()->addDays(1), // Oct 21 (Tue)
-        'created_at' => $startOfLastWeek->copy()->addDays(1),
+        'notified_at' => $startOfLastWeek->copy()->addDays(1)->subHour(), // Ensure it's set
+        'created_at' => $startOfLastWeek->copy()->addDays(1), // Oct 21 (Tue)
     ]);
 
     Video::factory()->count(3)->create([
-        'notified_at' => $startOfLastWeek->copy()->addDays(3), // Oct 23 (Thu)
-        'created_at' => $startOfLastWeek->copy()->addDays(3),
+        'notified_at' => $startOfLastWeek->copy()->addDays(3)->subHour(), // Ensure it's set
+        'created_at' => $startOfLastWeek->copy()->addDays(3), // Oct 23 (Thu)
     ]);
 
     $this->artisan(DispatchWeeklySummaryCommand::class)
-        ->expectsOutputToContain('Found 5 videos across 2 weekdays')
+        ->expectsOutputToContain('Found 5 videos across 2 weekdays for the weekly summary.')
         ->expectsOutputToContain('Weekly summary email dispatched successfully.')
         ->assertExitCode(0);
 
