@@ -56,7 +56,7 @@ class Channel extends Model
      */
     public function updateLastChecked(): void
     {
-        $this->update(['last_checked_at' => Carbon::now()]);
+        $this->update(['last_checked_at' => \Illuminate\Support\Facades\Date::now()]);
         Log::debug("Check for videos completed for channel: {$this->name}.");
     }
 
@@ -81,7 +81,7 @@ class Channel extends Model
      */
     public function toggleMute(): void
     {
-        $this->muted_at = $this->isMuted() ? null : Carbon::now();
+        $this->muted_at = $this->isMuted() ? null : \Illuminate\Support\Facades\Date::now();
         $this->save();
     }
 

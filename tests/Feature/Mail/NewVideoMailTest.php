@@ -15,7 +15,7 @@ it('builds the mailable correctly', function (): void {
         'channel_id' => $channel->id,
         'title' => 'Test Video',
         'video_id' => '5ltAy1W6k-Q',
-        'published_at' => Carbon::now(),
+        'published_at' => \Illuminate\Support\Facades\Date::now(),
     ]);
 
     $mailable = new NewVideoMail($video, $channel);
@@ -42,7 +42,7 @@ it('sends the mailable to a single email address', function (): void {
         'channel_id' => $channel->id,
         'title' => 'Test Video',
         'video_id' => '5ltAy1W6k-Q',
-        'published_at' => Carbon::now(),
+        'published_at' => \Illuminate\Support\Facades\Date::now(),
     ]);
 
     Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
@@ -61,7 +61,7 @@ it('sends the mailable to multiple email addresses', function (): void {
         'channel_id' => $channel->id,
         'title' => 'Test Video',
         'video_id' => '5ltAy1W6k-Q',
-        'published_at' => Carbon::now(),
+        'published_at' => \Illuminate\Support\Facades\Date::now(),
     ]);
 
     Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
@@ -81,7 +81,7 @@ it('translates the mailable into another language', function (): void {
         'channel_id' => $channel->id,
         'title' => 'Test Video',
         'video_id' => '5ltAy1W6k-Q',
-        'published_at' => Carbon::now(),
+        'published_at' => \Illuminate\Support\Facades\Date::now(),
     ]);
 
     $mailable = new NewVideoMail($video, $channel);

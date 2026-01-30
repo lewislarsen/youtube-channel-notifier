@@ -46,7 +46,7 @@ class CheckChannelsCommand extends Command
 
         $this->components->info('Checking channels for new videos...');
 
-        $checkForVideosAction = app(CheckForVideos::class);
+        $checkForVideosAction = resolve(CheckForVideos::class);
 
         foreach ($channels as $channel) {
             Log::debug('Checking channel "'.$channel->name.'" for new videos...');

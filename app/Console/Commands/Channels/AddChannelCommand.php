@@ -177,7 +177,7 @@ class AddChannelCommand extends Command
     private function importVideos(Channel $channel): void
     {
         $this->components->info("Running initial video import for '{$channel->name}'...");
-        app(CheckForVideos::class)->execute($channel);
+        resolve(CheckForVideos::class)->execute($channel);
         $this->components->success('Initial import completed successfully.');
     }
 }

@@ -31,9 +31,9 @@ class CheckForVideos
         ?ExtractVideos $extractVideos = null,
         ?ProcessVideos $processVideos = null
     ) {
-        $this->fetchRssFeed = $fetchRssFeed ?? app(FetchRssFeed::class);
-        $this->extractVideos = $extractVideos ?? app(ExtractVideos::class);
-        $this->processVideos = $processVideos ?? app(ProcessVideos::class);
+        $this->fetchRssFeed = $fetchRssFeed ?? resolve(FetchRssFeed::class);
+        $this->extractVideos = $extractVideos ?? resolve(ExtractVideos::class);
+        $this->processVideos = $processVideos ?? resolve(ProcessVideos::class);
     }
 
     /**

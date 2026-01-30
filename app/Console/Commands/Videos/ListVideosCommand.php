@@ -16,7 +16,7 @@ class ListVideosCommand extends Command
 
     public function handle(): void
     {
-        $builder = Video::with('channel')->orderBy('published_at', 'desc');
+        $builder = Video::with('channel')->latest('published_at');
 
         if ($this->option('notified')) {
             $builder->whereNotNull('notified_at');
@@ -30,7 +30,7 @@ class ListVideosCommand extends Command
                 return [
                     $video->title,
                     $video->channel->name ?? 'Unknown',
-                    Carbon::parse($video->published_at)->setTimezone(config('app.user_timezone'))->diffForHumans(),
+                    \Illuminate\Support\Facades\Date::parse($video->published_at)->setTimezone(config('app.user_timezone'))->diffForHumans(),
                     $video->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                     $video->getYoutubeUrl(),
                 ];

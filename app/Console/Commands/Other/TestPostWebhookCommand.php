@@ -42,8 +42,8 @@ class TestPostWebhookCommand extends Command
             'title' => 'Test Title',
             'video_url' => 'https://www.youtube.com/watch?v=1234567890',
             'thumbnail' => 'https://i.ytimg.com/vi/1234567890/hqdefault.jpg',
-            'published_at' => Carbon::now()->toDateTimeString(),
-            'published_at_formatted' => Carbon::now()->format('d M Y h:i A'),
+            'published_at' => \Illuminate\Support\Facades\Date::now()->toDateTimeString(),
+            'published_at_formatted' => \Illuminate\Support\Facades\Date::now()->format('d M Y h:i A'),
             'channel' => [
                 'label' => 'Test Channel',
                 'url' => 'https://www.youtube.com/channel/UC1234567890',

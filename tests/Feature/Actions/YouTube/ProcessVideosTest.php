@@ -31,14 +31,14 @@ describe('ProcessVideos', function (): void {
                 'video_id' => '5ltAy1W6k-Q',
                 'title' => 'First New Video',
                 'description' => 'Video description 1',
-                'published_at' => Carbon::parse('2025-01-01T00:00:00+00:00'),
+                'published_at' => \Illuminate\Support\Facades\Date::parse('2025-01-01T00:00:00+00:00'),
                 'channel_id' => $channel->id,
             ],
             [
                 'video_id' => '6mBgT3W7Ttw',
                 'title' => 'Second New Video',
                 'description' => 'Video description 2',
-                'published_at' => Carbon::parse('2025-01-02T00:00:00+00:00'),
+                'published_at' => \Illuminate\Support\Facades\Date::parse('2025-01-02T00:00:00+00:00'),
                 'channel_id' => $channel->id,
             ],
         ];
@@ -68,14 +68,14 @@ describe('ProcessVideos', function (): void {
                 'video_id' => '5ltAy1W6k-Q',
                 'title' => 'First New Video',
                 'description' => 'Video description 1',
-                'published_at' => Carbon::parse('2025-01-01T00:00:00+00:00'),
+                'published_at' => \Illuminate\Support\Facades\Date::parse('2025-01-01T00:00:00+00:00'),
                 'channel_id' => $channel->id,
             ],
             [
                 'video_id' => '6mBgT3W7Ttw',
                 'title' => 'Second New Video',
                 'description' => 'Video description 2',
-                'published_at' => Carbon::parse('2025-01-02T00:00:00+00:00'),
+                'published_at' => \Illuminate\Support\Facades\Date::parse('2025-01-02T00:00:00+00:00'),
                 'channel_id' => $channel->id,
             ],
         ];
@@ -105,7 +105,7 @@ describe('ProcessVideos', function (): void {
                 'video_id' => '5ltAy1W6k-Q',
                 'title' => 'New Video Title',
                 'description' => 'Video description',
-                'published_at' => Carbon::parse('2025-01-01T00:00:00+00:00'),
+                'published_at' => \Illuminate\Support\Facades\Date::parse('2025-01-01T00:00:00+00:00'),
                 'channel_id' => $channel->id,
             ],
         ];

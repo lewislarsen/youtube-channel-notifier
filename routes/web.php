@@ -21,7 +21,7 @@ Route::get('/mail', function () {
         'channel_id' => $channel->id,
     ]);
 
-    return (new NewVideoMail($video, $channel))->render();
+    return new NewVideoMail($video, $channel)->render();
 });
 
 Route::get('/mail/weekly-summary', function (FetchRecentVideosForSummary $fetchRecentVideosForSummary) {
@@ -75,5 +75,5 @@ Route::get('/mail/weekly-summary', function (FetchRecentVideosForSummary $fetchR
 
     $weekdays = $fetchRecentVideosForSummary->executeWithVideos($videos);
 
-    return (new WeeklySummaryMail($weekdays))->render();
+    return new WeeklySummaryMail($weekdays)->render();
 });

@@ -336,7 +336,7 @@ describe('UpdateLastChecked', function (): void {
         $initialDateTime = now();
         $updatedDateTime = now()->addMinute();
 
-        Carbon::setTestNow($initialDateTime);
+        \Illuminate\Support\Facades\Date::setTestNow($initialDateTime);
 
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
@@ -360,7 +360,7 @@ describe('UpdateLastChecked', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        Carbon::setTestNow($updatedDateTime);
+        \Illuminate\Support\Facades\Date::setTestNow($updatedDateTime);
 
         $action = new CheckForVideos;
         $action->execute($channel);
@@ -369,7 +369,7 @@ describe('UpdateLastChecked', function (): void {
 
         expect($channel->last_checked_at->gt($initialLastChecked))->toBeTrue();
 
-        Carbon::setTestNow();
+        \Illuminate\Support\Facades\Date::setTestNow();
     });
 });
 
@@ -505,7 +505,7 @@ describe('EmptyFeed', function (): void {
 describe('DateHandling', function (): void {
     it('correctly parses and stores the published date from RSS feed', function (): void {
         Mail::fake();
-        Carbon::setTestNow(now('UTC'));
+        \Illuminate\Support\Facades\Date::setTestNow(now('UTC'));
         Config::set('app.alert_emails', 'email@example.com');
 
         $channel = Channel::factory()->create([

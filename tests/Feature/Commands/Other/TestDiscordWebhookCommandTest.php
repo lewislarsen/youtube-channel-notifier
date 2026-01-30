@@ -29,8 +29,8 @@ it('can send a test Discord notification if the webhook URL is set', function ()
         ->with('assets/white-full.png')
         ->andReturn('https://example.com/assets/white-full.png');
 
-    $now = Carbon::create(2025, 5, 1, 12, 0, 0);
-    Carbon::setTestNow($now);
+    $now = \Illuminate\Support\Facades\Date::create(2025, 5, 1, 12, 0, 0);
+    \Illuminate\Support\Facades\Date::setTestNow($now);
 
     $this->artisan(TestDiscordWebhookCommand::class)
         ->expectsOutputToContain('Discord webhook notification sent successfully.');
@@ -60,7 +60,7 @@ it('can send a test Discord notification if the webhook URL is set', function ()
             $request->data() === $expectedPayload;
     });
 
-    Carbon::setTestNow();
+    \Illuminate\Support\Facades\Date::setTestNow();
 });
 
 it('can handle a failed Discord webhook request', function (): void {

@@ -29,7 +29,7 @@ it('sends a discord notification successfully', function (): void {
         'video_id' => 'test123',
         'title' => 'Test Video',
         'description' => 'Test Description',
-        'published_at' => Carbon::now(),
+        'published_at' => \Illuminate\Support\Facades\Date::now(),
     ]);
 
     // Mock HTTP response for Discord webhook

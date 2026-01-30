@@ -136,7 +136,7 @@ return [
     |
     */
 
-    'alert_emails' => array_map('trim', explode(',', (string) env('ALERT_EMAILS', 'alerts@example.com'))),
+    'alert_emails' => array_map(trim(...), explode(',', (string) env('ALERT_EMAILS', 'alerts@example.com'))),
 
     /*
     |--------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Rector\CodingStyle\Rector\Encapsed\WrapEncapsedVariableInCurlyBracesRector;
-use Rector\CodingStyle\Rector\String_\SymplifyQuoteEscapeRector;
+use Rector\CodingStyle\Rector\String_\SimplifyQuoteEscapeRector;
 use Rector\CodingStyle\Rector\Use_\SeparateMultiUseImportsRector;
 use Rector\Config\RectorConfig;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
@@ -36,12 +36,12 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_CODE_QUALITY,
         LaravelLevelSetList::UP_TO_LARAVEL_110,
     ])->withRules([
-            DeclareStrictTypesRector::class,
-            ClassPropertyAssignToConstructorPromotionRector::class,
-            SeparateMultiUseImportsRector::class,
-            SymplifyQuoteEscapeRector::class,
-            WrapEncapsedVariableInCurlyBracesRector::class,
-        ])
+        DeclareStrictTypesRector::class,
+        ClassPropertyAssignToConstructorPromotionRector::class,
+        SeparateMultiUseImportsRector::class,
+        SimplifyQuoteEscapeRector::class,
+        WrapEncapsedVariableInCurlyBracesRector::class,
+    ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(0)
     ->withCodeQualityLevel(0);

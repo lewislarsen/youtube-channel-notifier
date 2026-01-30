@@ -46,7 +46,7 @@ class TestDiscordWebhookCommand extends Command
             'description' => 'This is a test notification from the application.',
             'url' => config('app.url', 'https://example.com'),
             'color' => Colour::YouTube_Red->value,
-            'timestamp' => Carbon::now()->toIso8601String(),
+            'timestamp' => \Illuminate\Support\Facades\Date::now()->toIso8601String(),
             'thumbnail' => [
                 'url' => URL::asset('assets/white-full.png'),
             ],

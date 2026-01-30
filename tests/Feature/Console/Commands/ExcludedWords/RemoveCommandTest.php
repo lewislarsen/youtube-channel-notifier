@@ -14,7 +14,7 @@ describe('RemoveCommand', function (): void {
         ExcludedWord::create(['word' => 'test']);
 
         $this->artisan(RemoveCommand::class, ['word' => 'test'])
-            ->expectsConfirmation('Are you sure you want to remove the word \'test\'?', 'yes')
+            ->expectsConfirmation("Are you sure you want to remove the word 'test'?", 'yes')
             ->expectsOutput("Successfully removed excluded word: 'test'")
             ->assertExitCode(0);
 
@@ -31,7 +31,7 @@ describe('RemoveCommand', function (): void {
         ExcludedWord::create(['word' => 'test']);
 
         $this->artisan(RemoveCommand::class, ['word' => 'test'])
-            ->expectsConfirmation('Are you sure you want to remove the word \'test\'?', 'no')
+            ->expectsConfirmation("Are you sure you want to remove the word 'test'?", 'no')
             ->expectsOutput('Operation cancelled.')
             ->assertExitCode(0);
 

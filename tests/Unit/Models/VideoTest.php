@@ -9,12 +9,12 @@ beforeEach(function (): void {
     $this->originalTimezone = config('app.timezone');
     config(['app.timezone' => 'UTC']);
     Date::setTestNow(now('UTC'));
-    Carbon::setTestNow();
+    \Illuminate\Support\Facades\Date::setTestNow();
 });
 
 afterEach(function (): void {
     config(['app.timezone' => $this->originalTimezone]);
-    Carbon::setTestNow();
+    \Illuminate\Support\Facades\Date::setTestNow();
 });
 
 it('returns the full youtube link', function (): void {
@@ -39,7 +39,7 @@ it('returns thumbnail urls with different qualities', function (): void {
 });
 
 it('formats published date for human-readable display', function (): void {
-    $publishDate = Carbon::create(2023, 5, 15, 14, 30, 0, 'UTC');
+    $publishDate = \Illuminate\Support\Facades\Date::create(2023, 5, 15, 14, 30, 0, 'UTC');
     $video = Video::factory()->create([
         'published_at' => $publishDate,
     ]);
@@ -49,7 +49,7 @@ it('formats published date for human-readable display', function (): void {
 });
 
 it('formats published date for human-readable display with Europe/London timezone during BST period', function (): void {
-    $publishDate = Carbon::create(2023, 7, 20, 14, 30, 0, 'UTC');
+    $publishDate = \Illuminate\Support\Facades\Date::create(2023, 7, 20, 14, 30, 0, 'UTC');
     $video = Video::factory()->create([
         'published_at' => $publishDate,
     ]);
@@ -64,7 +64,7 @@ it('formats published date for human-readable display with Europe/London timezon
 });
 
 it('formats published date for human-readable display with Europe/London timezone during GMT period', function (): void {
-    $publishDate = Carbon::create(2023, 1, 15, 14, 30, 0, 'UTC');
+    $publishDate = \Illuminate\Support\Facades\Date::create(2023, 1, 15, 14, 30, 0, 'UTC');
     $video = Video::factory()->create([
         'published_at' => $publishDate,
     ]);
@@ -78,7 +78,7 @@ it('formats published date for human-readable display with Europe/London timezon
 });
 
 it('formats published date as ISO8601 according to app timezone configuration', function (): void {
-    $publishDate = Carbon::create(2023, 5, 15, 14, 30, 0, 'UTC');
+    $publishDate = \Illuminate\Support\Facades\Date::create(2023, 5, 15, 14, 30, 0, 'UTC');
     $video = Video::factory()->create([
         'published_at' => $publishDate,
     ]);
@@ -95,7 +95,7 @@ it('formats published date as ISO8601 according to app timezone configuration', 
 });
 
 it('formats published date according to app timezone configuration', function (): void {
-    $publishDate = Carbon::create(2023, 5, 15, 14, 30, 0, 'UTC');
+    $publishDate = \Illuminate\Support\Facades\Date::create(2023, 5, 15, 14, 30, 0, 'UTC');
     $video = Video::factory()->create([
         'published_at' => $publishDate,
     ]);
@@ -114,7 +114,7 @@ it('formats published date according to app timezone configuration', function ()
 
 it('formats published date as ISO8601 for Discord', function (): void {
 
-    $publishDate = Carbon::create(2023, 5, 15, 14, 30, 0, 'UTC');
+    $publishDate = \Illuminate\Support\Facades\Date::create(2023, 5, 15, 14, 30, 0, 'UTC');
     $video = Video::factory()->create([
         'published_at' => $publishDate,
     ]);
@@ -131,7 +131,7 @@ it('marks the videos notification column as true', function (): void {
 });
 
 it('returns true if the video has been notified', function (): void {
-    $video = Video::factory()->create(['notified_at' => Carbon::now()]);
+    $video = Video::factory()->create(['notified_at' => \Illuminate\Support\Facades\Date::now()]);
 
     expect($video->isNotified())->toBeTrue();
 });

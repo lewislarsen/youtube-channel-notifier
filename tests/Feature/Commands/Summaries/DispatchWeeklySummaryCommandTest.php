@@ -45,7 +45,7 @@ it('sends an email containing the last weeks emails', function (): void {
     Mail::fake();
 
     // Freeze time - November 1st, 2025 (Saturday)
-    $now = Carbon::parse('2025-11-01 12:00:00');
+    $now = \Illuminate\Support\Facades\Date::parse('2025-11-01 12:00:00');
     $this->travel($now);
 
     // Last week's range: Oct 20 (Mon) - Oct 26 (Sun)

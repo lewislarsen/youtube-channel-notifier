@@ -26,8 +26,8 @@ class ListCommand extends Command
         $this->info('Excluded Words:');
         $this->info(str_repeat('=', 30));
 
-        $words->each(function (ExcludedWord $word) {
-            $this->line("• {$word->word}");
+        $words->each(function (ExcludedWord $excludedWord): void {
+            $this->line("• {$excludedWord->word}");
         });
 
         $this->info("Total: {$words->count()} word(s)");

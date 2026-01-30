@@ -402,7 +402,7 @@ class ExtractYouTubeChannelId
      */
     protected function saveHtmlForDebug(string $html, Crawler $crawler): void
     {
-        $filename = storage_path('logs/youtube_channel_page_'.\Carbon\Carbon::now()->getTimestamp().'.html');
+        $filename = storage_path('logs/youtube_channel_page_'.\Illuminate\Support\Facades\Date::now()->getTimestamp().'.html');
         file_put_contents($filename, $html);
         $this->debug("Saved HTML to file for inspection: {$filename}");
 

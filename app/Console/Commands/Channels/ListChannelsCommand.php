@@ -43,7 +43,7 @@ class ListChannelsCommand extends Command
 
                 $latestNotifiedVideo = $channel->videos()
                     ->whereNotNull('notified_at')
-                    ->orderBy('notified_at', 'desc')
+                    ->latest('notified_at')
                     ->first();
 
                 return [

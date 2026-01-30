@@ -20,7 +20,7 @@ it('displays a list of channels', function (): void {
         ], $channels->map(function (Channel $channel) {
             $latestNotifiedVideo = $channel->videos()
                 ->whereNotNull('notified_at')
-                ->orderBy('notified_at', 'desc')
+                ->latest('notified_at')
                 ->first();
 
             return [
@@ -138,7 +138,7 @@ it('displays last notification correctly when videos have notified_at timestamps
 
     $latestNotifiedVideo = $channel->videos()
         ->whereNotNull('notified_at')
-        ->orderBy('notified_at', 'desc')
+        ->latest('notified_at')
         ->first();
 
     $this->artisan(ListChannelsCommand::class)
