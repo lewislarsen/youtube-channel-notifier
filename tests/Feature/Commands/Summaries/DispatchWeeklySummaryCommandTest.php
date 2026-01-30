@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Console\Commands\Summaries\DispatchWeeklySummaryCommand;
 use App\Mail\WeeklySummaryMail;
 use App\Models\Video;
-use Illuminate\Support\Carbon;
 
 it('outputs a message when weekly summary dispatch is disabled', function (): void {
     Config::set('app.dispatch_weekly_summary_email', false);

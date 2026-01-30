@@ -7,7 +7,6 @@ namespace App\Actions\YouTube;
 use App\Models\Channel;
 use App\Models\ExcludedWord;
 use App\Models\Video;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
 

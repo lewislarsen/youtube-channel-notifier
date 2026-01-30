@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Console\Commands\Other;
 
 use App\Enums\Colour;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;

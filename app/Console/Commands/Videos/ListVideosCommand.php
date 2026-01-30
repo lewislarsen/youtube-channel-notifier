@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Console\Commands\Videos;
 
 use App\Models\Video;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class ListVideosCommand extends Command

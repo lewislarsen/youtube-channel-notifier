@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Actions\YouTube\ExtractYouTubeChannelAvatar;
-use Carbon\Carbon;
 use Database\Factories\ChannelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

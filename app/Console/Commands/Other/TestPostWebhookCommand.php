@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Other;
 
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Log;

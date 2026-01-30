@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Actions\Notifications\SendWebhookNotification;
 use App\Models\Channel;
 use App\Models\Video;
-use Carbon\Carbon;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;

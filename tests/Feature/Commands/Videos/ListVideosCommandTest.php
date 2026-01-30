@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Console\Commands\Videos\ListVideosCommand;
 use App\Models\Channel;
 use App\Models\Video;
-use Carbon\Carbon;
 
 it('displays a list of videos', function (): void {
     $channel = Channel::factory()->create();

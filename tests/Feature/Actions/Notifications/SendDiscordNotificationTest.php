@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Actions\Notifications\SendDiscordNotification;
 use App\Models\Channel;
 use App\Models\Video;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 

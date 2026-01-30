@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Console\Commands\Other\TestDiscordWebhookCommand;
 use App\Enums\Colour;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\URL;
