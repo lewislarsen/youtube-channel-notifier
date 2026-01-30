@@ -267,37 +267,32 @@ Please note that by default, this feature is disabled.
 
 ### Video Filtering
 
-The project automatically attempts to filters out certain types of content by default. This is configured in `config/excluded-video-words.php`:
+The project automatically filters out certain types of content by default. The excluded words are stored in the database and can be managed through the application.
 
-```php
-<?php
+#### Default Excluded Words
+By default, the following terms are excluded:
+- `live`, `LIVE` - Filters out livestream content
+- `premiere` - Filters out premiere events  
+- `trailer` - Filters out trailer videos
+- `teaser` - Filters out teaser content
+- `preview` - Filters out preview videos
 
-declare(strict_types=1);
+#### Managing Excluded Words
+The excluded words are stored in the `excluded_words` database table and can be managed using the provided artisan commands:
 
-return [
+```bash
+# List all excluded words
+php artisan excluded-words:list
 
-    /*
-    |--------------------------------------------------------------------------
-    | Video Filtering Configuration
-    |--------------------------------------------------------------------------
-    |
-    | This configuration holds settings for filtering out unwanted videos.
-    | Any video with a title containing these terms will be excluded
-    | from import and notifications to reduce alert noise.
-    |
-    */
+# Add a new excluded word
+php artisan excluded-words:add "word"
 
-    'skip_terms' => [
-        'live',
-        'LIVE',
-        'premiere',
-        'trailer',
-        'teaser',
-        'preview',
-    ],
-
-];
+# Remove an excluded word
+php artisan excluded-words:remove "word"
 ```
+
+Each excluded word contains:
+- `word`: The term to filter by (case-sensitive matching)
 
 By default, the application filters out:
 - Livestreams (containing "live" or "LIVE")
@@ -326,7 +321,12 @@ No, and that's a good thing! The application uses YouTube's public RSS feeds, wh
 No, we can only detect publicly available videos that appear in the channel's public RSS feed.
 
 ### Can I get notifications for livestreams?
-By default, we attempt to filter out livestreams. If you want to receive notifications for (likely) livestreams, you can edit the `config/excluded-video-words.php` file and remove 'live' and 'LIVE' from the skip terms.
+By default, we attempt to filter out livestreams. If you want to receive notifications for (likely) livestreams, you can remove the 'live' and 'LIVE' excluded words:
+
+```bash
+php artisan excluded-words:remove "live"
+php artisan excluded-words:remove "LIVE"
+```
 
 ### Does it support platforms other than YouTube?
 There are no plans to support platforms other than YouTube.

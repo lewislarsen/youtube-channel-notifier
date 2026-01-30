@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Actions\YouTube;
 
 use App\Models\Channel;
+use App\Models\ExcludedWord;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
 
@@ -28,7 +28,7 @@ class ExtractVideos
     public function execute(SimpleXMLElement $rssData, Channel $channel): array
     {
         $existingVideoIds = $this->getExistingVideoIds($channel);
-        $excludedWords = Config::get('excluded-video-words.skip_terms', []);
+        $excludedWords = ExcludedWord::getWords();
         $newVideos = [];
 
         if (! isset($rssData->entry) || count($rssData->entry) === 0) {

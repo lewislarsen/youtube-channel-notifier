@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Actions\CheckForVideos;
 use App\Mail\NewVideoMail;
 use App\Models\Channel;
+use App\Models\ExcludedWord;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 beforeEach(function (): void {
     Channel::truncate();
     Video::truncate();
+    ExcludedWord::truncate();
 });
 
 describe('Core Video Detection', function (): void {
@@ -119,11 +121,11 @@ describe('Filtering', function (): void {
         Mail::fake();
     });
 
-    it('ignores videos with titles containing words from the skipped terms config', function (): void {
-        Config::set('excluded-video-words.skip_terms', [
-            'LIVE',
-            'Premiere',
-            'Trailer',
+    it('ignores videos with titles containing words from the excluded words database', function (): void {
+        ExcludedWord::insert([
+            ['word' => 'LIVE', 'created_at' => now(), 'updated_at' => now()],
+            ['word' => 'Premiere', 'created_at' => now(), 'updated_at' => now()],
+            ['word' => 'Trailer', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         $channel = Channel::factory()->create([
@@ -167,17 +169,9 @@ describe('Filtering', function (): void {
             return $video->video_id === '7yyyy7X8Uuw' && $video->title === 'Normal Video Title';
         });
 
-        $this->assertDatabaseMissing('videos', [
-            'video_id' => '5ltAy1W6k-Q',
-        ]);
-
-        $this->assertDatabaseMissing('videos', [
-            'video_id' => '6xxxx6W7Ttw',
-        ]);
-
-        $this->assertDatabaseHas('videos', [
-            'video_id' => '7yyyy7X8Uuw',
-        ]);
+        expect(Video::where('video_id', '5ltAy1W6k-Q')->exists())->toBeFalse();
+        expect(Video::where('video_id', '6xxxx6W7Ttw')->exists())->toBeFalse();
+        expect(Video::where('video_id', '7yyyy7X8Uuw')->exists())->toBeTrue();
     });
 
     it('does not send any notifications if the channel has been muted', function (): void {
@@ -511,7 +505,7 @@ describe('EmptyFeed', function (): void {
 describe('DateHandling', function (): void {
     it('correctly parses and stores the published date from RSS feed', function (): void {
         Mail::fake();
-        Date::setTestNow(now('UTC'));
+        Carbon::setTestNow(now('UTC'));
         Config::set('app.alert_emails', 'email@example.com');
 
         $channel = Channel::factory()->create([
