@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 use App\Actions\YouTube\ExtractVideos;
 use App\Models\Channel;
+use App\Models\ExcludedWord;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
 beforeEach(function (): void {
     Channel::truncate();
     Video::truncate();
+    ExcludedWord::truncate();
 });
 
 describe('ExtractVideos', function (): void {
@@ -87,10 +88,10 @@ describe('ExtractVideos', function (): void {
     });
 
     it('filters out videos containing excluded words', function (): void {
-        Config::set('excluded-video-words.skip_terms', [
-            'LIVE',
-            'Premiere',
-            'Trailer',
+        ExcludedWord::insert([
+            ['word' => 'LIVE', 'created_at' => now(), 'updated_at' => now()],
+            ['word' => 'Premiere', 'created_at' => now(), 'updated_at' => now()],
+            ['word' => 'Trailer', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         $channel = Channel::factory()->create();
