@@ -161,7 +161,7 @@ If you want to make sure this is correct, visit https://www.youtube.com/channel/
 
 ### Requirements
 
-- PHP 8.2+
+- PHP 8.4+
 - Composer
 - SQLite, PostgreSQL or MySQL
 
