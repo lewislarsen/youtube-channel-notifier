@@ -6,6 +6,7 @@ namespace App\Console\Commands\Videos;
 
 use App\Models\Video;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Date;
 
 class ListVideosCommand extends Command
 {
@@ -29,7 +30,7 @@ class ListVideosCommand extends Command
                 return [
                     $video->title,
                     $video->channel->name ?? 'Unknown',
-                    \Illuminate\Support\Facades\Date::parse($video->published_at)->setTimezone(config('app.user_timezone'))->diffForHumans(),
+                    Date::parse($video->published_at)->setTimezone(config('app.user_timezone'))->diffForHumans(),
                     $video->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
                     $video->getYoutubeUrl(),
                 ];

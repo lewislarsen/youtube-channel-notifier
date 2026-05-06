@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
+use App\Models\Video;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -19,7 +22,7 @@ class WeeklySummaryMail extends Mailable
     /**
      * Create a new message instance.
      *
-     * @param  array<string, array{date: \Carbon\Carbon, videos: \Illuminate\Database\Eloquent\Collection<int, \App\Models\Video>}>  $weekdays  An array of weekdays with their videos, grouped by date.
+     * @param  array<string, array{date: Carbon, videos: Collection<int, Video>}>  $weekdays  An array of weekdays with their videos, grouped by date.
      */
     public function __construct(private readonly array $weekdays)
     {

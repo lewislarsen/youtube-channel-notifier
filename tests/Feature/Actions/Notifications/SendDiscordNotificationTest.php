@@ -6,6 +6,7 @@ use App\Actions\Notifications\SendDiscordNotification;
 use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function (): void {
@@ -28,7 +29,7 @@ it('sends a discord notification successfully', function (): void {
         'video_id' => 'test123',
         'title' => 'Test Video',
         'description' => 'Test Description',
-        'published_at' => \Illuminate\Support\Facades\Date::now(),
+        'published_at' => Date::now(),
     ]);
 
     // Mock HTTP response for Discord webhook

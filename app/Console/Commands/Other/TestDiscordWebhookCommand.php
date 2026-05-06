@@ -7,6 +7,7 @@ namespace App\Console\Commands\Other;
 use App\Enums\Colour;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -45,7 +46,7 @@ class TestDiscordWebhookCommand extends Command
             'description' => 'This is a test notification from the application.',
             'url' => config('app.url', 'https://example.com'),
             'color' => Colour::YouTube_Red->value,
-            'timestamp' => \Illuminate\Support\Facades\Date::now()->toIso8601String(),
+            'timestamp' => Date::now()->toIso8601String(),
             'thumbnail' => [
                 'url' => URL::asset('assets/white-full.png'),
             ],

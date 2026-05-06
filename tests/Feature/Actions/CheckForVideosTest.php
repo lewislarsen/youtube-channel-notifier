@@ -8,6 +8,7 @@ use App\Models\Channel;
 use App\Models\ExcludedWord;
 use App\Models\Video;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -335,7 +336,7 @@ describe('UpdateLastChecked', function (): void {
         $initialDateTime = now();
         $updatedDateTime = now()->addMinute();
 
-        \Illuminate\Support\Facades\Date::setTestNow($initialDateTime);
+        Date::setTestNow($initialDateTime);
 
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
@@ -359,7 +360,7 @@ describe('UpdateLastChecked', function (): void {
             'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
         ]);
 
-        \Illuminate\Support\Facades\Date::setTestNow($updatedDateTime);
+        Date::setTestNow($updatedDateTime);
 
         $action = new CheckForVideos;
         $action->execute($channel);
@@ -368,7 +369,7 @@ describe('UpdateLastChecked', function (): void {
 
         expect($channel->last_checked_at->gt($initialLastChecked))->toBeTrue();
 
-        \Illuminate\Support\Facades\Date::setTestNow();
+        Date::setTestNow();
     });
 });
 
@@ -504,7 +505,7 @@ describe('EmptyFeed', function (): void {
 describe('DateHandling', function (): void {
     it('correctly parses and stores the published date from RSS feed', function (): void {
         Mail::fake();
-        \Illuminate\Support\Facades\Date::setTestNow(now('UTC'));
+        Date::setTestNow(now('UTC'));
         Config::set('app.alert_emails', 'email@example.com');
 
         $channel = Channel::factory()->create([

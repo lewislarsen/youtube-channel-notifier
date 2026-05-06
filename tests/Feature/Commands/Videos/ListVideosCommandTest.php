@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Console\Commands\Videos\ListVideosCommand;
 use App\Models\Channel;
 use App\Models\Video;
+use Illuminate\Support\Facades\Date;
 
 it('displays a list of videos', function (): void {
     $channel = Channel::factory()->create();
@@ -19,8 +20,8 @@ it('displays a list of videos', function (): void {
             return [
                 $video->title,
                 $video->channel->name,
-                \Illuminate\Support\Facades\Date::parse($video->published_at)->diffForHumans(),
-                $video->notified_at ? \Illuminate\Support\Facades\Date::parse($video->notified_at)->diffForHumans() : '—',
+                Date::parse($video->published_at)->diffForHumans(),
+                $video->notified_at ? Date::parse($video->notified_at)->diffForHumans() : '—',
                 $video->getYoutubeUrl(),
             ];
         })->toArray());
@@ -52,22 +53,22 @@ it('orders videos by most recently published', function (): void {
             [
                 $newVideo->title,
                 $newVideo->channel->name,
-                \Illuminate\Support\Facades\Date::parse($newVideo->published_at)->diffForHumans(),
-                $newVideo->notified_at ? \Illuminate\Support\Facades\Date::parse($newVideo->notified_at)->diffForHumans() : '—',
+                Date::parse($newVideo->published_at)->diffForHumans(),
+                $newVideo->notified_at ? Date::parse($newVideo->notified_at)->diffForHumans() : '—',
                 $newVideo->getYoutubeUrl(),
             ],
             [
                 $middleVideo->title,
                 $middleVideo->channel->name,
-                \Illuminate\Support\Facades\Date::parse($middleVideo->published_at)->diffForHumans(),
-                $middleVideo->notified_at ? \Illuminate\Support\Facades\Date::parse($middleVideo->notified_at)->diffForHumans() : '—',
+                Date::parse($middleVideo->published_at)->diffForHumans(),
+                $middleVideo->notified_at ? Date::parse($middleVideo->notified_at)->diffForHumans() : '—',
                 $middleVideo->getYoutubeUrl(),
             ],
             [
                 $oldVideo->title,
                 $oldVideo->channel->name,
-                \Illuminate\Support\Facades\Date::parse($oldVideo->published_at)->diffForHumans(),
-                $oldVideo->notified_at ? \Illuminate\Support\Facades\Date::parse($oldVideo->notified_at)->diffForHumans() : '—',
+                Date::parse($oldVideo->published_at)->diffForHumans(),
+                $oldVideo->notified_at ? Date::parse($oldVideo->notified_at)->diffForHumans() : '—',
                 $oldVideo->getYoutubeUrl(),
             ],
         ]);
@@ -84,8 +85,8 @@ it('displays correct video information', function (): void {
             [
                 $video->title,
                 $video->channel->name,
-                \Illuminate\Support\Facades\Date::parse($video->published_at)->diffForHumans(),
-                $video->notified_at ? \Illuminate\Support\Facades\Date::parse($video->notified_at)->diffForHumans() : '—',
+                Date::parse($video->published_at)->diffForHumans(),
+                $video->notified_at ? Date::parse($video->notified_at)->diffForHumans() : '—',
                 $video->getYoutubeUrl(),
             ],
         ]);
@@ -116,15 +117,15 @@ it('only displays notified videos when --notified flag is used', function (): vo
             [
                 $notifiedVideo->title,
                 $notifiedVideo->channel->name,
-                \Illuminate\Support\Facades\Date::parse($notifiedVideo->published_at)->diffForHumans(),
-                \Illuminate\Support\Facades\Date::parse($notifiedVideo->notified_at)->diffForHumans(),
+                Date::parse($notifiedVideo->published_at)->diffForHumans(),
+                Date::parse($notifiedVideo->notified_at)->diffForHumans(),
                 $notifiedVideo->getYoutubeUrl(),
             ],
             [
                 $anotherNotifiedVideo->title,
                 $anotherNotifiedVideo->channel->name,
-                \Illuminate\Support\Facades\Date::parse($anotherNotifiedVideo->published_at)->diffForHumans(),
-                \Illuminate\Support\Facades\Date::parse($anotherNotifiedVideo->notified_at)->diffForHumans(),
+                Date::parse($anotherNotifiedVideo->published_at)->diffForHumans(),
+                Date::parse($anotherNotifiedVideo->notified_at)->diffForHumans(),
                 $anotherNotifiedVideo->getYoutubeUrl(),
             ],
         ]);

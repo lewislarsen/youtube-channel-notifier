@@ -8,6 +8,7 @@ use Database\Factories\VideoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Date;
 
 /**
  * Class Video
@@ -62,7 +63,7 @@ class Video extends Model
      */
     public function getFormattedPublishedDate(): string
     {
-        return \Illuminate\Support\Facades\Date::parse($this->published_at)->setTimezone(config('app.user_timezone'))->format('d M Y h:i A');
+        return Date::parse($this->published_at)->setTimezone(config('app.user_timezone'))->format('d M Y h:i A');
     }
 
     /**
@@ -70,7 +71,7 @@ class Video extends Model
      */
     public function getIsoPublishedDate(): string
     {
-        return \Illuminate\Support\Facades\Date::parse($this->published_at)->setTimezone(config('app.user_timezone'))->toIso8601String();
+        return Date::parse($this->published_at)->setTimezone(config('app.user_timezone'))->toIso8601String();
     }
 
     /**
@@ -78,7 +79,7 @@ class Video extends Model
      */
     public function markAsNotified(): bool
     {
-        return $this->update(['notified_at' => \Illuminate\Support\Facades\Date::now()]);
+        return $this->update(['notified_at' => Date::now()]);
     }
 
     /**

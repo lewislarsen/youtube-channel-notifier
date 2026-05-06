@@ -8,6 +8,7 @@ use App\Models\Video;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 class FetchRecentVideosForSummary
 {
@@ -63,7 +64,7 @@ class FetchRecentVideosForSummary
     private function groupVideosByDays(EloquentCollection $eloquentCollection): array
     {
         $groupedVideos = $eloquentCollection->groupBy(function (Video $video): string {
-            return \Illuminate\Support\Facades\Date::parse($video->created_at)->format('Y-m-d');
+            return Date::parse($video->created_at)->format('Y-m-d');
         });
 
         $days = [];

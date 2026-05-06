@@ -9,6 +9,7 @@ use Database\Factories\ChannelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -55,7 +56,7 @@ class Channel extends Model
      */
     public function updateLastChecked(): void
     {
-        $this->update(['last_checked_at' => \Illuminate\Support\Facades\Date::now()]);
+        $this->update(['last_checked_at' => Date::now()]);
         Log::debug("Check for videos completed for channel: {$this->name}.");
     }
 
@@ -80,7 +81,7 @@ class Channel extends Model
      */
     public function toggleMute(): void
     {
-        $this->muted_at = $this->isMuted() ? null : \Illuminate\Support\Facades\Date::now();
+        $this->muted_at = $this->isMuted() ? null : Date::now();
         $this->save();
     }
 

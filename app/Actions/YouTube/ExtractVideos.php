@@ -7,6 +7,7 @@ namespace App\Actions\YouTube;
 use App\Models\Channel;
 use App\Models\ExcludedWord;
 use App\Models\Video;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
 
@@ -144,10 +145,10 @@ class ExtractVideos
             'video_id' => $videoId,
             'title' => $title,
             'description' => $description,
-            'published_at' => \Illuminate\Support\Facades\Date::parse((string) $entry->published),
+            'published_at' => Date::parse((string) $entry->published),
             'channel_id' => $channel->id,
-            'created_at' => \Illuminate\Support\Facades\Date::now(),
-            'updated_at' => \Illuminate\Support\Facades\Date::now(),
+            'created_at' => Date::now(),
+            'updated_at' => Date::now(),
         ];
     }
 }

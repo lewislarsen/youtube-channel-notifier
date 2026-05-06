@@ -7,6 +7,7 @@ use App\Models\Channel;
 use App\Models\Video;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -29,7 +30,7 @@ it('sends a post webhook request successfully', function (): void {
         'video_id' => 'test123',
         'title' => 'Test Video',
         'description' => 'Test Description',
-        'published_at' => \Illuminate\Support\Facades\Date::now(),
+        'published_at' => Date::now(),
     ]);
 
     Http::fake([$url => Http::response(null, 204)]);
@@ -102,7 +103,7 @@ it('handles exceptions during the webhook', function (): void {
 
     Log::shouldReceive('error')
         ->once()
-        ->with('An error occurred while sending the webhook notification.', \Mockery::on(function ($data) use ($video) {
+        ->with('An error occurred while sending the webhook notification.', Mockery::on(function ($data) use ($video) {
             return isset($data['video_id']) && $data['video_id'] === $video->id && isset($data['response']);
         }));
 
@@ -134,7 +135,7 @@ it('handles connection exceptions during the webhook', function (): void {
 
     Log::shouldReceive('error')
         ->once()
-        ->with('An error occurred while sending the webhook notification.', \Mockery::on(function ($data) use ($video) {
+        ->with('An error occurred while sending the webhook notification.', Mockery::on(function ($data) use ($video) {
             return isset($data['video_id'], $data['exception']) && $data['video_id'] === $video->id;
         }));
 

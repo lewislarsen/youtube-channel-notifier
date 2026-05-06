@@ -6,6 +6,7 @@ namespace App\Actions\YouTube;
 
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -402,7 +403,7 @@ class ExtractYouTubeChannelId
      */
     protected function saveHtmlForDebug(string $html, Crawler $crawler): void
     {
-        $filename = storage_path('logs/youtube_channel_page_'.\Illuminate\Support\Facades\Date::now()->getTimestamp().'.html');
+        $filename = storage_path('logs/youtube_channel_page_'.Date::now()->getTimestamp().'.html');
         file_put_contents($filename, $html);
         $this->debug("Saved HTML to file for inspection: {$filename}");
 

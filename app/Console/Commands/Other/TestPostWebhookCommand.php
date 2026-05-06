@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands\Other;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Log;
 
@@ -41,8 +42,8 @@ class TestPostWebhookCommand extends Command
             'title' => 'Test Title',
             'video_url' => 'https://www.youtube.com/watch?v=1234567890',
             'thumbnail' => 'https://i.ytimg.com/vi/1234567890/hqdefault.jpg',
-            'published_at' => \Illuminate\Support\Facades\Date::now()->toDateTimeString(),
-            'published_at_formatted' => \Illuminate\Support\Facades\Date::now()->format('d M Y h:i A'),
+            'published_at' => Date::now()->toDateTimeString(),
+            'published_at_formatted' => Date::now()->format('d M Y h:i A'),
             'channel' => [
                 'label' => 'Test Channel',
                 'url' => 'https://www.youtube.com/channel/UC1234567890',
