@@ -128,9 +128,9 @@ it('handles connection exceptions during the webhook', function (): void {
     ]);
 
     Http::fake([
-        $url => Http::response(function (): void {
+        $url => function (): void {
             throw new ConnectionException('Connection failed');
-        }),
+        },
     ]);
 
     Log::shouldReceive('error')

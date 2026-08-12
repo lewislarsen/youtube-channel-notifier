@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Console\Commands\Other\TestPostWebhookCommand;
+use Illuminate\Support\Facades\Date;
 
 it('cannot send a test POST request if the webhook URL is not set', function (): void {
     Http::fake();
@@ -17,6 +18,7 @@ it('cannot send a test POST request if the webhook URL is not set', function ():
 it('can send a test POST request if the webhook URL is set', function (): void {
     Http::fake();
     Config::set('app.webhook_post_url', 'https://example.com/webhook');
+    Date::setTestNow(Date::create(2025, 5, 1, 12, 0, 0));
 
     $this->artisan(TestPostWebhookCommand::class)
         ->expectsOutputToContain('Webhook notification sent successfully.');
@@ -28,14 +30,16 @@ it('can send a test POST request if the webhook URL is set', function (): void {
                 'title' => 'Test Title',
                 'video_url' => 'https://www.youtube.com/watch?v=1234567890',
                 'thumbnail' => 'https://i.ytimg.com/vi/1234567890/hqdefault.jpg',
-                'published_at' => now()->toDateTimeString(),
-                'published_at_formatted' => now()->format('d M Y h:i A'),
+                'published_at' => Date::now()->toDateTimeString(),
+                'published_at_formatted' => Date::now()->format('d M Y h:i A'),
                 'channel' => [
                     'label' => 'Test Channel',
                     'url' => 'https://www.youtube.com/channel/UC1234567890',
                 ],
             ];
     });
+
+    Date::setTestNow();
 });
 
 it('can handle a failed POST request', function (): void {
