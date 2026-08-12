@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Rector\CodingStyle\Rector\Encapsed\WrapEncapsedVariableInCurlyBracesRector;
 use Rector\CodingStyle\Rector\String_\SimplifyQuoteEscapeRector;
 use Rector\CodingStyle\Rector\Use_\SeparateMultiUseImportsRector;
 use Rector\Config\RectorConfig;
@@ -40,7 +39,6 @@ return RectorConfig::configure()
         ClassPropertyAssignToConstructorPromotionRector::class,
         SeparateMultiUseImportsRector::class,
         SimplifyQuoteEscapeRector::class,
-        WrapEncapsedVariableInCurlyBracesRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(0)
