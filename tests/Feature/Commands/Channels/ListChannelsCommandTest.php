@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Console\Commands\Channels\ListChannelsCommand;
 use App\Models\Channel;
 use App\Models\Video;
+use Illuminate\Support\Facades\Date;
 
 it('displays a list of channels', function (): void {
     $channels = Channel::factory()->count(3)->create();
@@ -72,6 +73,8 @@ it('shows muted status correctly for muted and unmuted channels', function (): v
 });
 
 it('orders channels by most recently created', function (): void {
+    Date::setTestNow(Date::create(2025, 5, 1, 12, 0, 0));
+
     $oldChannel = Channel::factory()->create([
         'created_at' => now()->subDays(10),
         'last_checked_at' => now()->subDays(10),
@@ -117,6 +120,8 @@ it('orders channels by most recently created', function (): void {
                 $oldChannel->note ?? '—',
             ],
         ]);
+
+    Date::setTestNow();
 });
 
 it('displays last notification correctly when videos have notified_at timestamps', function (): void {
