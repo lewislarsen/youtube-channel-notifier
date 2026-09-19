@@ -39,9 +39,16 @@ class ExtractVideos
             $videoId = $this->extractVideoId($entry);
             $title = (string) $entry->title;
             $description = $this->extractVideoDescription($entry);
+            $publishedAt = Date::parse((string) $entry->published);
 
             if (in_array($videoId, $existingVideoIds, true)) {
                 Log::debug("Skipping existing video: {$title} ({$videoId})");
+
+                continue;
+            }
+
+            if ($this->wasPublishedBeforeLastCheck($channel, $publishedAt)) {
+                Log::debug("Skipping old video published before last check: {$title} ({$videoId})");
 
                 continue;
             }
@@ -50,7 +57,7 @@ class ExtractVideos
                 continue;
             }
 
-            $newVideos[] = $this->createVideoData($entry, $channel, $videoId, $title, $description);
+            $newVideos[] = $this->createVideoData($channel, $videoId, $title, $description, $publishedAt);
         }
 
         if (empty($newVideos)) {
@@ -131,21 +138,29 @@ class ExtractVideos
     }
 
     /**
+     * Check if a video was published before this channel was last checked.
+     */
+    private function wasPublishedBeforeLastCheck(Channel $channel, \DateTimeInterface $publishedAt): bool
+    {
+        return $channel->last_checked_at !== null && $publishedAt <= $channel->last_checked_at;
+    }
+
+    /**
      * Create video data from an RSS entry.
      *
-     * @param  SimpleXMLElement  $entry  The RSS entry.
      * @param  Channel  $channel  The channel to which the video belongs.
      * @param  string  $videoId  The ID of the video.
      * @param  string  $title  The title of the video.
+     * @param  \DateTimeInterface  $publishedAt  The date the video was published.
      * @return array<string, mixed> The created video data.
      */
-    private function createVideoData(SimpleXMLElement $entry, Channel $channel, string $videoId, string $title, ?string $description): array
+    private function createVideoData(Channel $channel, string $videoId, string $title, ?string $description, \DateTimeInterface $publishedAt): array
     {
         return [
             'video_id' => $videoId,
             'title' => $title,
             'description' => $description,
-            'published_at' => Date::parse((string) $entry->published),
+            'published_at' => $publishedAt,
             'channel_id' => $channel->id,
             'created_at' => Date::now(),
             'updated_at' => Date::now(),

@@ -27,7 +27,7 @@ describe('Core Video Detection', function (): void {
     it('does not send a mailable if no new videos are found', function (): void {
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $rssResponse = <<<'XML'
@@ -50,7 +50,7 @@ describe('Core Video Detection', function (): void {
 
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $rssResponse = <<<'XML'
@@ -80,6 +80,37 @@ describe('Core Video Detection', function (): void {
         $this->assertTrue($video->exists);
         $this->assertNotNull($video->notified_at);
         $this->assertTrue($video->isNotified());
+    });
+
+    it('does not notify for old videos that appear after a feed source changes', function (): void {
+        Config::set('app.alert_emails', 'email@example.com');
+
+        $channel = Channel::factory()->create([
+            'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
+            'last_checked_at' => Date::parse('2025-01-01 00:00:00'),
+        ]);
+
+        $rssResponse = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:old-video</id>
+                <title>Old Video From Playlist Feed</title>
+                <summary>Video description</summary>
+                <published>2020-01-01T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        Http::fake([
+            'https://www.youtube.com/feeds/videos.xml*' => Http::response($rssResponse, 200),
+        ]);
+
+        $action = new CheckForVideos;
+        $action->execute($channel);
+
+        Mail::assertNothingSent();
+
+        expect(Video::where('video_id', 'old-video')->exists())->toBeFalse();
     });
 
     it('does not send a mailable on first-time import', function (): void {
@@ -130,7 +161,7 @@ describe('Filtering', function (): void {
 
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $rssResponse = <<<'XML'
@@ -180,7 +211,7 @@ describe('Filtering', function (): void {
 
         $channel = Channel::factory()->muted()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $rssResponse = <<<'XML'
@@ -226,7 +257,7 @@ describe('Notifications', function (): void {
 
             $channel = Channel::factory()->create([
                 'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-                'last_checked_at' => now()->subDay(),
+                'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
             ]);
 
             $rssResponse = <<<'XML'
@@ -270,7 +301,7 @@ describe('Notifications', function (): void {
 
             $channel = Channel::factory()->create([
                 'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-                'last_checked_at' => now()->subDay(),
+                'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
             ]);
 
             Http::fake([
@@ -340,7 +371,7 @@ describe('UpdateLastChecked', function (): void {
 
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $initialLastChecked = $channel->last_checked_at->copy();
@@ -382,7 +413,7 @@ describe('MultipleVideos', function (): void {
     it('processes and notifies about multiple new videos in a single run', function (): void {
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $rssResponse = <<<'XML'
@@ -427,7 +458,7 @@ describe('MultipleVideos', function (): void {
     it('skips existing videos when processing multiple entries', function (): void {
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         Video::create([
@@ -481,7 +512,7 @@ describe('EmptyFeed', function (): void {
 
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $rssResponse = <<<'XML'
@@ -510,7 +541,7 @@ describe('DateHandling', function (): void {
 
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-            'last_checked_at' => now()->subDay(),
+            'last_checked_at' => Date::parse('2024-12-31 00:00:00'),
         ]);
 
         $rssResponse = <<<'XML'

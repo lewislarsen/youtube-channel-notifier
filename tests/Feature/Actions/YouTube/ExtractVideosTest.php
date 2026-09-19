@@ -87,6 +87,64 @@ describe('ExtractVideos', function (): void {
             ->and($newVideos[0]['title'])->toBe('New Video');
     });
 
+    it('skips videos published before the channel was last checked', function (): void {
+        $channel = Channel::factory()->create([
+            'last_checked_at' => Carbon::parse('2025-01-01 00:00:00'),
+        ]);
+
+        $rssXml = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:old-video</id>
+                <title>Old Video From Playlist Feed</title>
+                <summary>Old description</summary>
+                <published>2020-01-01T00:00:00+00:00</published>
+            </entry>
+            <entry>
+                <id>yt:video:new-video</id>
+                <title>New Video</title>
+                <summary>New description</summary>
+                <published>2025-01-02T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        $rssData = simplexml_load_string($rssXml);
+
+        $action = new ExtractVideos;
+        $newVideos = $action->execute($rssData, $channel);
+
+        expect($newVideos)->toHaveCount(1)
+            ->and($newVideos[0]['video_id'])->toBe('new-video')
+            ->and($newVideos[0]['title'])->toBe('New Video');
+    });
+
+    it('still imports older videos for a channel that has never been checked', function (): void {
+        $channel = Channel::factory()->create([
+            'last_checked_at' => null,
+        ]);
+
+        $rssXml = <<<'XML'
+        <feed>
+            <entry>
+                <id>yt:video:old-video</id>
+                <title>Old Video From First Import</title>
+                <summary>Old description</summary>
+                <published>2020-01-01T00:00:00+00:00</published>
+            </entry>
+        </feed>
+        XML;
+
+        $rssData = simplexml_load_string($rssXml);
+
+        $action = new ExtractVideos;
+        $newVideos = $action->execute($rssData, $channel);
+
+        expect($newVideos)->toHaveCount(1)
+            ->and($newVideos[0]['video_id'])->toBe('old-video')
+            ->and($newVideos[0]['title'])->toBe('Old Video From First Import');
+    });
+
     it('filters out videos containing excluded words', function (): void {
         ExcludedWord::insert([
             ['word' => 'LIVE', 'created_at' => now(), 'updated_at' => now()],
