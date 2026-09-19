@@ -80,20 +80,64 @@ describe('FetchRssFeed', function (): void {
         expect($result)->toBeNull();
     });
 
-    it('correctly builds the RSS feed URL for a channel', function (): void {
+    it('builds the RSS feed URL with the normal videos playlist for a channel', function (): void {
         $channel = Channel::factory()->create([
             'channel_id' => 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
         ]);
 
         Http::fake([
-            'https://www.youtube.com/feeds/videos.xml?channel_id=UC_x5XG1OV2P6uZZ5FSM9Ttw' => Http::response('<feed></feed>', 200),
+            'https://www.youtube.com/feeds/videos.xml?playlist_id=UULF_x5XG1OV2P6uZZ5FSM9Ttw' => Http::response('<feed></feed>', 200),
         ]);
 
         $action = new FetchRssFeed;
         $action->execute($channel);
 
         Http::assertSent(function ($request) {
-            return $request->url() === 'https://www.youtube.com/feeds/videos.xml?channel_id=UC_x5XG1OV2P6uZZ5FSM9Ttw';
+            return $request->url() === 'https://www.youtube.com/feeds/videos.xml?playlist_id=UULF_x5XG1OV2P6uZZ5FSM9Ttw';
         });
     });
+
+    it('only transforms eligible YouTube channel feed URLs', function (string $input, string $expected): void {
+        $action = new FetchRssFeed;
+        $method = new ReflectionMethod($action, 'transformYouTubeFeedUrl');
+
+        expect($method->invoke($action, $input))->toBe($expected);
+    })->with([
+        'youtube channel feed' => [
+            'https://www.youtube.com/feeds/videos.xml?channel_id=UCxSGC9BtJN2jgcz7ynXWdOw',
+            'https://www.youtube.com/feeds/videos.xml?playlist_id=UULFxSGC9BtJN2jgcz7ynXWdOw',
+        ],
+        'youtube channel feed with existing query parameters' => [
+            'https://www.youtube.com/feeds/videos.xml?channel_id=UCxSGC9BtJN2jgcz7ynXWdOw&foo=bar',
+            'https://www.youtube.com/feeds/videos.xml?foo=bar&playlist_id=UULFxSGC9BtJN2jgcz7ynXWdOw',
+        ],
+        'youtube subdomain feed' => [
+            'https://music.youtube.com/feeds/videos.xml?channel_id=UCxSGC9BtJN2jgcz7ynXWdOw',
+            'https://music.youtube.com/feeds/videos.xml?playlist_id=UULFxSGC9BtJN2jgcz7ynXWdOw',
+        ],
+        'already playlist feed' => [
+            'https://www.youtube.com/feeds/videos.xml?playlist_id=UULFxSGC9BtJN2jgcz7ynXWdOw',
+            'https://www.youtube.com/feeds/videos.xml?playlist_id=UULFxSGC9BtJN2jgcz7ynXWdOw',
+        ],
+        'malformed url' => [
+            'https://www.youtube.com/feeds/videos.xml?channel_id',
+            'https://www.youtube.com/feeds/videos.xml?channel_id',
+        ],
+        'empty UC channel ID' => [
+            'https://www.youtube.com/feeds/videos.xml?channel_id=UC',
+            'https://www.youtube.com/feeds/videos.xml?channel_id=UC',
+        ],
+        'youtube feed without UC channel ID' => [
+            'https://www.youtube.com/feeds/videos.xml?channel_id=OLAK5uy_example',
+            'https://www.youtube.com/feeds/videos.xml?channel_id=OLAK5uy_example',
+        ],
+        'youtube non-feed url' => [
+            'https://www.youtube.com/watch?channel_id=UCxSGC9BtJN2jgcz7ynXWdOw',
+            'https://www.youtube.com/watch?channel_id=UCxSGC9BtJN2jgcz7ynXWdOw',
+        ],
+        'non-youtube feed' => [
+            'https://example.com/feeds/videos.xml?channel_id=UCxSGC9BtJN2jgcz7ynXWdOw',
+            'https://example.com/feeds/videos.xml?channel_id=UCxSGC9BtJN2jgcz7ynXWdOw',
+        ],
+    ]);
 });

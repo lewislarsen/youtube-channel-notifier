@@ -52,7 +52,67 @@ class FetchRssFeed
      */
     private function buildRssUrl(Channel $channel): string
     {
-        return sprintf('https://www.youtube.com/feeds/videos.xml?channel_id=%s', $channel->channel_id);
+        return $this->transformYouTubeFeedUrl(sprintf(
+            'https://www.youtube.com/feeds/videos.xml?channel_id=%s',
+            $channel->channel_id
+        ));
+    }
+
+    /**
+     * Transform YouTube channel feeds to the uploads playlist feed that excludes Shorts.
+     *
+     * @param  string  $url  The feed URL to transform.
+     * @return string The transformed URL, or the original URL when it is not transformable.
+     */
+    private function transformYouTubeFeedUrl(string $url): string
+    {
+        $parts = parse_url($url);
+
+        if ($parts === false || ! isset($parts['host'], $parts['path'], $parts['query'])) {
+            return $url;
+        }
+
+        $host = strtolower($parts['host']);
+
+        if (! ($host === 'youtube.com' || str_ends_with($host, '.youtube.com'))) {
+            return $url;
+        }
+
+        if ($parts['path'] !== '/feeds/videos.xml') {
+            return $url;
+        }
+
+        parse_str($parts['query'], $query);
+
+        if (
+            ! isset($query['channel_id'])
+            || ! is_string($query['channel_id'])
+            || ! str_starts_with($query['channel_id'], 'UC')
+            || strlen($query['channel_id']) <= 2
+        ) {
+            return $url;
+        }
+
+        $query['playlist_id'] = 'UULF'.substr($query['channel_id'], 2);
+        unset($query['channel_id']);
+
+        $scheme = $parts['scheme'] ?? 'https';
+        $port = isset($parts['port']) ? ':'.$parts['port'] : '';
+        $user = $parts['user'] ?? null;
+        $pass = isset($parts['pass']) ? ':'.$parts['pass'] : '';
+        $auth = $user !== null ? $user.$pass.'@' : '';
+        $fragment = isset($parts['fragment']) ? '#'.$parts['fragment'] : '';
+
+        return sprintf(
+            '%s://%s%s%s%s?%s%s',
+            $scheme,
+            $auth,
+            $parts['host'],
+            $port,
+            $parts['path'],
+            http_build_query($query),
+            $fragment
+        );
     }
 
     /**

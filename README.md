@@ -335,7 +335,7 @@ There are no plans to support platforms other than YouTube.
 Please create an issue in the repository and I'll get back to you.
 
 ### What about shorts?
-Unfortunately, YouTube's RSS feed does not distinguish between regular videos and shorts. As a result, we cannot filter out shorts at this time. 
+Shorts are filtered automatically where YouTube's RSS feeds allow it.
 
 ### How do I set my timezone?
 You can set your timezone in the `.env` file using the `USER_TIMEZONE` variable. You can find a list of supported timezones in the [PHP documentation](https://www.php.net/manual/en/timezones.php).

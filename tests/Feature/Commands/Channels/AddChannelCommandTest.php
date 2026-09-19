@@ -6,12 +6,17 @@ use App\Actions\YouTube\ExtractYouTubeChannelId;
 use App\Console\Commands\Channels\AddChannelCommand;
 use App\Models\Channel;
 use App\Models\Video;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Mockery\MockInterface;
 
 beforeEach(function (): void {
     Channel::truncate();
     Video::truncate();
+
+    Http::fake([
+        'https://www.youtube.com/feeds/videos.xml*' => Http::response('<feed></feed>', 200),
+    ]);
 });
 
 it('adds a new channel using URL and performs an initial video import', function (): void {
@@ -37,6 +42,10 @@ it('adds a new channel using URL and performs an initial video import', function
     expect($channel)->not->toBeNull();
 
     Mail::assertNothingSent();
+
+    Http::assertSent(function ($request) {
+        return $request->url() === 'https://www.youtube.com/feeds/videos.xml?playlist_id=UULF_x5XG1OV2P6uZZ5FSM9Ttw';
+    });
 });
 
 it('falls back to manual entry when channel ID extraction fails', function (): void {
