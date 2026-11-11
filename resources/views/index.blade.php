@@ -11,195 +11,281 @@ declare(strict_types=1);
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>YouTube Channel Notifier</title>
 
-    <!-- Favicon -->
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     <link rel="icon" href="{{ asset('gray-favicon.ico') }}" media="(prefers-color-scheme: light)">
     <link rel="icon" href="{{ asset('white-favicon.ico') }}" media="(prefers-color-scheme: dark)">
 
-    <!-- Social Media Meta Tags -->
     <meta property="og:title" content="YouTube Channel Notifier">
     <meta property="og:description" content="Get notified when your favourite YouTube channels upload new content.">
     <meta property="og:image" content="{{ asset('og-image.png') }}">
     <meta property="og:url" content="{{ URL::current() }}">
     <meta property="og:type" content="website">
-
-    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="YouTube Channel Notifier">
-    <meta name="twitter:description" content="Get notified when your favoirite YouTube channels upload new content.">
+    <meta name="twitter:description" content="Get notified when your favourite YouTube channels upload new content.">
     <meta name="twitter:image" content="{{ asset('og-image.png') }}">
+    <meta name="theme-color" content="#0F0F0F">
 
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#FF0000">
-
-    <!-- Styles -->
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <!-- Custom Styles -->
     <style>
-        /* Force the background color */
-        html {
-            background-color: #e6e6e6; /* gray-50 */
+        :root {
+            color-scheme: light;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: #18181B;
+            background: #F4F4F5;
         }
 
-        html.dark {
-            background-color: #111827; /* gray-900 */
-        }
+        * { box-sizing: border-box; }
 
         body {
-            background-color: #e6e6e6; /* gray-50 */
+            min-height: 100vh;
+            margin: 0;
+            padding: 48px 20px;
+            background: #F4F4F5;
         }
 
-        .dark body {
-            background-color: #111827; /* gray-900 */
+        a { color: inherit; }
+
+        .page-shell { width: min(100%, 920px); margin: 0 auto; }
+
+        .hero {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 180px;
+            align-items: center;
+            gap: 32px;
+            overflow: hidden;
+            padding: clamp(28px, 6vw, 56px);
+            border-radius: 24px;
+            background: #0F0F0F;
+            color: #FFFFFF;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .hero::before {
+            position: absolute;
+            top: -120px;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(255, 0, 51, .22);
+            border-radius: 50%;
+            content: '';
         }
 
-        .float-animation {
-            animation: float 6s ease-in-out infinite;
+        .hero-copy { position: relative; z-index: 1; }
+
+        h1 {
+            max-width: 620px;
+            margin: 0;
+            font-size: clamp(36px, 6vw, 58px);
+            line-height: 1.04;
+            letter-spacing: -.045em;
         }
 
-        .bg-gradient-pattern {
-            background-image:
-                radial-gradient(circle at 25% 10%, rgba(255, 0, 0, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(255, 0, 0, 0.1) 0%, transparent 50%);
-            background-attachment: fixed;
+        .hero-lede {
+            max-width: 540px;
+            margin: 18px 0 0;
+            color: #D4D4D8;
+            font-size: 17px;
+            line-height: 1.65;
         }
 
-        .glass-card {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+        .hero-art {
+            position: relative;
+            display: flex;
+            height: 150px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .perspective-1000 {
-            perspective: 1000px;
+        .hero-art::before,
+        .hero-art::after {
+            position: absolute;
+            width: 126px;
+            height: 126px;
+            border: 1px solid rgba(255, 0, 51, .25);
+            border-radius: 50%;
+            content: '';
+        }
+
+        .hero-art::after { width: 96px; height: 96px; border-color: rgba(255, 0, 51, .4); }
+
+        .signal-bar {
+            z-index: 1;
+            width: 7px;
+            border-radius: 999px;
+            background: #FF0033;
+        }
+
+        .signal-bar:nth-child(1), .signal-bar:nth-child(7) { height: 22px; opacity: .55; }
+        .signal-bar:nth-child(2), .signal-bar:nth-child(6) { height: 42px; opacity: .72; }
+        .signal-bar:nth-child(3), .signal-bar:nth-child(5) { height: 62px; }
+        .signal-bar:nth-child(4) { height: 82px; }
+
+        .github-link {
+            display: inline-flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+            padding: 0 22px;
+            border-radius: 999px;
+            background: #FF0033;
+            color: #FFFFFF;
+            font-size: 15px;
+            font-weight: 650;
+            text-decoration: none;
+            transition: background-color .15s ease, transform .15s ease;
+        }
+
+        .github-link:hover { background: #E6002E; transform: translateY(-1px); }
+        .github-link:focus-visible, summary:focus-visible { outline: 3px solid #FF8AA1; outline-offset: 3px; }
+        .github-link svg { width: 18px; height: 18px; }
+
+        .intro-card {
+            margin-top: 16px;
+            padding: 24px 28px;
+            border-radius: 16px;
+            background: #FFF0F2;
+            color: #52525B;
+            font-size: 16px;
+            line-height: 1.65;
+        }
+
+        .faq { margin-top: 44px; }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 { margin: 0; font-size: 25px; letter-spacing: -.025em; }
+        .section-heading p { margin: 0; color: #71717A; font-size: 13px; }
+
+        .faq-list { display: grid; gap: 10px; }
+
+        .faq-item {
+            overflow: hidden;
+            border-radius: 16px;
+            background: #FFFFFF;
+        }
+
+        .faq-item summary {
+            display: flex;
+            min-height: 64px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 22px;
+            color: #18181B;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 650;
+            list-style: none;
+        }
+
+        .faq-item summary::-webkit-details-marker { display: none; }
+
+        .faq-item summary::after {
+            flex: 0 0 auto;
+            color: #FF0033;
+            content: '+';
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 1;
+        }
+
+        .faq-item[open] summary::after { content: '−'; }
+
+        .faq-answer {
+            max-width: 760px;
+            padding: 0 22px 22px;
+            color: #52525B;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .site-footer {
+            margin-top: 44px;
+            padding: 24px;
+            border-radius: 16px;
+            background: #0F0F0F;
+            color: #A1A1AA;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .site-footer p { margin: 0; }
+        .site-footer a { color: #FFFFFF; text-decoration: underline; text-underline-offset: 3px; }
+
+        @media (max-width: 640px) {
+            body { padding: 20px 14px; }
+            .hero { grid-template-columns: 1fr; gap: 8px; padding: 30px 24px; border-radius: 20px; }
+            .hero-art { position: absolute; right: -50px; bottom: -35px; width: 160px; height: 140px; opacity: .55; }
+            .hero-copy { max-width: 100%; }
+            .hero-lede { font-size: 16px; }
+            .intro-card { padding: 20px; }
+            .faq { margin-top: 34px; }
+            .section-heading { display: block; }
+            .section-heading p { margin-top: 6px; }
+            .site-footer { margin-top: 32px; }
         }
     </style>
 </head>
-
-<body class="min-h-screen bg-gray-50 dark:bg-gray-900 bg-gradient-pattern flex items-center justify-center p-4 text-gray-900 dark:text-gray-100"
-      x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' || window.matchMedia('(prefers-color-scheme: dark)').matches }"
-      x-init="$watch('darkMode', val => { localStorage.setItem('darkMode', val); document.documentElement.classList.toggle('dark', val) });
-              document.documentElement.classList.toggle('dark', darkMode)"
-      :class="{ 'dark': darkMode }">
-
-<!-- Main Content Card -->
-<div class="max-w-lg w-full perspective-1000">
-    <div class="relative">
-        <!-- Decorative Elements -->
-        <div class="absolute -top-6 -right-8 w-24 h-24 bg-red-600 rounded-full opacity-30 blur-2xl"></div>
-        <div class="absolute -bottom-6 -left-8 w-20 h-20 bg-red-600 rounded-full opacity-20 blur-xl"></div>
-
-        <!-- Card Content -->
-        <div class="relative bg-white/90 dark:bg-gray-800/90 glass-card rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden z-10">
-            <!-- Card Header -->
-            <div class="bg-gradient-to-r from-red-600 to-red-700 p-6 text-center relative overflow-hidden">
-                <div class="absolute inset-0 opacity-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" class="absolute h-full w-full">
-                        <circle cx="512" cy="512" r="512" fill="white" />
-                        <circle cx="512" cy="512" r="400" fill="white" opacity="0.7" />
-                        <circle cx="512" cy="512" r="300" fill="white" opacity="0.5" />
+<body>
+    <main class="page-shell">
+        <section class="hero" aria-labelledby="page-title">
+            <div class="hero-copy">
+                <h1 id="page-title">YouTube Channel Notifier</h1>
+                <p class="hero-lede">Get an email when a channel you follow uploads a new video.</p>
+                <a class="github-link" href="https://github.com/lewislarsen/youtube-channel-notifier" target="_blank" rel="noopener noreferrer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.66-.22.66-.48v-1.69c-2.78.6-3.37-1.2-3.37-1.2-.46-1.17-1.12-1.48-1.12-1.48-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.57 9.57 0 0112 6.8c.85.004 1.71.11 2.51.32 1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.67-4.57 4.92.36.31.67.91.67 1.84v2.73c0 .27.16.58.67.48A10.012 10.012 0 0022 12c0-5.52-4.48-10-10-10z" />
                     </svg>
-                </div>
+                    View on GitHub
+                </a>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <span class="signal-bar"></span><span class="signal-bar"></span><span class="signal-bar"></span>
+                <span class="signal-bar"></span><span class="signal-bar"></span><span class="signal-bar"></span>
+                <span class="signal-bar"></span>
+            </div>
+        </section>
 
-                <div class="relative">
-                    <div class="float-animation inline-block bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-red-600">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
-                        </svg>
-                    </div>
+        <p class="intro-card">A straightforward way to keep up with your favourite YouTube channels, without having to check for new videos yourself.</p>
 
-                    <h1 class="text-3xl font-bold text-white">YouTube Channel Notifier</h1>
-                    <p class="text-red-100 mt-2 max-w-md mx-auto">Never miss a video upload from your favourite creators again.</p>
-                </div>
+        <section class="faq" aria-labelledby="faq-title">
+            <div class="section-heading">
+                <h2 id="faq-title">Frequently Asked Questions</h2>
             </div>
 
-            <!-- Card Body -->
-            <div class="p-6">
-                <div class="flex justify-center mb-6">
-                    <p class="text-gray-600 dark:text-gray-300 text-center max-w-md">
-                        Stay informed when channels you follow post new content. Simple, reliable, and customizable notifications.
-                    </p>
-                </div>
-
-                <!-- Action Button -->
-                <div class="flex justify-center mb-8">
-                    <a href="https://github.com/lewislarsen/youtube-channel-notifier" target="_blank"
-                       class="inline-flex items-center px-6 py-3 text-white font-semibold bg-gradient-to-r from-red-600 to-red-700 rounded-xl shadow-lg hover:shadow-xl hover:from-red-700 hover:to-red-800 transition-all transform hover:-translate-y-0.5">
-                        <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.66-.22.66-.48v-1.69c-2.78.6-3.37-1.2-3.37-1.2-.46-1.17-1.12-1.48-1.12-1.48-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.57 9.57 0 0112 6.8c.85.004 1.71.11 2.51.32 1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.67-4.57 4.92.36.31.67.91.67 1.84v2.73c0 .27.16.58.67.48A10.012 10.012 0 0022 12c0-5.52-4.48-10-10-10z" />
-                        </svg>
-                        View on GitHub
-                    </a>
-                </div>
-
-                <!-- Theme Toggle -->
-                <div class="flex justify-center mb-6">
-                    <button @click="darkMode = !darkMode" class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-600 transition-colors">
-                        <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                        <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <span x-text="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"></span>
-                    </button>
-                </div>
-
-                <!-- FAQ Section -->
-                <div class="mt-6 text-left" x-data="{ open: null }">
-                    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Frequently Asked Questions</h2>
-
-                    <div class="mb-3 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden">
-                        <button @click="open = open === 1 ? null : 1"
-                                class="w-full text-left p-4 font-medium text-gray-800 dark:text-white flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                            What is this service?
-                            <span class="text-red-600 text-xl" x-text="open === 1 ? '−' : '+'"></span>
-                        </button>
-                        <div x-show="open === 1" x-transition class="p-4 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800/30">
-                            This is a YouTube Channel Notifier, a tool that monitors your favourite YouTube channels and notifies you whenever they upload new content. It helps you stay up-to-date without constantly checking YouTube.
-                        </div>
-                    </div>
-
-                    <div class="mb-3 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden">
-                        <button @click="open = open === 2 ? null : 2"
-                                class="w-full text-left p-4 font-medium text-gray-800 dark:text-white flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                            How can I use it?
-                            <span class="text-red-600 text-xl" x-text="open === 2 ? '−' : '+'"></span>
-                        </button>
-                        <div x-show="open === 2" x-transition class="p-4 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800/30">
-                            Follow the detailed instructions in the GitHub repository. You'll need to host it yourself, but the setup process is straightforward and well-documented.
-                        </div>
-                    </div>
-
-                    <div class="mb-3 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden">
-                        <button @click="open = open === 3 ? null : 3"
-                                class="w-full text-left p-4 font-medium text-gray-800 dark:text-white flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                            What are the costs involved?
-                            <span class="text-red-600 text-xl" x-text="open === 3 ? '−' : '+'"></span>
-                        </button>
-                        <div x-show="open === 3" x-transition class="p-4 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800/30">
-                            This project is completely free and open source. You only need to cover the costs of hosting it yourself, which can be very minimal or even free depending on your setup.
-                        </div>
-                    </div>
-                </div>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>What is this service?</summary>
+                    <div class="faq-answer">YouTube Channel Notifier checks the channels you choose and emails you when they publish a new video. No need to keep checking YouTube for updates.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>How can I use it?</summary>
+                    <div class="faq-answer">The setup guide is in the GitHub repository. You’ll need to run your own instance; the guide walks you through the steps.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>What are the costs involved?</summary>
+                    <div class="faq-answer">The software is free and open source. You’ll need to arrange hosting for your instance; the cost depends on the service and setup you choose.</div>
+                </details>
             </div>
+        </section>
 
-            <!-- Card Footer -->
-            <div class="p-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700/50 text-center text-sm text-gray-500 dark:text-gray-400">
-                <p>Open source project by <a href="https://github.com/lewislarsen" target="_blank" class="text-red-600 hover:underline">Lewis Larsen</a></p>
-            </div>
-        </div>
-    </div>
-</div>
+        <footer class="site-footer">
+            <p>Open source project by <a href="https://github.com/lewislarsen" target="_blank" rel="noopener noreferrer">Lewis Larsen</a></p>
+        </footer>
+    </main>
 </body>
 </html>
-<?php
