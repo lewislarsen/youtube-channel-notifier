@@ -25,7 +25,7 @@ it('builds the mailable correctly', function (): void {
 
     $content = $mailable->content();
 
-    expect($content->markdown)->toBe('mail.new-video-mail')
+    expect($content->html)->toBe('mail.new-video-mail')
         ->and($content->with['videoCreator'])->toBe('TestChannel')
         ->and($content->with['videoTitle'])->toBe('Test Video')
         ->and($content->with['videoUrl'])->toBe('https://www.youtube.com/watch?v=5ltAy1W6k-Q')
@@ -92,8 +92,7 @@ it('translates the mailable into another language', function (): void {
     $renderedContent = $mailable->render();
 
     expect($renderedContent)
-        ->toContain(__('email.new_upload_from', ['creator' => $channel->name]))
-        ->toContain(__('email.creator_uploaded_video', ['creator' => $channel->name]))
+        ->toContain('<strong>'.$channel->name.'</strong> '.__('email.creator_uploaded_video'))
         ->toContain(__('email.published_date', ['date' => $video->getFormattedPublishedDate()]))
         ->toContain(__('email.watch_on_youtube'))
         ->toContain(__('email.notification_reason', ['creator' => $channel->name]));

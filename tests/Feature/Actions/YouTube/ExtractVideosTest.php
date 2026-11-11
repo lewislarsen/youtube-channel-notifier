@@ -7,6 +7,7 @@ use App\Models\Channel;
 use App\Models\ExcludedWord;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 
 beforeEach(function (): void {
@@ -89,7 +90,7 @@ describe('ExtractVideos', function (): void {
 
     it('skips videos published before the channel was last checked', function (): void {
         $channel = Channel::factory()->create([
-            'last_checked_at' => \Illuminate\Support\Facades\Date::parse('2025-01-01 00:00:00'),
+            'last_checked_at' => Date::parse('2025-01-01 00:00:00'),
         ]);
 
         $rssXml = <<<'XML'
