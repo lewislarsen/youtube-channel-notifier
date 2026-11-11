@@ -17,7 +17,7 @@ declare(strict_types=1);
                         <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                             <tr>
                                 <td>
-                                    <a href="{{ $url }}" class="button button-{{ $color }}" target="_blank" rel="noopener" style="font-weight: 600;">{{ $slot }}</a>
+                                    <a href="{{ $url }}" class="button button-{{ $color }}" target="_blank" rel="noopener" style="font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;line-height:20px;font-weight:600;text-align:center;">{{ $slot }}</a>
                                 </td>
                             </tr>
                         </table>

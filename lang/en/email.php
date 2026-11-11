@@ -3,7 +3,7 @@
 return [
     'subject_new_upload' => 'New Upload: :channel - ":title"',
     'new_upload_from' => 'New Upload from :creator',
-    'creator_uploaded_video' => ':creator has uploaded a new video to their channel.',
+    'creator_uploaded_video' => 'uploaded a new video',
     'published_date' => 'Published :date',
     'watch_on_youtube' => 'Watch on YouTube',
     'alternative_watch_link' => 'Or click this link: <a href=":link">:link</a>',

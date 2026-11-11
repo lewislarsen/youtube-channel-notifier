@@ -9,40 +9,36 @@ declare(strict_types=1);
 {{ __('email.weekly_summary_intro') }}
 
 @foreach($weekdays as $dateString => $dayData)
-<div style="margin: 40px 0 30px 0;">
-<h2 style="font-size: 22px; color: #1f2937; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb;">
+<div style="margin: 28px 0 24px;">
+<h2 style="font-size:20px;line-height:26px;color:#18181B;margin:0 0 14px;padding:0;text-align:left;">
 {{ __('email.weekday_' . strtolower($dayData['date']->format('l'))) }} - {{ $dayData['date']->format('M j, Y') }}
 </h2>
 
 @foreach($dayData['videos'] as $video)
-<div style="margin-bottom: 30px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #f9fafb;">
-<div style="display: flex; align-items: center; margin-bottom: 15px;">
-<div style="flex: 1;">
-<h3 style="margin: 0 0 5px 0; font-size: 18px; color: #1f2937;">
-<a href="{{ $video->getYoutubeUrl() }}" style="text-decoration: none; color: #1f2937;">
+<div style="margin-bottom:16px;padding:20px;border:0;border-radius:16px;background-color:#FFF0F2;">
+<div style="margin-bottom:12px;">
+<h3 style="margin:0 0 6px;font-size:18px;line-height:24px;color:#18181B;">
+<a href="{{ $video->getYoutubeUrl() }}" style="text-decoration:none;color:#18181B;">
 {{ $video->title }}
 </a>
 </h3>
-<p style="margin: 0; color: #6b7280; font-size: 14px;">
+<p style="margin:0;color:#52525B;font-size:14px;line-height:20px;">
 @if(isset($video->channel))
-{!! __('email.by_creator', ['creator' => '<a href="' . $video->channel->getChannelUrl() . '" style="color: #dc2626; text-decoration: none;">' . $video->channel->name . '</a>']) !!}
+{!! __('email.by_creator', ['creator' => '<a href="' . $video->channel->getChannelUrl() . '" style="color:#71717A;text-decoration:underline;">' . $video->channel->name . '</a>']) !!}
 • {{ $video->getFormattedPublishedDate() }}
 @endif
 </p>
 </div>
-</div>
 
-<div style="text-align: center; margin: 15px 0;">
+<div style="text-align:center;margin:12px 0 16px;">
 <a href="{{ $video->getYoutubeUrl() }}" style="display: inline-block;">
-<img src="{{ $video->getThumbnailUrl('maxresdefault') }}" alt="{{ $video->title }}" style="max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #d1d5db; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+<img src="{{ $video->getThumbnailUrl('maxresdefault') }}" alt="{{ $video->title }}" width="400" style="display:block;width:100%;max-width:400px;max-height:225px;height:auto;margin:0 auto;border:0;border-radius:16px;">
 </a>
 </div>
 
 <div style="text-align: center;">
 <x-mail::button :url="$video->getYoutubeUrl()" color="primary" style="display: inline-block; margin: 0 auto;">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="height:16px; width:16px; margin-right: 5px; vertical-align: middle;">
-<path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-</svg>
+<span style="padding-right:7px;font-size:14px;">&#9654;</span>
 {{ __('email.watch_on_youtube') }}
 </x-mail::button>
 </div>
@@ -50,7 +46,7 @@ declare(strict_types=1);
 @endforeach
 </div>
 @endforeach
-<x-mail::subcopy>
+<x-slot:subcopy>
 {!! __('email.weekly_summary_notification_reason') !!} {!! __('email.documentation_link', ['github_url' => 'https://github.com/lewislarsen/youtube-channel-notifier?tab=readme-ov-file#youtube-channel-notifier-ycn-project']) !!}
-</x-mail::subcopy>
+</x-slot:subcopy>
 </x-mail::message>

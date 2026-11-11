@@ -68,7 +68,7 @@ class NewVideoMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.new-video-mail',
+            html: 'mail.new-video-mail',
             with: [
                 'videoCreator' => $this->channel->name,
                 'videoTitle' => $this->video->title,

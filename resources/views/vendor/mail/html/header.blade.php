@@ -5,12 +5,12 @@ declare(strict_types=1);
 ?>
 @props(['url'])
 <tr>
-    <td class="header">
+                <td class="header" style="height:72px;padding:0 32px;background-color:#FFF0F2;text-align:left;">
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
             <tr>
-                <td align="center">
-                    <a href="{{ $url }}" style="display: inline-block;">
-                        <h1 style="color: #fc0032; font-size: 28px; font-weight: bold; margin: 0; text-align: center;">{{ $slot }}</h1>
+                <td align="left" style="height:72px;vertical-align:middle;">
+                    <a href="{{ $url }}" style="display:inline-block;color:#FF0033;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:20px;line-height:24px;font-weight:700;text-decoration:none;">
+                        {{ $slot }}
                     </a>
                 </td>
             </tr>

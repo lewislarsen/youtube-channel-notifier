@@ -14,19 +14,17 @@ declare(strict_types=1);
 {{-- Body --}}
 {{ $slot }}
 
-{{-- Subcopy --}}
-@isset($subcopy)
-<x-slot:subcopy>
-<x-mail::subcopy>
-{{ $subcopy }}
-</x-mail::subcopy>
-</x-slot:subcopy>
- @endisset
-
  {{-- Footer --}}
 <x-slot:footer>
 <x-mail::footer>
-{!! __('email.automated_notification', ['app_name' => Config::get('app.name'), 'github_url' => 'https://github.com/lewislarsen/youtube-channel-notifier']) !!}
+@isset($subcopy)
+<div style="padding-bottom:16px;">
+{{ $subcopy }}
+</div>
+@endisset
+<div style="color:#A1A1AA;font-size:12px;line-height:18px;">
+{!! str_replace('<a ', '<a style="color:#A1A1AA;text-decoration:underline;" ', __('email.automated_notification', ['app_name' => Config::get('app.name'), 'github_url' => 'https://github.com/lewislarsen/youtube-channel-notifier'])) !!}
+</div>
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>
