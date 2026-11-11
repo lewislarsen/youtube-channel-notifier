@@ -38,53 +38,61 @@ class VideoFactory extends Factory
      */
     protected function generateRealisticVideoTitle(): string
     {
-        $titleFormats = [
-            // How-to and tutorial formats
-            fn () => 'How to '.fake()->sentence(3, true),
-            fn () => 'Tutorial: '.ucfirst(fake()->word()).' for Beginners',
-            fn () => 'Learn '.ucfirst(fake()->word()).' in '.fake()->numberBetween(5, 60).' Minutes',
-            fn () => ucfirst(fake()->word()).' Masterclass: '.fake()->sentence(2, true),
-
-            // Listicle formats
-            fn () => fake()->numberBetween(3, 20).' '.ucfirst(fake()->words(3, true)).' You Need to See',
-            fn () => 'Top '.fake()->numberBetween(5, 20).' '.ucfirst(fake()->words(2, true)).' of '.date('Y'),
-            fn () => 'The BEST '.ucfirst(fake()->word()).' '.ucfirst(fake()->word()).' Ever!',
-
-            // Review formats
-            fn () => ucfirst(fake()->word()).' '.ucfirst(fake()->word()).' Review: Is It Worth It?',
-            fn () => 'Honest Review: '.ucfirst(fake()->words(3, true)),
-            fn () => 'I Tried '.ucfirst(fake()->words(2, true)).' For a Week and This Happened',
-
-            // Vlog and personal content
-            fn () => 'Day in the Life of a '.fake()->jobTitle(),
-            fn () => 'I '.ucfirst(fake()->word()).' for '.fake()->numberBetween(10, 100).' Days Straight',
-            fn () => 'My '.ucfirst(fake()->word()).' Routine '.date('Y'),
-
-            // Reaction videos
-            fn () => 'REACTING to '.ucfirst(fake()->words(3, true)),
-            fn () => 'Reaction: '.ucfirst(fake()->words(3, true)),
-
-            // Clickbait formats (but not too extreme)
-            fn () => 'You Won\'t Believe What Happened When I '.fake()->sentence(3, true),
-            fn () => 'This '.ucfirst(fake()->word()).' Changed Everything!',
-            fn () => 'I Can\'t Believe '.ucfirst(fake()->words(4, true)).'...',
-
-            // Gaming content
-            fn () => ucfirst(fake()->word()).' Gameplay - Part '.fake()->numberBetween(1, 30),
-            fn () => 'Let\'s Play '.ucfirst(fake()->word()).' - Episode '.fake()->numberBetween(1, 50),
+        $howToTopics = [
+            'organize my camera files',
+            'plan a week of meals',
+            'edit a travel video',
+            'keep a small workspace tidy',
+            'back up photos without overthinking it',
+            'make better coffee at home',
+            'track my spending each month',
+            'get started with Blender',
         ];
 
-        // Randomly select a format and generate a title
-        $formatIndex = array_rand($titleFormats);
-        $title = $titleFormats[$formatIndex]();
+        $weeklongExperiments = [
+            'cooking every meal at home',
+            'running before work',
+            'using a paper planner',
+            'cycling instead of driving',
+            'shooting a roll of film',
+            'learning to sew',
+            'making espresso at home',
+            'taking a break from social media',
+        ];
 
-        // Sometimes add attention-grabbing elements
-        if (fake()->boolean(40)) {
-            $attention = ['(MUST WATCH)', '(SHOCKING)', '(NEW METHOD)', '[OFFICIAL]', '[PART '.fake()->numberBetween(1, 10).']'];
-            $title .= ' '.$attention[array_rand($attention)];
-        }
+        $projects = [
+            'a quiet home server from spare parts',
+            'a standing desk from plywood',
+            'my first mechanical keyboard',
+            'a balcony garden for under £50',
+            'a simple home recording setup',
+            'a better bike storage rack',
+        ];
 
-        return $title;
+        $topics = [
+            'film photography',
+            'home espresso',
+            'trail running',
+            'meal planning',
+            'mechanical keyboards',
+            'digital illustration',
+            'home networking',
+            'weekend train travel',
+        ];
+
+        $titles = [
+            fn (): string => 'How I '.fake()->randomElement($howToTopics),
+            fn (): string => 'A week of '.fake()->randomElement($weeklongExperiments).': what I learned',
+            fn (): string => 'Building '.fake()->randomElement($projects),
+            fn (): string => 'A practical guide to '.fake()->randomElement($topics),
+            fn (): string => 'What I learned after a year of '.fake()->randomElement($topics),
+            fn (): string => 'My current '.fake()->randomElement(['camera kit', 'desk setup', 'home server', 'everyday bike'])
+                .' (and what I would change)',
+            fn (): string => 'A weekend in '.fake()->city().' without a car',
+            fn (): string => 'I tried '.fake()->randomElement($weeklongExperiments).' for 30 days',
+        ];
+
+        return fake()->randomElement($titles)();
     }
 
     /**

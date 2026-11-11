@@ -37,45 +37,15 @@ class ChannelFactory extends Factory
      */
     protected function generateRealisticChannelName(): string
     {
-        $channelNameFormats = [
-            // Personal brand formats
-            fn () => fake()->firstName().' '.fake()->lastName(),
-            fn () => fake()->userName(),
-            fn () => fake()->firstName().'TV',
-            fn () => fake()->lastName().'Gaming',
-            fn () => 'The'.fake()->lastName().'Family',
-
-            // Topic-based formats
-            fn () => fake()->word().' '.fake()->word().' Studio',
-            fn () => fake()->word().'Tutorials',
-            fn () => fake()->word().'Reviews',
-            fn () => fake()->word().' '.fake()->word().' Official',
-            fn () => 'The'.ucfirst(fake()->word()).'Channel',
-
-            // Creative formats
-            fn () => ucfirst(fake()->word()).ucfirst(fake()->word()),
-            fn () => ucfirst(fake()->word()).fake()->numberBetween(1, 9999),
-            fn () => 'The'.ucfirst(fake()->colorName()).ucfirst(fake()->word()),
-            fn () => ucfirst(fake()->word()).'Hub',
-            fn () => ucfirst(fake()->word()).'Nation',
-
-            // Professional formats
-            fn () => fake()->company().' Official',
-            fn () => ucfirst(fake()->bs()),
-            fn () => fake()->catchPhrase(),
+        $styles = [
+            fn (): string => fake()->firstName().' '.fake()->lastName(),
+            fn (): string => fake()->firstName().' '.fake()->randomElement(['Makes', 'Builds', 'Cooks', 'Rides', 'Creates']),
+            fn (): string => fake()->firstName().' on '.fake()->randomElement(['Film', 'Foot', 'Food', 'Games', 'the Road']),
+            fn (): string => 'The '.fake()->randomElement(['Weekend Workshop', 'Sunday Kitchen', 'Camera Roll', 'Open Bench', 'Everyday Outdoors', 'Small Space Garden', 'Home Studio', 'Field Notes']),
+            fn (): string => ucfirst(fake()->userName()),
         ];
 
-        // Randomly select a format and generate a channel name
-        $formatIndex = array_rand($channelNameFormats);
-        $channelName = $channelNameFormats[$formatIndex]();
-
-        // Sometimes add decorations like emojis or special characters
-        if (fake()->boolean(20)) {
-            $decorations = ['✓', '™', '®', '➤', '►', '★', '☆', '❤', '🎮', '🎬', '🎯', '🔥', '💯'];
-            $channelName .= ' '.$decorations[array_rand($decorations)];
-        }
-
-        return $channelName;
+        return fake()->randomElement($styles)();
     }
 
     /**
