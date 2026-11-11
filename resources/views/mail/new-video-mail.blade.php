@@ -35,10 +35,10 @@ use Illuminate\Support\Facades\Config;
                     </tr>
                     <!-- Main content -->
                     <tr>
-                        <td class="email-main" style="padding:0; color:#18181B;">
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                        <td class="email-main" valign="top" style="padding:16px 0 0; color:#18181B; font-size:0; line-height:0;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse; border-spacing:0; font-size:0; line-height:0;">
                                 <tr>
-                                    <td class="email-gutter" style="padding:0 16px;">
+                                    <td class="email-gutter" valign="top" style="padding:0 16px; font-size:0; line-height:0;">
                                         <!-- Channel card -->
                                         <table role="presentation" class="email-card" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#FFF0F2; border-radius:16px;">
                                             <tr>

@@ -49,12 +49,13 @@ class TestMail extends Mailable
     /**
      * Get the message content definition.
      *
-     * @return Content The content instance with markdown and data.
+     * @return Content The content instance with HTML and data.
      */
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.test-mail',
+            html: 'mail.test-mail',
+            text: 'mail.test-mail-text',
         );
     }
 }
