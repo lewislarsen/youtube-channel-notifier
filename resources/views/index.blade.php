@@ -245,7 +245,7 @@ declare(strict_types=1);
         <section class="hero" aria-labelledby="page-title">
             <div class="hero-copy">
                 <h1 id="page-title">YouTube Channel Notifier</h1>
-                <p class="hero-lede">Get an email when a channel you follow uploads a new video.</p>
+                <p class="hero-lede">Get a notification when a channel you follow uploads a new video—by email, Discord, or POST webhook.</p>
                 <a class="github-link" href="https://github.com/lewislarsen/youtube-channel-notifier" target="_blank" rel="noopener noreferrer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.66-.22.66-.48v-1.69c-2.78.6-3.37-1.2-3.37-1.2-.46-1.17-1.12-1.48-1.12-1.48-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.57 9.57 0 0112 6.8c.85.004 1.71.11 2.51.32 1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.67-4.57 4.92.36.31.67.91.67 1.84v2.73c0 .27.16.58.67.48A10.012 10.012 0 0022 12c0-5.52-4.48-10-10-10z" />
@@ -260,7 +260,7 @@ declare(strict_types=1);
             </div>
         </section>
 
-        <p class="intro-card">A straightforward way to keep up with your favourite YouTube channels, without having to check for new videos yourself.</p>
+        <p class="intro-card">Choose email, Discord, or a JSON POST to a URL you configure, and keep up with your favourite channels without checking YouTube for new uploads.</p>
 
         <section class="faq" aria-labelledby="faq-title">
             <div class="section-heading">
@@ -269,8 +269,8 @@ declare(strict_types=1);
 
             <div class="faq-list">
                 <details class="faq-item">
-                    <summary>What is this service?</summary>
-                    <div class="faq-answer">YouTube Channel Notifier checks the channels you choose and emails you when they publish a new video. No need to keep checking YouTube for updates.</div>
+                    <summary>What is this?</summary>
+                    <div class="faq-answer">YouTube Channel Notifier checks the channels you choose and sends new-upload notifications by email, Discord, or a JSON POST request to your configured webhook URL. No need to keep checking YouTube for updates.</div>
                 </details>
                 <details class="faq-item">
                     <summary>How can I use it?</summary>
