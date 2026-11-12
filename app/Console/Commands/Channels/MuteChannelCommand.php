@@ -5,26 +5,16 @@ declare(strict_types=1);
 namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Database\Console\Migrations\BaseCommand;
 
 use function Laravel\Prompts\suggest;
 
+#[Description('Toggle the mute status of a channel; this prevents notifications being sent.')]
+#[Signature('channels:mute {name?}')]
 class MuteChannelCommand extends BaseCommand
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'channels:mute {name?}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Toggle the mute status of a channel; this prevents notifications being sent.';
-
     public function handle(): void
     {
         $channelName = $this->argument('name') ?? suggest(
@@ -39,7 +29,7 @@ class MuteChannelCommand extends BaseCommand
 
         $channel = $this->findChannel($channelName);
 
-        if (! $channel) {
+        if (! $channel instanceof Channel) {
             $this->components->error('A channel cannot be found with that name. Please run `php artisan channels:list`.');
 
             return;

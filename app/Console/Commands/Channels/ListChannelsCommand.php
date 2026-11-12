@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 /**
@@ -14,22 +16,10 @@ use Illuminate\Console\Command;
  * details such as the channel name, number of videos stored, last video grabbed time,
  * and the channel URL.
  */
+#[Description('Lists all the channels that have been stored in the database')]
+#[Signature('channels:list')]
 class ListChannelsCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'channels:list';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Lists all the channels that have been stored in the database';
-
     /**
      * Execute the console command.
      */

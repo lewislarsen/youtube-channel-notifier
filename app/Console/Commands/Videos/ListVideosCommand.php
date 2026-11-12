@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Console\Commands\Videos;
 
 use App\Models\Video;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Date;
 
+#[Description('Lists all the videos that have been stored in the database')]
+#[Signature('videos:list {--notified : Only list videos that have not been notified}')]
 class ListVideosCommand extends Command
 {
-    protected $signature = 'videos:list {--notified : Only list videos that have not been notified}';
-
-    protected $description = 'Lists all the videos that have been stored in the database';
-
     public function handle(): void
     {
         $builder = Video::with('channel')->latest('published_at');
@@ -26,15 +26,13 @@ class ListVideosCommand extends Command
 
         $this->table(
             ['Title', 'Creator', 'Published', 'Notified', 'URL'],
-            $videos->map(function (Video $video): array {
-                return [
-                    $video->title,
-                    $video->channel->name ?? 'Unknown',
-                    Date::parse($video->published_at)->setTimezone(config('app.user_timezone'))->diffForHumans(),
-                    $video->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
-                    $video->getYoutubeUrl(),
-                ];
-            })->toArray()
+            $videos->map(fn (Video $video): array => [
+                $video->title,
+                $video->channel->name ?? 'Unknown',
+                Date::parse($video->published_at)->setTimezone(config('app.user_timezone'))->diffForHumans(),
+                $video->notified_at?->setTimezone(config('app.user_timezone'))->diffForHumans() ?? '—',
+                $video->getYoutubeUrl(),
+            ])->toArray()
         );
     }
 }

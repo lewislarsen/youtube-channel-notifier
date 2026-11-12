@@ -103,9 +103,7 @@ it('handles exceptions during the webhook', function (): void {
 
     Log::shouldReceive('error')
         ->once()
-        ->with('An error occurred while sending the webhook notification.', Mockery::on(function ($data) use ($video) {
-            return isset($data['video_id']) && $data['video_id'] === $video->id && isset($data['response']);
-        }));
+        ->with('An error occurred while sending the webhook notification.', Mockery::on(fn ($data) => isset($data['video_id']) && $data['video_id'] === $video->id && isset($data['response'])));
 
     $action = new SendWebhookNotification;
     $result = $action->execute($video);
@@ -135,9 +133,7 @@ it('handles connection exceptions during the webhook', function (): void {
 
     Log::shouldReceive('error')
         ->once()
-        ->with('An error occurred while sending the webhook notification.', Mockery::on(function ($data) use ($video) {
-            return isset($data['video_id'], $data['exception']) && $data['video_id'] === $video->id;
-        }));
+        ->with('An error occurred while sending the webhook notification.', Mockery::on(fn ($data) => isset($data['video_id'], $data['exception']) && $data['video_id'] === $video->id));
 
     $action = new SendWebhookNotification;
     $result = $action->execute($video);

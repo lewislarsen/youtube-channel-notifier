@@ -74,7 +74,7 @@ class FetchRssFeed
 
         $host = strtolower($parts['host']);
 
-        if (! ($host === 'youtube.com' || str_ends_with($host, '.youtube.com'))) {
+        if ($host !== 'youtube.com' && ! str_ends_with($host, '.youtube.com')) {
             return $url;
         }
 

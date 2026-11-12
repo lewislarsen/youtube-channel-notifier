@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -16,22 +18,10 @@ use function Laravel\Prompts\text;
  *
  * This command is responsible for renaming a channel you've already added.
  */
+#[Description('Rename a channel you have already added.')]
+#[Signature('channels:rename')]
 class RenameChannelCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'channels:rename';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Rename a channel you have already added.';
-
     /**
      * Execute the console command.
      */
@@ -50,7 +40,7 @@ class RenameChannelCommand extends Command
 
         $channel = $this->findChannel($channelName);
 
-        if (! $channel) {
+        if (! $channel instanceof Channel) {
             $this->components->error('A channel cannot be found with that name. Please run `php artisan channels:list`.');
 
             return;

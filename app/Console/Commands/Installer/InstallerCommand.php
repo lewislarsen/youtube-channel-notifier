@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Installer;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -15,22 +17,10 @@ use function Laravel\Prompts\search;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 
+#[Description('Install and configure the YouTube Channel Notifier')]
+#[Signature('app:install {--force : Force the operation to run when in production}')]
 class InstallerCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:install {--force : Force the operation to run when in production}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Install and configure the YouTube Channel Notifier';
-
     /**
      * Execute the console command.
      */
@@ -176,7 +166,7 @@ class InstallerCommand extends Command
      */
     private function configureTimezone(): void
     {
-        $this->components->info('🌍 Let\'s set your timezone for accurate notification timing:');
+        $this->components->info("🌍 Let's set your timezone for accurate notification timing:");
         $this->newLine();
 
         $commonTimezones = config('timezones.common');
@@ -200,9 +190,7 @@ class InstallerCommand extends Command
                         return [];
                     }
 
-                    return array_values(array_filter($allTimezones, function ($timezone) use ($value) {
-                        return stripos($timezone, $value) !== false;
-                    }));
+                    return array_values(array_filter($allTimezones, fn ($timezone) => stripos($timezone, $value) !== false));
                 },
                 placeholder: 'Type to search (e.g., "New_York", "London", "Tokyo")...',
                 hint: 'Start typing your city or region name'
@@ -258,7 +246,7 @@ class InstallerCommand extends Command
      */
     private function showNextSteps(): void
     {
-        $this->components->info('🚀 Ready to start monitoring? Here\'s what to do next:');
+        $this->components->info("🚀 Ready to start monitoring? Here's what to do next:");
         $this->newLine();
 
         $this->components->bulletList([

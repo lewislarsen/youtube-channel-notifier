@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -16,22 +18,10 @@ use function Laravel\Prompts\textarea;
  *
  * This command is responsible for updating the note of a channel you've already added.
  */
+#[Description('Update the note for a channel you have already added.')]
+#[Signature('channels:note')]
 class UpdateNoteCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'channels:note';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Update the note for a channel you have already added.';
-
     /**
      * Execute the console command.
      */
@@ -50,7 +40,7 @@ class UpdateNoteCommand extends Command
 
         $channel = $this->findChannel($channelName);
 
-        if (! $channel) {
+        if (! $channel instanceof Channel) {
             $this->components->error('A channel cannot be found with that name. Please run `php artisan channels:list`.');
 
             return;

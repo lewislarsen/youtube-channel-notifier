@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Console\Commands\ExcludedWords;
 
 use App\Models\ExcludedWord;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Description('List all excluded words')]
+#[Signature('excluded-words:list')]
 class ListCommand extends Command
 {
-    protected $signature = 'excluded-words:list';
-
-    protected $description = 'List all excluded words';
-
     public function handle(): void
     {
         $words = ExcludedWord::orderBy('word')->get();

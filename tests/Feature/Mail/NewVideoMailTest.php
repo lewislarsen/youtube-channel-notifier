@@ -47,9 +47,7 @@ it('sends the mailable to a single email address', function (): void {
 
     Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
 
-    Mail::assertSent(NewVideoMail::class, function ($mail) use ($video) {
-        return $mail->video->is($video) && $mail->hasTo('lewis@larsens.dev');
-    });
+    Mail::assertSent(NewVideoMail::class, fn ($mail) => $mail->video->is($video) && $mail->hasTo('lewis@larsens.dev'));
 });
 
 it('sends the mailable to multiple email addresses', function (): void {
@@ -66,11 +64,9 @@ it('sends the mailable to multiple email addresses', function (): void {
 
     Mail::to(Config::get('app.alert_emails'))->send(new NewVideoMail($video, $channel));
 
-    Mail::assertSent(NewVideoMail::class, function ($mail) use ($video) {
-        return $mail->video->is($video)
-            && $mail->hasTo('lewis@larsens.dev')
-            && $mail->hasTo('another@example.com');
-    });
+    Mail::assertSent(NewVideoMail::class, fn ($mail) => $mail->video->is($video)
+        && $mail->hasTo('lewis@larsens.dev')
+        && $mail->hasTo('another@example.com'));
 });
 
 it('translates the mailable into another language', function (): void {

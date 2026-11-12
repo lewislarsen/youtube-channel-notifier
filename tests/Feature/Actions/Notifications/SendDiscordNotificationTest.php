@@ -99,9 +99,7 @@ it('handles error responses from discord', function (): void {
     expect($result)->toBeFalse();
 
     // Assert that HTTP request to Discord was attempted
-    Http::assertSent(function ($request) {
-        return $request->url() === 'https://discord.com/api/webhooks/test';
-    });
+    Http::assertSent(fn ($request) => $request->url() === 'https://discord.com/api/webhooks/test');
 });
 
 it('handles exceptions during discord notification', function (): void {

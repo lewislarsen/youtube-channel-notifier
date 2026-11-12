@@ -32,13 +32,9 @@ it('handles CheckForVideosAction execution for each channel', function (): void 
         'channel_id' => 'UC_x6YG2P6uZZ5FSM9Ttw',
     ]);
 
-    $mock->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel1) {
-        return $channel->is($channel1);
-    }))->once();
+    $mock->shouldReceive('execute')->with(Mockery::on(fn ($channel) => $channel->is($channel1)))->once();
 
-    $mock->shouldReceive('execute')->with(Mockery::on(function ($channel) use ($channel2) {
-        return $channel->is($channel2);
-    }))->once();
+    $mock->shouldReceive('execute')->with(Mockery::on(fn ($channel) => $channel->is($channel2)))->once();
 
     $this->artisan(CheckChannelsCommand::class)
         ->expectsOutputToContain('Checking channels for new videos...')

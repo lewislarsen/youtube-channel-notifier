@@ -61,7 +61,7 @@ class ExtractVideos
             $newVideos[] = $this->createVideoData($channel, $videoId, $title, $description, $publishedAt);
         }
 
-        if (empty($newVideos)) {
+        if ($newVideos === []) {
             Log::info("No new valid videos found after filtering for channel: {$channel->name}.");
         }
 

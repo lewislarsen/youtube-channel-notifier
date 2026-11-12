@@ -4,27 +4,17 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Other;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+#[Description('Sends a test POST request to the location specified in the env file.')]
+#[Signature('other:post-test')]
 class TestPostWebhookCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'other:post-test';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Sends a test POST request to the location specified in the env file.';
-
     /**
      * Execute the console command.
      */

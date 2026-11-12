@@ -5,26 +5,16 @@ declare(strict_types=1);
 namespace App\Console\Commands\Other;
 
 use App\Mail\TestMail;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
+#[Description('Sends a test email to ensure the SMTP connection is working.')]
+#[Signature('other:mail-test')]
 class TestMailCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'other:mail-test';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Sends a test email to ensure the SMTP connection is working.';
-
     /**
      * Execute the console command.
      */

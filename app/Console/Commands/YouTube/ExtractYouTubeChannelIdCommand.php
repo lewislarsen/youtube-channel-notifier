@@ -6,26 +6,16 @@ namespace App\Console\Commands\YouTube;
 
 use App\Actions\YouTube\DebuggableExtractYouTubeChannelId;
 use Exception;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Description('Extract the channel ID from a YouTube channel')]
+#[Signature('youtube:extract-channel-id
+                            {channelUrl : The YouTube channel URL (@username or full URL)}
+                            {--debug : Enable debug mode to see detailed information}')]
 class ExtractYouTubeChannelIdCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'youtube:extract-channel-id
-                            {channelUrl : The YouTube channel URL (@username or full URL)}
-                            {--debug : Enable debug mode to see detailed information}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Extract the channel ID from a YouTube channel';
-
     /**
      * Execute the console command.
      */

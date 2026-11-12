@@ -12,10 +12,8 @@ it('sends a test email to all alert emails', function (): void {
     $this->artisan(TestMailCommand::class)
         ->expectsOutputToContain('Sent a test email to alert1@email.com, alert2@email.com.');
 
-    Mail::assertSent(TestMail::class, function ($mail) {
-        return $mail->hasTo('alert1@email.com') &&
-               $mail->hasTo('alert2@email.com');
-    });
+    Mail::assertSent(TestMail::class, fn ($mail) => $mail->hasTo('alert1@email.com') &&
+           $mail->hasTo('alert2@email.com'));
 
 });
 

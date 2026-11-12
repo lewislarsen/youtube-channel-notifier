@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands\Other;
 
 use App\Enums\Colour;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
@@ -12,22 +14,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
+#[Description('Sends a test Discord webhook notification to the configured URL')]
+#[Signature('other:discord-webhook-test')]
 class TestDiscordWebhookCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'other:discord-webhook-test';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Sends a test Discord webhook notification to the configured URL';
-
     /**
      * Execute the console command.
      */

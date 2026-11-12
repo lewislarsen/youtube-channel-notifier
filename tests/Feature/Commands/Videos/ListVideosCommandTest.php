@@ -16,15 +16,13 @@ it('displays a list of videos', function (): void {
     $this->artisan(ListVideosCommand::class)
         ->expectsTable([
             'Title', 'Creator', 'Published', 'Notified', 'URL',
-        ], $videos->map(function (Video $video) {
-            return [
-                $video->title,
-                $video->channel->name,
-                Date::parse($video->published_at)->diffForHumans(),
-                $video->notified_at ? Date::parse($video->notified_at)->diffForHumans() : '—',
-                $video->getYoutubeUrl(),
-            ];
-        })->toArray());
+        ], $videos->map(fn (Video $video) => [
+            $video->title,
+            $video->channel->name,
+            Date::parse($video->published_at)->diffForHumans(),
+            $video->notified_at ? Date::parse($video->notified_at)->diffForHumans() : '—',
+            $video->getYoutubeUrl(),
+        ])->toArray());
 });
 
 it('displays an empty table when no videos exist', function (): void {

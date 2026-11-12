@@ -23,21 +23,19 @@ it('can send a test POST request if the webhook URL is set', function (): void {
     $this->artisan(TestPostWebhookCommand::class)
         ->expectsOutputToContain('Webhook notification sent successfully.');
 
-    Http::assertSent(function ($request) {
-        return $request->url() === 'https://example.com/webhook' &&
-            $request->method() === 'POST' &&
-            $request->data() === [
-                'title' => 'Test Title',
-                'video_url' => 'https://www.youtube.com/watch?v=1234567890',
-                'thumbnail' => 'https://i.ytimg.com/vi/1234567890/hqdefault.jpg',
-                'published_at' => Date::now()->toDateTimeString(),
-                'published_at_formatted' => Date::now()->format('d M Y h:i A'),
-                'channel' => [
-                    'label' => 'Test Channel',
-                    'url' => 'https://www.youtube.com/channel/UC1234567890',
-                ],
-            ];
-    });
+    Http::assertSent(fn ($request) => $request->url() === 'https://example.com/webhook' &&
+        $request->method() === 'POST' &&
+        $request->data() === [
+            'title' => 'Test Title',
+            'video_url' => 'https://www.youtube.com/watch?v=1234567890',
+            'thumbnail' => 'https://i.ytimg.com/vi/1234567890/hqdefault.jpg',
+            'published_at' => Date::now()->toDateTimeString(),
+            'published_at_formatted' => Date::now()->format('d M Y h:i A'),
+            'channel' => [
+                'label' => 'Test Channel',
+                'url' => 'https://www.youtube.com/channel/UC1234567890',
+            ],
+        ]);
 
     Date::setTestNow();
 });
@@ -53,8 +51,6 @@ it('can handle a failed POST request', function (): void {
     $this->artisan(TestPostWebhookCommand::class)
         ->expectsOutputToContain('An error occurred while sending the webhook notification. View the logs for more details.');
 
-    Http::assertSent(function ($request) {
-        return $request->url() === 'https://example.com/webhook' &&
-            $request->method() === 'POST';
-    });
+    Http::assertSent(fn ($request) => $request->url() === 'https://example.com/webhook' &&
+        $request->method() === 'POST');
 });

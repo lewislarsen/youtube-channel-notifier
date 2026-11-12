@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,12 +14,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
+#[Fillable([
+    'word',
+])]
 class ExcludedWord extends Model
 {
-    protected $fillable = [
-        'word',
-    ];
-
     /**
      * @return array<string>
      */

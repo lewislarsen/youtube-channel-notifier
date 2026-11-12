@@ -63,9 +63,7 @@ class FetchRecentVideosForSummary
      */
     private function groupVideosByDays(EloquentCollection $eloquentCollection): array
     {
-        $groupedVideos = $eloquentCollection->groupBy(function (Video $video): string {
-            return Date::parse($video->created_at)->format('Y-m-d');
-        });
+        $groupedVideos = $eloquentCollection->groupBy(fn (Video $video): string => Date::parse($video->created_at)->format('Y-m-d'));
 
         $days = [];
         $startOfWeek = now()->subWeek()->startOfWeek(); // Monday of last week

@@ -7,25 +7,15 @@ namespace App\Console\Commands\Other;
 use App\Models\Channel;
 use App\Models\Video;
 use Carbon\Carbon;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 
+#[Description('View compiled statistics for the YouTube Channel Notifier instance.')]
+#[Signature('other:stats')]
 class StatisticsCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'other:stats';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'View compiled statistics for the YouTube Channel Notifier instance.';
-
     /**
      * Execute the console command.
      */

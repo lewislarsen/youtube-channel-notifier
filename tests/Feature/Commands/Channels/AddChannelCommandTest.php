@@ -43,9 +43,7 @@ it('adds a new channel using URL and performs an initial video import', function
 
     Mail::assertNothingSent();
 
-    Http::assertSent(function ($request) {
-        return $request->url() === 'https://www.youtube.com/feeds/videos.xml?playlist_id=UULF_x5XG1OV2P6uZZ5FSM9Ttw';
-    });
+    Http::assertSent(fn ($request) => $request->url() === 'https://www.youtube.com/feeds/videos.xml?playlist_id=UULF_x5XG1OV2P6uZZ5FSM9Ttw');
 });
 
 it('falls back to manual entry when channel ID extraction fails', function (): void {

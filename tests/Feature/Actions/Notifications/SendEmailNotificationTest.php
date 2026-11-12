@@ -33,11 +33,9 @@ describe('SendEmailNotification', function (): void {
         $action = new SendEmailNotification;
         $action->execute($video);
 
-        Mail::assertSent(NewVideoMail::class, function ($mail) use ($video, $channel) {
-            return $mail->hasTo('email@example.com') &&
-                $mail->video->id === $video->id &&
-                $mail->channel->id === $channel->id;
-        });
+        Mail::assertSent(NewVideoMail::class, fn ($mail) => $mail->hasTo('email@example.com') &&
+            $mail->video->id === $video->id &&
+            $mail->channel->id === $channel->id);
     });
 
     it('sends to multiple recipients when configured with an array', function (): void {
@@ -57,9 +55,7 @@ describe('SendEmailNotification', function (): void {
         $action = new SendEmailNotification;
         $action->execute($video);
 
-        Mail::assertSent(NewVideoMail::class, function ($mail) {
-            return $mail->hasTo('email1@example.com') &&
-                $mail->hasTo('email2@example.com');
-        });
+        Mail::assertSent(NewVideoMail::class, fn ($mail) => $mail->hasTo('email1@example.com') &&
+            $mail->hasTo('email2@example.com'));
     });
 });

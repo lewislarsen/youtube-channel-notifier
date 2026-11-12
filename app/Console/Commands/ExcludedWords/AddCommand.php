@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Console\Commands\ExcludedWords;
 
 use App\Models\ExcludedWord;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Description('Add a new excluded word')]
+#[Signature('excluded-words:add {word : The word to add}')]
 class AddCommand extends Command
 {
-    protected $signature = 'excluded-words:add {word : The word to add}';
-
-    protected $description = 'Add a new excluded word';
-
     public function handle(): void
     {
         $word = $this->argument('word');

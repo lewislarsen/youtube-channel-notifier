@@ -11,8 +11,8 @@ it('displays a list of channels', function (): void {
     $channels = Channel::factory()->count(3)->create();
 
     $channels->each(fn ($channel) => [
-        Video::factory()->count(rand(1, 5))->for($channel)->create(),
-        $channel->update(['last_checked_at' => now()->subDays(rand(1, 10))]),
+        Video::factory()->count(random_int(1, 5))->for($channel)->create(),
+        $channel->update(['last_checked_at' => now()->subDays(random_int(1, 10))]),
     ]);
 
     $this->artisan(ListChannelsCommand::class)

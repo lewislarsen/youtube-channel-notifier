@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands\Channels;
 
 use App\Models\Channel;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\confirm;
@@ -16,22 +18,10 @@ use function Laravel\Prompts\suggest;
  * This command is responsible for removing an existing YouTube channel from the database
  * and deleting all stored data related to the channel.
  */
+#[Description('Remove a YouTube channel and all stored data.')]
+#[Signature('channels:remove')]
 class RemoveChannelCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'channels:remove';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Remove a YouTube channel and all stored data.';
-
     /**
      * Execute the console command.
      */
@@ -49,7 +39,7 @@ class RemoveChannelCommand extends Command
 
         $channel = $this->findChannel($channelName);
 
-        if (! $channel) {
+        if (! $channel instanceof Channel) {
             $this->components->error('A channel cannot be found with that name. Please run `php artisan channels:list`.');
 
             return;

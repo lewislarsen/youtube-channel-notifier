@@ -8,6 +8,8 @@ use App\Actions\CheckForVideos;
 use App\Actions\YouTube\ExtractYouTubeChannelId;
 use App\Models\Channel;
 use Exception;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -20,22 +22,10 @@ use function Laravel\Prompts\text;
  * This command is responsible for adding a new YouTube channel to the database
  * and performing an initial video import for the newly added channel.
  */
+#[Description('Add a new YouTube channel and perform an initial video import.')]
+#[Signature('channels:add {--debug : Enable debug mode to see detailed information}')]
 class AddChannelCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'channels:add {--debug : Enable debug mode to see detailed information}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Add a new YouTube channel and perform an initial video import.';
-
     /**
      * Execute the console command.
      */
@@ -72,8 +62,9 @@ class AddChannelCommand extends Command
 
         $this->components->info("Extracting channel ID from: {$channelUrl}");
 
+        $debugMode = $this->option('debug');
+
         try {
-            $debugMode = $this->option('debug');
             $channelId = $extractYouTubeChannelId->execute($channelUrl, $debugMode);
 
             $this->components->info("Extracted channel ID: {$channelId}");

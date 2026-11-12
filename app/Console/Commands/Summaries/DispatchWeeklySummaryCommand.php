@@ -7,27 +7,17 @@ namespace App\Console\Commands\Summaries;
 use App\Actions\Summaries\FetchRecentVideosForSummary;
 use App\Mail\WeeklySummaryMail;
 use App\Models\Video;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
+#[Description('Triggers the dispatch of the weekly summary email.')]
+#[Signature('summaries:dispatch-weekly-summary')]
 class DispatchWeeklySummaryCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'summaries:dispatch-weekly-summary';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Triggers the dispatch of the weekly summary email.';
-
     public function __construct(
         private readonly FetchRecentVideosForSummary $fetchRecentVideosForSummary
     ) {
@@ -53,7 +43,7 @@ class DispatchWeeklySummaryCommand extends Command
 
         $weekdays = $this->fetchRecentVideosForSummary->execute();
 
-        if (empty($weekdays)) {
+        if ($weekdays === []) {
             $this->components->info('No new uploads found for weekdays in the past week.');
 
             return;

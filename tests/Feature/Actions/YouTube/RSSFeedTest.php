@@ -92,9 +92,7 @@ describe('FetchRssFeed', function (): void {
         $action = new FetchRssFeed;
         $action->execute($channel);
 
-        Http::assertSent(function ($request) {
-            return $request->url() === 'https://www.youtube.com/feeds/videos.xml?playlist_id=UULF_x5XG1OV2P6uZZ5FSM9Ttw';
-        });
+        Http::assertSent(fn ($request) => $request->url() === 'https://www.youtube.com/feeds/videos.xml?playlist_id=UULF_x5XG1OV2P6uZZ5FSM9Ttw');
     });
 
     it('only transforms eligible YouTube channel feed URLs', function (string $input, string $expected): void {

@@ -71,9 +71,7 @@ describe('Core Video Detection', function (): void {
         $action = new CheckForVideos;
         $action->execute($channel);
 
-        Mail::assertSent(NewVideoMail::class, function ($mail) {
-            return $mail->hasTo('email@example.com');
-        });
+        Mail::assertSent(NewVideoMail::class, fn ($mail) => $mail->hasTo('email@example.com'));
 
         $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
 
@@ -234,9 +232,7 @@ describe('Filtering', function (): void {
 
         Mail::assertNotSent(NewVideoMail::class);
 
-        Http::assertNotSent(function ($request) {
-            return str_contains((string) $request->url(), 'discord.com/api/webhooks');
-        });
+        Http::assertNotSent(fn ($request) => str_contains((string) $request->url(), 'discord.com/api/webhooks'));
 
         $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
 
@@ -278,10 +274,8 @@ describe('Notifications', function (): void {
             $action = new CheckForVideos;
             $action->execute($channel);
 
-            Mail::assertSent(NewVideoMail::class, function ($mail) {
-                return $mail->hasTo('email1@example.com') &&
-                    $mail->hasTo('email2@example.com');
-            });
+            Mail::assertSent(NewVideoMail::class, fn ($mail) => $mail->hasTo('email1@example.com') &&
+                $mail->hasTo('email2@example.com'));
 
             $video = Video::where('video_id', '5ltAy1W6k-Q')->first();
 
@@ -323,9 +317,7 @@ describe('Notifications', function (): void {
             $action->execute($channel);
 
             Mail::assertSent(NewVideoMail::class);
-            Http::assertSent(function ($request) {
-                return $request->url() === 'https://discord.com/api/webhooks/test';
-            });
+            Http::assertSent(fn ($request) => $request->url() === 'https://discord.com/api/webhooks/test');
         });
 
         it('does not send discord notifications on first-time import', function (): void {
@@ -353,9 +345,7 @@ describe('Notifications', function (): void {
             $action->execute($channel);
 
             Mail::assertNothingSent();
-            Http::assertNotSent(function ($request) {
-                return str_contains((string) $request->url(), 'discord.com/api/webhooks');
-            });
+            Http::assertNotSent(fn ($request) => str_contains((string) $request->url(), 'discord.com/api/webhooks'));
         });
     });
 });

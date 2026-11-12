@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Console\Commands\ExcludedWords;
 
 use App\Models\ExcludedWord;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Description('Remove an excluded word')]
+#[Signature('excluded-words:remove {word : The word to remove}')]
 class RemoveCommand extends Command
 {
-    protected $signature = 'excluded-words:remove {word : The word to remove}';
-
-    protected $description = 'Remove an excluded word';
-
     public function handle(): void
     {
         $word = $this->argument('word');

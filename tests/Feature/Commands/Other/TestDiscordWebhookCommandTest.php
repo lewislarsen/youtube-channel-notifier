@@ -74,8 +74,6 @@ it('can handle a failed Discord webhook request', function (): void {
     $this->artisan(TestDiscordWebhookCommand::class)
         ->expectsOutputToContain('An error occurred while sending the Discord webhook notification. View the logs for more details.');
 
-    Http::assertSent(function ($request) {
-        return $request->url() === 'https://discord.com/api/webhooks/example' &&
-            $request->method() === 'POST';
-    });
+    Http::assertSent(fn ($request) => $request->url() === 'https://discord.com/api/webhooks/example' &&
+        $request->method() === 'POST');
 });
