@@ -39,11 +39,11 @@ class ExtractYouTubeChannelId
     protected function formatChannelUrl(string $channelUrl): string
     {
         if (str_starts_with($channelUrl, '@')) {
-            return 'https://www.youtube.com/'.$channelUrl;
+            return 'https://www.youtube.com/' . $channelUrl;
         }
 
         if (! str_starts_with($channelUrl, 'http')) {
-            return 'https://www.youtube.com/channel/'.$channelUrl;
+            return 'https://www.youtube.com/channel/' . $channelUrl;
         }
 
         return $channelUrl;
@@ -63,10 +63,10 @@ class ExtractYouTubeChannelId
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         ];
 
-        $this->debug('Attempting channel ID extraction with '.count($userAgents).' different user agents');
+        $this->debug('Attempting channel ID extraction with ' . count($userAgents) . ' different user agents');
 
         foreach ($userAgents as $index => $userAgent) {
-            $this->debug('Attempt #'.($index + 1).' with user agent: '.$this->truncateUserAgent($userAgent));
+            $this->debug('Attempt #' . ($index + 1) . ' with user agent: ' . $this->truncateUserAgent($userAgent));
 
             $headers = [
                 'User-Agent' => $userAgent,
@@ -91,7 +91,7 @@ class ExtractYouTubeChannelId
                     return $channelId;
                 }
             } catch (Exception $e) {
-                $this->warn('Attempt failed: '.$e->getMessage());
+                $this->warn('Attempt failed: ' . $e->getMessage());
             }
         }
 
@@ -121,7 +121,7 @@ class ExtractYouTubeChannelId
             throw new RuntimeException($errorMessage);
         }
 
-        $this->debug('Successfully fetched page, response length: '.strlen($response->body()).' bytes');
+        $this->debug('Successfully fetched page, response length: ' . strlen($response->body()) . ' bytes');
 
         return $response->body();
     }
@@ -150,7 +150,7 @@ class ExtractYouTubeChannelId
                 return $channelId;
             }
         } catch (RuntimeException $e) {
-            $this->warn('DOM crawler extraction failed: '.$e->getMessage());
+            $this->warn('DOM crawler extraction failed: ' . $e->getMessage());
         }
 
         $this->debug('Failed to extract channel ID from HTML');
@@ -336,7 +336,7 @@ class ExtractYouTubeChannelId
                 $jsonContent = $scriptNode->textContent;
                 $data = json_decode($jsonContent, true, 512, JSON_THROW_ON_ERROR);
 
-                $this->debug('JSON-LD data keys: '.(is_array($data) ? implode(', ', array_keys($data)) : 'invalid data'));
+                $this->debug('JSON-LD data keys: ' . (is_array($data) ? implode(', ', array_keys($data)) : 'invalid data'));
 
                 if (is_array($data)) {
                     if (isset($data['channelId'])) {
@@ -352,7 +352,7 @@ class ExtractYouTubeChannelId
                     }
                 }
             } catch (Exception $e) {
-                $this->warn('JSON-LD parsing error: '.$e->getMessage());
+                $this->warn('JSON-LD parsing error: ' . $e->getMessage());
             }
         }
 
@@ -391,7 +391,7 @@ class ExtractYouTubeChannelId
                     }
                 }
             } catch (Exception $e) {
-                $this->warn('ytInitialData parsing error: '.$e->getMessage());
+                $this->warn('ytInitialData parsing error: ' . $e->getMessage());
             }
         }
 
@@ -403,7 +403,7 @@ class ExtractYouTubeChannelId
      */
     protected function saveHtmlForDebug(string $html, Crawler $crawler): void
     {
-        $filename = storage_path('logs/youtube_channel_page_'.Date::now()->getTimestamp().'.html');
+        $filename = storage_path('logs/youtube_channel_page_' . Date::now()->getTimestamp() . '.html');
         file_put_contents($filename, $html);
         $this->debug("Saved HTML to file for inspection: {$filename}");
 

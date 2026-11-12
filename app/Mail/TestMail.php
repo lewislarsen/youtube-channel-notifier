@@ -37,16 +37,6 @@ class TestMail extends Mailable
     }
 
     /**
-     * Generate the subject line for the envelope.
-     *
-     * @return string The generated subject line.
-     */
-    protected function getSubject(): string
-    {
-        return 'Notification email test';
-    }
-
-    /**
      * Get the message content definition.
      *
      * @return Content The content instance with HTML and data.
@@ -57,5 +47,15 @@ class TestMail extends Mailable
             html: 'mail.test-mail',
             text: 'mail.test-mail-text',
         );
+    }
+
+    /**
+     * Generate the subject line for the envelope.
+     *
+     * @return string The generated subject line.
+     */
+    protected function getSubject(): string
+    {
+        return 'Notification email test';
     }
 }

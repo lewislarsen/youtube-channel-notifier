@@ -9,7 +9,7 @@ declare(strict_types=1);
 <p style="margin:8px 0 0;color:#52525B;font-size:15px;line-height:22px;text-align:left;">{{ __('email.weekly_summary_intro') }}</p>
 </div>
 
-@foreach($weekdays as $dateString => $dayData)
+@foreach ($weekdays as $dateString => $dayData)
 <div style="margin: 28px 0 24px;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0 0 14px;background-color:#FFF0F2;border-radius:14px;border-collapse:separate;border-spacing:0;">
 <tr>
@@ -20,7 +20,7 @@ declare(strict_types=1);
 </tr>
 </table>
 
-@foreach($dayData['videos'] as $video)
+@foreach ($dayData['videos'] as $video)
 <div style="margin-bottom:16px;padding:20px;border:0;border-radius:16px;background-color:#F4F4F5;">
 <div style="margin-bottom:12px;">
 <h3 style="margin:0 0 6px;font-size:18px;line-height:24px;color:#18181B;">
@@ -29,7 +29,7 @@ declare(strict_types=1);
 </a>
 </h3>
 <p style="margin:0;color:#52525B;font-size:14px;line-height:20px;">
-@if(isset($video->channel))
+@if (isset($video->channel))
 {!! __('email.by_creator', ['creator' => '<a href="' . $video->channel->getChannelUrl() . '" style="color:#71717A;text-decoration:underline;">' . $video->channel->name . '</a>']) !!}
 • {{ $video->getFormattedPublishedDate() }}
 @endif

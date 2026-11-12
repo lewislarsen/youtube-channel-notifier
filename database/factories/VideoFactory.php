@@ -81,15 +81,15 @@ class VideoFactory extends Factory
         ];
 
         $titles = [
-            fn (): string => 'How I '.fake()->randomElement($howToTopics),
-            fn (): string => 'A week of '.fake()->randomElement($weeklongExperiments).': what I learned',
-            fn (): string => 'Building '.fake()->randomElement($projects),
-            fn (): string => 'A practical guide to '.fake()->randomElement($topics),
-            fn (): string => 'What I learned after a year of '.fake()->randomElement($topics),
-            fn (): string => 'My current '.fake()->randomElement(['camera kit', 'desk setup', 'home server', 'everyday bike'])
-                .' (and what I would change)',
-            fn (): string => 'A weekend in '.fake()->city().' without a car',
-            fn (): string => 'I tried '.fake()->randomElement($weeklongExperiments).' for 30 days',
+            fn (): string => 'How I ' . fake()->randomElement($howToTopics),
+            fn (): string => 'A week of ' . fake()->randomElement($weeklongExperiments) . ': what I learned',
+            fn (): string => 'Building ' . fake()->randomElement($projects),
+            fn (): string => 'A practical guide to ' . fake()->randomElement($topics),
+            fn (): string => 'What I learned after a year of ' . fake()->randomElement($topics),
+            fn (): string => 'My current ' . fake()->randomElement(['camera kit', 'desk setup', 'home server', 'everyday bike'])
+                . ' (and what I would change)',
+            fn (): string => 'A weekend in ' . fake()->city() . ' without a car',
+            fn (): string => 'I tried ' . fake()->randomElement($weeklongExperiments) . ' for 30 days',
         ];
 
         return fake()->randomElement($titles)();
@@ -113,7 +113,7 @@ class VideoFactory extends Factory
         $description .= $intros[array_rand($intros)];
 
         // Main description content
-        $description .= fake()->paragraph(2)."\n\n";
+        $description .= fake()->paragraph(2) . "\n\n";
 
         // Add timestamps (50% chance)
         if (fake()->boolean(50)) {
@@ -123,7 +123,7 @@ class VideoFactory extends Factory
                 $minutes += fake()->numberBetween(1, 5);
                 $seconds = fake()->numberBetween(0, 59);
                 $timestamp = sprintf('%02d:%02d', $minutes, $seconds);
-                $description .= $timestamp.' - '.ucfirst(fake()->words(fake()->numberBetween(2, 5), true))."\n";
+                $description .= $timestamp . ' - ' . ucfirst(fake()->words(fake()->numberBetween(2, 5), true)) . "\n";
             }
             $description .= "\n";
         }
@@ -136,20 +136,20 @@ class VideoFactory extends Factory
             'Let me know in the comments what you want to see next!',
             'Thanks for watching! Subscribe for weekly uploads.',
         ];
-        $description .= $ctas[array_rand($ctas)]."\n\n";
+        $description .= $ctas[array_rand($ctas)] . "\n\n";
 
         // Add social media links (40% chance)
         if (fake()->boolean(40)) {
             $description .= "FOLLOW ME:\n";
-            $description .= 'Instagram: '.'@'.fake()->userName()."\n";
-            $description .= 'Twitter: '.'@'.fake()->userName()."\n";
-            $description .= 'TikTok: '.'@'.fake()->userName()."\n\n";
+            $description .= 'Instagram: ' . '@' . fake()->userName() . "\n";
+            $description .= 'Twitter: ' . '@' . fake()->userName() . "\n";
+            $description .= 'TikTok: ' . '@' . fake()->userName() . "\n\n";
         }
 
         // Add hashtags
-        $description .= '#'.ucfirst(fake()->word()).' ';
-        $description .= '#'.ucfirst(fake()->word()).ucfirst(fake()->word()).' ';
-        $description .= '#'.ucfirst(fake()->word())."\n";
+        $description .= '#' . ucfirst(fake()->word()) . ' ';
+        $description .= '#' . ucfirst(fake()->word()) . ucfirst(fake()->word()) . ' ';
+        $description .= '#' . ucfirst(fake()->word()) . "\n";
 
         return $description;
     }

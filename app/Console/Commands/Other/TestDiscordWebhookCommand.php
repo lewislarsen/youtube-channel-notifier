@@ -56,7 +56,7 @@ class TestDiscordWebhookCommand extends Command
         ];
 
         $payload = [
-            'content' => '**Test Notification** This is a test message from '.Config::get('app.name'),
+            'content' => '**Test Notification** This is a test message from ' . Config::get('app.name'),
             'embeds' => [$embed],
             'avatar_url' => URL::asset('assets/white-full.png'),
             'username' => Config::get('app.name'),

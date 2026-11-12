@@ -40,6 +40,6 @@ class TestMailCommand extends Command
 
         Mail::to($emails)->send(new TestMail);
 
-        $this->components->success('Sent a test email to '.implode(', ', Config::get('app.alert_emails')).'.');
+        $this->components->success('Sent a test email to ' . implode(', ', Config::get('app.alert_emails')) . '.');
     }
 }

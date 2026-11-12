@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Actions\Notifications;
 
-use App;
 use App\Enums\Colour;
 use App\Models\Channel;
 use App\Models\Video;
 use Exception;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;

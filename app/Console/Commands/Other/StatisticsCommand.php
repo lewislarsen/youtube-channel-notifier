@@ -69,7 +69,7 @@ class StatisticsCommand extends Command
             $this->addTableSection($tableData, '🆕 LATEST CHANNEL', [
                 'Channel Name' => $latestChannel->name,
                 'Channel URL' => $latestChannel->getChannelUrl(),
-                'Added on' => $latestChannel->created_at->format('Y-m-d H:i:s').' ('.$this->humanReadableTime($latestChannel->created_at).')',
+                'Added on' => $latestChannel->created_at->format('Y-m-d H:i:s') . ' (' . $this->humanReadableTime($latestChannel->created_at) . ')',
             ]);
         }
 
@@ -79,7 +79,7 @@ class StatisticsCommand extends Command
                 'Video Title' => $latestVideo->title,
                 'Video URL' => $latestVideo->getYoutubeUrl(),
                 'Channel' => $latestVideo->channel->name ?? 'Unknown',
-                'Added on' => $latestVideo->created_at->format('Y-m-d H:i:s').' ('.$this->humanReadableTime($latestVideo->created_at).')',
+                'Added on' => $latestVideo->created_at->format('Y-m-d H:i:s') . ' (' . $this->humanReadableTime($latestVideo->created_at) . ')',
             ]);
         }
 
@@ -109,9 +109,9 @@ class StatisticsCommand extends Command
                 ->get()
                 ->each(function ($channel) use (&$mutedChannelsInfo): void {
                     if ($channel->muted_at instanceof Carbon) {
-                        $channelInfo = $channel->name.' ('.$channel->getChannelUrl().')';
-                        $mutedChannelsInfo['Since '.$channel->muted_at->format('Y-m-d H:i:s').
-                        ' ('.$this->humanReadableTime($channel->muted_at).')'] = $channelInfo;
+                        $channelInfo = $channel->name . ' (' . $channel->getChannelUrl() . ')';
+                        $mutedChannelsInfo['Since ' . $channel->muted_at->format('Y-m-d H:i:s') .
+                        ' (' . $this->humanReadableTime($channel->muted_at) . ')'] = $channelInfo;
                     }
                 });
 

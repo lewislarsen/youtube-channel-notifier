@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'index')->name('index');
 
-Route::get('/mail', function () {
+Route::get('mail', function () {
     if (! Config::get('app.debug')) {
         abort(404);
     }
@@ -24,7 +24,7 @@ Route::get('/mail', function () {
     return new NewVideoMail($video, $channel)->render();
 });
 
-Route::get('/mail/weekly-summary', function (FetchRecentVideosForSummary $fetchRecentVideosForSummary) {
+Route::get('mail/weekly-summary', function (FetchRecentVideosForSummary $fetchRecentVideosForSummary) {
     if (! Config::get('app.debug')) {
         abort(404);
     }

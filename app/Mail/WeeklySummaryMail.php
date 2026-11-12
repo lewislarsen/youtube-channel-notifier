@@ -40,14 +40,6 @@ class WeeklySummaryMail extends Mailable
     }
 
     /**
-     * Generate the subject line for the envelope.
-     */
-    protected function getSubject(): string
-    {
-        return __('email.weekly_summary_subject');
-    }
-
-    /**
      * Get the message content definition.
      */
     public function content(): Content
@@ -59,5 +51,13 @@ class WeeklySummaryMail extends Mailable
                 'locale' => $this->locale,
             ]
         );
+    }
+
+    /**
+     * Generate the subject line for the envelope.
+     */
+    protected function getSubject(): string
+    {
+        return __('email.weekly_summary_subject');
     }
 }

@@ -7,6 +7,7 @@ namespace App\Actions\YouTube;
 use App\Models\Channel;
 use App\Models\ExcludedWord;
 use App\Models\Video;
+use DateTimeInterface;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 use SimpleXMLElement;
@@ -140,7 +141,7 @@ class ExtractVideos
     /**
      * Check if a video was published before this channel was last checked.
      */
-    private function wasPublishedBeforeLastCheck(Channel $channel, \DateTimeInterface $publishedAt): bool
+    private function wasPublishedBeforeLastCheck(Channel $channel, DateTimeInterface $publishedAt): bool
     {
         return $channel->last_checked_at !== null && $publishedAt <= $channel->last_checked_at;
     }
@@ -151,10 +152,10 @@ class ExtractVideos
      * @param  Channel  $channel  The channel to which the video belongs.
      * @param  string  $videoId  The ID of the video.
      * @param  string  $title  The title of the video.
-     * @param  \DateTimeInterface  $publishedAt  The date the video was published.
+     * @param  DateTimeInterface  $publishedAt  The date the video was published.
      * @return array<string, mixed> The created video data.
      */
-    private function createVideoData(Channel $channel, string $videoId, string $title, ?string $description, \DateTimeInterface $publishedAt): array
+    private function createVideoData(Channel $channel, string $videoId, string $title, ?string $description, DateTimeInterface $publishedAt): array
     {
         return [
             'video_id' => $videoId,

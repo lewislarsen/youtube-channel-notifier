@@ -6,13 +6,14 @@ namespace App\Providers;
 
 use App\Console\Commands\Installer\InstallerCommand;
 use Illuminate\Support\ServiceProvider;
+use Override;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
-    #[\Override]
+    #[Override]
     public function register(): void
     {
         //

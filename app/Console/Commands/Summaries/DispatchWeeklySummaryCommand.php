@@ -66,7 +66,7 @@ class DispatchWeeklySummaryCommand extends Command
             return $videos->count();
         });
 
-        $this->info("Found {$totalVideos} videos across ".count($weekdays).' weekdays for the weekly summary.');
+        $this->info("Found {$totalVideos} videos across " . count($weekdays) . ' weekdays for the weekly summary.');
 
         Mail::to(Config::get('app.alert_emails'))->send(new WeeklySummaryMail($weekdays));
 

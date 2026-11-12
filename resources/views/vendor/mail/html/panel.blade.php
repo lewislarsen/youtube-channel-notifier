@@ -16,4 +16,4 @@ declare(strict_types=1);
 </td>
 </tr>
 </table>
-<?php 
+<?php

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\YouTube;
 
+use Override;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -33,7 +34,7 @@ class DebuggableExtractYouTubeChannelId extends ExtractYouTubeChannelId
     /**
      * Override the parent debug method to also send messages to the callback.
      */
-    #[\Override]
+    #[Override]
     protected function debug(string $message): void
     {
         // First call the parent method to ensure logging still happens
@@ -48,7 +49,7 @@ class DebuggableExtractYouTubeChannelId extends ExtractYouTubeChannelId
     /**
      * Override the parent warn method to also send warnings to the callback.
      */
-    #[\Override]
+    #[Override]
     protected function warn(string $message): void
     {
         parent::warn($message);
@@ -61,7 +62,7 @@ class DebuggableExtractYouTubeChannelId extends ExtractYouTubeChannelId
     /**
      * Save HTML to a file for debugging purposes with additional custom information.
      */
-    #[\Override]
+    #[Override]
     protected function saveHtmlForDebug(string $html, Crawler $crawler): void
     {
         parent::saveHtmlForDebug($html, $crawler);

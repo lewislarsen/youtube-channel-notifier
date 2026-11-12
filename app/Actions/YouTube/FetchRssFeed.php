@@ -93,15 +93,15 @@ class FetchRssFeed
             return $url;
         }
 
-        $query['playlist_id'] = 'UULF'.substr($query['channel_id'], 2);
+        $query['playlist_id'] = 'UULF' . substr($query['channel_id'], 2);
         unset($query['channel_id']);
 
         $scheme = $parts['scheme'] ?? 'https';
-        $port = isset($parts['port']) ? ':'.$parts['port'] : '';
+        $port = isset($parts['port']) ? ':' . $parts['port'] : '';
         $user = $parts['user'] ?? null;
-        $pass = isset($parts['pass']) ? ':'.$parts['pass'] : '';
-        $auth = $user !== null ? $user.$pass.'@' : '';
-        $fragment = isset($parts['fragment']) ? '#'.$parts['fragment'] : '';
+        $pass = isset($parts['pass']) ? ':' . $parts['pass'] : '';
+        $auth = $user !== null ? $user . $pass . '@' : '';
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
 
         return sprintf(
             '%s://%s%s%s%s?%s%s',

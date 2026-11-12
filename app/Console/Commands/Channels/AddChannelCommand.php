@@ -110,7 +110,7 @@ class AddChannelCommand extends Command
             return $this->formatYouTubeUrl($channelUrl);
         }
 
-        return '@'.$channelUrl;
+        return '@' . $channelUrl;
     }
 
     /**
@@ -134,7 +134,7 @@ class AddChannelCommand extends Command
             return $url;
         }
 
-        return Str::replaceLast($lastPart, '@'.$lastPart, $url);
+        return Str::replaceLast($lastPart, '@' . $lastPart, $url);
     }
 
     /**

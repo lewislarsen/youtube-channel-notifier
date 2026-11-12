@@ -48,19 +48,6 @@ class NewVideoMail extends Mailable
     }
 
     /**
-     * Generate the subject line for the envelope.
-     *
-     * @return string The generated subject line.
-     */
-    protected function getSubject(): string
-    {
-        return __('email.subject_new_upload', [
-            'channel' => $this->channel->name,
-            'title' => $this->video->title,
-        ]);
-    }
-
-    /**
      * Get the message content definition.
      *
      * @return Content The content instance with markdown and data.
@@ -78,5 +65,18 @@ class NewVideoMail extends Mailable
                 'videoCreatorUrl' => $this->channel->getChannelUrl(),
             ],
         );
+    }
+
+    /**
+     * Generate the subject line for the envelope.
+     *
+     * @return string The generated subject line.
+     */
+    protected function getSubject(): string
+    {
+        return __('email.subject_new_upload', [
+            'channel' => $this->channel->name,
+            'title' => $this->video->title,
+        ]);
     }
 }

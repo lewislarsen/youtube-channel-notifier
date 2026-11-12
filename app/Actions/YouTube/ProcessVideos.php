@@ -40,7 +40,7 @@ readonly class ProcessVideos
     private function handleFirstTimeImport(array $newVideos, Channel $channel): void
     {
         Video::insert($newVideos);
-        Log::info("First-time import for channel: {$channel->name} completed with ".count($newVideos).' videos.');
+        Log::info("First-time import for channel: {$channel->name} completed with " . count($newVideos) . ' videos.');
     }
 
     /**

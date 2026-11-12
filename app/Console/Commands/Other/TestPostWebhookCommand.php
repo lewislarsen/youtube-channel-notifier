@@ -7,7 +7,7 @@ namespace App\Console\Commands\Other;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class TestPostWebhookCommand extends Command
 {

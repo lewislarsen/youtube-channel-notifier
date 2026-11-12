@@ -8,6 +8,7 @@ use App\Actions\YouTube\ExtractVideos;
 use App\Actions\YouTube\FetchRssFeed;
 use App\Actions\YouTube\ProcessVideos;
 use App\Models\Channel;
+use SimpleXMLElement;
 
 /**
  * Class CheckForVideosAction
@@ -45,7 +46,7 @@ class CheckForVideos
     {
         $rssData = $this->fetchRssFeed->execute($channel);
 
-        if (! $rssData instanceof \SimpleXMLElement) {
+        if (! $rssData instanceof SimpleXMLElement) {
             return;
         }
 

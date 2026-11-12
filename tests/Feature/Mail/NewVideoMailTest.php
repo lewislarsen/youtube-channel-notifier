@@ -92,7 +92,7 @@ it('translates the mailable into another language', function (): void {
     $renderedContent = $mailable->render();
 
     expect($renderedContent)
-        ->toContain('<strong>'.$channel->name.'</strong> '.__('email.creator_uploaded_video'))
+        ->toContain('<strong>' . $channel->name . '</strong> ' . __('email.creator_uploaded_video'))
         ->toContain(__('email.published_date', ['date' => $video->getFormattedPublishedDate()]))
         ->toContain(__('email.watch_on_youtube'))
         ->toContain(__('email.notification_reason', ['creator' => $channel->name]));

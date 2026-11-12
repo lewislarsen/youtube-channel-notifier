@@ -234,7 +234,7 @@ class InstallerCommand extends Command
 
             // Wrap in quotes if value contains spaces or special characters
             if (Str::contains($value, ' ') || Str::contains($value, '#') || Str::contains($value, '=')) {
-                $value = '"'.$value.'"';
+                $value = '"' . $value . '"';
             }
         }
 
@@ -263,7 +263,7 @@ class InstallerCommand extends Command
 
         $this->components->bulletList([
             'Add your first YouTube channel: <fg=yellow>php artisan channels:add</>',
-            'Set up the scheduler (so checks run automatically): <fg=yellow>* * * * * cd '.base_path().' && php artisan schedule:run >> /dev/null 2>&1</>',
+            'Set up the scheduler (so checks run automatically): <fg=yellow>* * * * * cd ' . base_path() . ' && php artisan schedule:run >> /dev/null 2>&1</>',
             'Test the system right now: <fg=yellow>php artisan channels:check</>',
             'View all monitored channels: <fg=yellow>php artisan channels:list</>',
         ]);

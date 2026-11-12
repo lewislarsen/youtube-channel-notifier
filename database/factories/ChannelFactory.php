@@ -33,22 +33,6 @@ class ChannelFactory extends Factory
     }
 
     /**
-     * Generate a realistic YouTube channel name.
-     */
-    protected function generateRealisticChannelName(): string
-    {
-        $styles = [
-            fn (): string => fake()->firstName().' '.fake()->lastName(),
-            fn (): string => fake()->firstName().' '.fake()->randomElement(['Makes', 'Builds', 'Cooks', 'Rides', 'Creates']),
-            fn (): string => fake()->firstName().' on '.fake()->randomElement(['Film', 'Foot', 'Food', 'Games', 'the Road']),
-            fn (): string => 'The '.fake()->randomElement(['Weekend Workshop', 'Sunday Kitchen', 'Camera Roll', 'Open Bench', 'Everyday Outdoors', 'Small Space Garden', 'Home Studio', 'Field Notes']),
-            fn (): string => ucfirst(fake()->userName()),
-        ];
-
-        return fake()->randomElement($styles)();
-    }
-
-    /**
      * Mark the channel as muted.
      */
     public function muted(): static
@@ -70,5 +54,21 @@ class ChannelFactory extends Factory
                 'muted_at' => null,
             ];
         });
+    }
+
+    /**
+     * Generate a realistic YouTube channel name.
+     */
+    protected function generateRealisticChannelName(): string
+    {
+        $styles = [
+            fn (): string => fake()->firstName() . ' ' . fake()->lastName(),
+            fn (): string => fake()->firstName() . ' ' . fake()->randomElement(['Makes', 'Builds', 'Cooks', 'Rides', 'Creates']),
+            fn (): string => fake()->firstName() . ' on ' . fake()->randomElement(['Film', 'Foot', 'Food', 'Games', 'the Road']),
+            fn (): string => 'The ' . fake()->randomElement(['Weekend Workshop', 'Sunday Kitchen', 'Camera Roll', 'Open Bench', 'Everyday Outdoors', 'Small Space Garden', 'Home Studio', 'Field Notes']),
+            fn (): string => ucfirst(fake()->userName()),
+        ];
+
+        return fake()->randomElement($styles)();
     }
 }

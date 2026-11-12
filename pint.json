@@ -1,6 +1,0 @@
-{
-    "preset": "laravel",
-    "notPath": [
-        "rector.php"
-    ]
-}
